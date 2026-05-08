@@ -13,6 +13,20 @@
       "password": "password123",
       "status": "BLOCKED",
       "failedAttempts": 5
+    },
+    {
+      "id": "u-001",
+      "email": "brianna@brandradar.com",
+      "passwordHash": "hashed_password",
+      "role": "AGENCY_ADMIN",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "u-002",
+      "email": "jean@brandradar.com",
+      "passwordHash": "hashed_password",
+      "role": "BRAND_ANALYST",
+      "status": "ACTIVE"
     }
   ],
   "auth": {
@@ -21,71 +35,82 @@
     "verify-email": { "status": "verified" },
     "forgot-password": { "message": "Email sent" },
     "reset-password": { "message": "Password updated" },
-    "logout": { "message": "Logged out" }
+    "logout": { "message": "Logged out" },
+    "response": { "status": "integrated", "message": "Estructura actualizada por líder" }
   },
   "workspaces": [
-    { "id": "1", "name": "UPC Startup Lab", "ownerId": "1" },
-    { "id": "2", "name": "Marketing Agency", "ownerId": "1" }
+    {
+      "id": "w-001",
+      "name": "BrandRadar Agency",
+      "plan": "PROFESSIONAL",
+      "ownerId": "u-001",
+      "status": "ACTIVE",
+      "policyMaxBrands": 10,
+      "policyAlertQuota": 50
+    }
   ],
   "brands": [
-    { "id": "1", "workspaceId": "1", "name": "BrandRadar Corp", "status": "ACTIVE" },
-    { "id": "2", "workspaceId": "2", "name": "Pepsi Peru", "status": "ACTIVE" }
+    {
+      "id": "b-001",
+      "workspaceId": "w-001",
+      "name": "Nike Peru",
+      "reputationScore": 78.5,
+      "isActive": true
+    },
+    {
+      "id": "b-002",
+      "workspaceId": "w-001",
+      "name": "Adidas Peru",
+      "reputationScore": 65.2,
+      "isActive": true
+    }
   ],
   "incidents": [
     {
-      "id": "101",
-      "brandId": "1",
-      "title": "Caída de servidor principal",
-      "severity": "CRITICAL",
-      "status": "OPEN"
-    },
-    {
-      "id": "102",
-      "brandId": "1",
-      "title": "Fuga de datos detectada",
-      "severity": "HIGH",
-      "status": "OPEN"
-    },
-    {
-      "id": "103",
-      "brandId": "2",
-      "title": "Reseña negativa masiva",
-      "severity": "MEDIUM",
-      "status": "RESOLVED"
-    },
-    {
-      "id": "104",
-      "brandId": "1",
-      "title": "Error de tipografía en logo",
-      "severity": "LOW",
-      "status": "OPEN"
+      "id": "i-001",
+      "brandId": "b-001",
+      "severityLevel": 3,
+      "severityLabel": "HIGH",
+      "status": "OPEN",
+      "impactScore": 72.0,
+      "createdAt": "2026-05-07T12:00:00Z"
     }
   ],
   "mentions": [
     {
-      "id": "1",
-      "brandId": "1",
-      "source": "twitter",
-      "sentiment": "NEGATIVE",
-      "content": "El servicio es muy lento."
-    },
-    {
-      "id": "2",
-      "brandId": "1",
-      "source": "google",
-      "sentiment": "POSITIVE",
-      "content": "Me encanta la app!"
+      "id": "m-001",
+      "brandId": "b-001",
+      "content": "Nike tiene los mejores productos del mercado",
+      "sourcePlatform": "TWITTER",
+      "author": "@usuario1",
+      "category": "POSITIVE",
+      "sentimentPositive": 0.85,
+      "sentimentNegative": 0.05,
+      "sentimentNeutral": 0.10,
+      "publishedAt": "2026-05-07T10:00:00Z"
     }
   ],
-  "monitoring-rules": [
-    { "id": "1", "brandId": "1", "keywords": ["queja", "lento", "estafa"], "active": true }
+  "crisis-alerts": [
+    {
+      "id": "ca-001",
+      "brandId": "b-001",
+      "priorityLevel": 2,
+      "priorityLabel": "MEDIUM",
+      "status": "TRIGGERED",
+      "triggerType": "SENTIMENT_DROP",
+      "triggerConfidence": 0.91,
+      "detectedAt": "2026-05-07T12:05:00Z"
+    }
+  ],
+  "keywords": [
+    { "id": "k-001", "brandId": "b-001", "keyword": "Nike", "matchType": "EXACT", "weight": 1.0, "isActive": true }
+  ],
+  "sources": [
+    { "id": "s-001", "brandId": "b-001", "channelType": "TWITTER", "isActive": true, "lastSyncAt": "2026-05-07T11:00:00Z" }
   ],
   "audit": [
-    {
-      "id": "1",
-      "action": "LOGIN",
-      "userId": "1",
-      "timestamp": "2026-05-08T10:00:00Z"
-    }
-  ]
+    { "id": "1", "action": "LOGIN", "userId": "1", "timestamp": "2026-05-08T10:00:00Z" }
+  ],
+  "sessions": [],
+  "audit-logs": []
 }
