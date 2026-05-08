@@ -1,0 +1,130 @@
+{
+  "users": [
+    {
+      "id": "u-001",
+      "email": "brianna@brandradar.com",
+      "passwordHash": "hashed_password",
+      "role": "AGENCY_ADMIN",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "u-002",
+      "email": "jean@brandradar.com",
+      "passwordHash": "hashed_password",
+      "role": "BRAND_ANALYST",
+      "status": "ACTIVE"
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "w-001",
+      "name": "BrandRadar Agency",
+      "plan": "PROFESSIONAL",
+      "ownerId": "u-001",
+      "status": "ACTIVE",
+      "policyMaxBrands": 10,
+      "policyAlertQuota": 50
+    }
+  ],
+  "brands": [
+    {
+      "id": "b-001",
+      "workspaceId": "w-001",
+      "name": "Nike Peru",
+      "reputationScore": 78.5,
+      "isActive": true
+    },
+    {
+      "id": "b-002",
+      "workspaceId": "w-001",
+      "name": "Adidas Peru",
+      "reputationScore": 65.2,
+      "isActive": true
+    }
+  ],
+  "mentions": [
+    {
+      "id": "m-001",
+      "brandId": "b-001",
+      "content": "Nike tiene los mejores productos del mercado",
+      "sourcePlatform": "TWITTER",
+      "author": "@usuario1",
+      "category": "POSITIVE",
+      "sentimentPositive": 0.85,
+      "sentimentNegative": 0.05,
+      "sentimentNeutral": 0.10,
+      "publishedAt": "2026-05-07T10:00:00Z"
+    },
+    {
+      "id": "m-002",
+      "brandId": "b-001",
+      "content": "Mala experiencia con el servicio al cliente de Nike",
+      "sourcePlatform": "INSTAGRAM",
+      "author": "@usuario2",
+      "category": "NEGATIVE",
+      "sentimentPositive": 0.05,
+      "sentimentNegative": 0.88,
+      "sentimentNeutral": 0.07,
+      "publishedAt": "2026-05-07T11:30:00Z"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "i-001",
+      "brandId": "b-001",
+      "severityLevel": 3,
+      "severityLabel": "HIGH",
+      "status": "OPEN",
+      "impactScore": 72.0,
+      "createdAt": "2026-05-07T12:00:00Z"
+    }
+  ],
+  "crisis-alerts": [
+    {
+      "id": "ca-001",
+      "brandId": "b-001",
+      "priorityLevel": 2,
+      "priorityLabel": "MEDIUM",
+      "status": "TRIGGERED",
+      "triggerType": "SENTIMENT_DROP",
+      "triggerConfidence": 0.91,
+      "detectedAt": "2026-05-07T12:05:00Z"
+    }
+  ],
+  "keywords": [
+    {
+      "id": "k-001",
+      "brandId": "b-001",
+      "keyword": "Nike",
+      "matchType": "EXACT",
+      "weight": 1.0,
+      "isActive": true
+    },
+    {
+      "id": "k-002",
+      "brandId": "b-001",
+      "keyword": "swoosh",
+      "matchType": "PARTIAL",
+      "weight": 0.8,
+      "isActive": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "s-001",
+      "brandId": "b-001",
+      "channelType": "TWITTER",
+      "isActive": true,
+      "lastSyncAt": "2026-05-07T11:00:00Z"
+    },
+    {
+      "id": "s-002",
+      "brandId": "b-001",
+      "channelType": "INSTAGRAM",
+      "isActive": true,
+      "lastSyncAt": "2026-05-07T11:00:00Z"
+    }
+  ],
+  "sessions": [],
+  "audit-logs": []
+}
