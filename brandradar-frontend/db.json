@@ -1,0 +1,91 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "luis@upc.edu.pe",
+      "password": "password123",
+      "status": "ACTIVE",
+      "failedAttempts": 0
+    },
+    {
+      "id": "2",
+      "email": "bloqueado@upc.edu.pe",
+      "password": "password123",
+      "status": "BLOCKED",
+      "failedAttempts": 5
+    }
+  ],
+  "auth": {
+    "login": { "status": "success", "token": "jwt-token-brandradar-2026", "userId": "1" },
+    "register": { "status": "success" },
+    "verify-email": { "status": "verified" },
+    "forgot-password": { "message": "Email sent" },
+    "reset-password": { "message": "Password updated" },
+    "logout": { "message": "Logged out" }
+  },
+  "workspaces": [
+    { "id": "1", "name": "UPC Startup Lab", "ownerId": "1" },
+    { "id": "2", "name": "Marketing Agency", "ownerId": "1" }
+  ],
+  "brands": [
+    { "id": "1", "workspaceId": "1", "name": "BrandRadar Corp", "status": "ACTIVE" },
+    { "id": "2", "workspaceId": "2", "name": "Pepsi Peru", "status": "ACTIVE" }
+  ],
+  "incidents": [
+    {
+      "id": "101",
+      "brandId": "1",
+      "title": "Caída de servidor principal",
+      "severity": "CRITICAL",
+      "status": "OPEN"
+    },
+    {
+      "id": "102",
+      "brandId": "1",
+      "title": "Fuga de datos detectada",
+      "severity": "HIGH",
+      "status": "OPEN"
+    },
+    {
+      "id": "103",
+      "brandId": "2",
+      "title": "Reseña negativa masiva",
+      "severity": "MEDIUM",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "104",
+      "brandId": "1",
+      "title": "Error de tipografía en logo",
+      "severity": "LOW",
+      "status": "OPEN"
+    }
+  ],
+  "mentions": [
+    {
+      "id": "1",
+      "brandId": "1",
+      "source": "twitter",
+      "sentiment": "NEGATIVE",
+      "content": "El servicio es muy lento."
+    },
+    {
+      "id": "2",
+      "brandId": "1",
+      "source": "google",
+      "sentiment": "POSITIVE",
+      "content": "Me encanta la app!"
+    }
+  ],
+  "monitoring-rules": [
+    { "id": "1", "brandId": "1", "keywords": ["queja", "lento", "estafa"], "active": true }
+  ],
+  "audit": [
+    {
+      "id": "1",
+      "action": "LOGIN",
+      "userId": "1",
+      "timestamp": "2026-05-08T10:00:00Z"
+    }
+  ]
+}

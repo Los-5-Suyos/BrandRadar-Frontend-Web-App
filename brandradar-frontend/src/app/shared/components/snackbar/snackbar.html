@@ -1,1 +1,4 @@
-<p>snackbar works!</p>
+<div class="snackbar-container" [class.show]="isVisible" [class.error]="isError">
+  <span class="message">{{ message }}</span>
+  <button class="close-btn" (click)="close()">×</button>
+</div>
