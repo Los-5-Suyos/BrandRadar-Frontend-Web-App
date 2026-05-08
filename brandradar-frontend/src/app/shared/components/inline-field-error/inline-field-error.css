@@ -1,0 +1,14 @@
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  animation: slideIn 0.15s ease;
+}
+.field-error svg { flex-shrink: 0; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

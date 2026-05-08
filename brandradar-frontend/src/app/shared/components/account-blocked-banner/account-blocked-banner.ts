@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-account-blocked-banner',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './account-blocked-banner.html',
-  styleUrl: './account-blocked-banner.css',
+  styleUrl: './account-blocked-banner.css'
 })
-export class AccountBlockedBanner {}
+export class AccountBlockedBanner {
+  @Input() visible: boolean = false;
+}
