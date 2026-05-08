@@ -8,109 +8,81 @@
       "failedAttempts": 0
     },
     {
-      "id": "2",
-      "email": "bloqueado@upc.edu.pe",
-      "password": "password123",
-      "status": "BLOCKED",
-      "failedAttempts": 5
-    },
-    {
       "id": "u-001",
       "email": "brianna@brandradar.com",
-      "passwordHash": "hashed_password",
       "role": "AGENCY_ADMIN",
-      "status": "ACTIVE"
-    },
-    {
-      "id": "u-002",
-      "email": "jean@brandradar.com",
-      "passwordHash": "hashed_password",
-      "role": "BRAND_ANALYST",
       "status": "ACTIVE"
     }
   ],
   "auth": {
     "login": { "status": "success", "token": "jwt-token-brandradar-2026", "userId": "1" },
-    "register": { "status": "success" },
-    "verify-email": { "status": "verified" },
-    "forgot-password": { "message": "Email sent" },
-    "reset-password": { "message": "Password updated" },
-    "logout": { "message": "Logged out" },
-    "response": { "status": "integrated", "message": "Estructura actualizada por líder" }
+    "response": {
+      "status": "integrated",
+      "message": "Estructura actualizada por líder",
+      "version": "2.0"
+    }
   },
   "workspaces": [
-    {
-      "id": "w-001",
-      "name": "BrandRadar Agency",
-      "plan": "PROFESSIONAL",
-      "ownerId": "u-001",
-      "status": "ACTIVE",
-      "policyMaxBrands": 10,
-      "policyAlertQuota": 50
-    }
+    { "id": "w-001", "name": "BrandRadar Agency", "status": "ACTIVA" }
   ],
   "brands": [
-    {
-      "id": "b-001",
-      "workspaceId": "w-001",
-      "name": "Nike Peru",
-      "reputationScore": 78.5,
-      "isActive": true
-    },
-    {
-      "id": "b-002",
-      "workspaceId": "w-001",
-      "name": "Adidas Peru",
-      "reputationScore": 65.2,
-      "isActive": true
-    }
-  ],
-  "incidents": [
-    {
-      "id": "i-001",
-      "brandId": "b-001",
-      "severityLevel": 3,
-      "severityLabel": "HIGH",
-      "status": "OPEN",
-      "impactScore": 72.0,
-      "createdAt": "2026-05-07T12:00:00Z"
-    }
+    { "id": "b-001", "name": "Nike Peru", "reputationScore": 78.5, "isActive": true }
   ],
   "mentions": [
     {
       "id": "m-001",
       "brandId": "b-001",
-      "content": "Nike tiene los mejores productos del mercado",
-      "sourcePlatform": "TWITTER",
-      "author": "@usuario1",
-      "category": "POSITIVE",
-      "sentimentPositive": 0.85,
-      "sentimentNegative": 0.05,
-      "sentimentNeutral": 0.10,
-      "publishedAt": "2026-05-07T10:00:00Z"
-    }
-  ],
-  "crisis-alerts": [
+      "content": "Nike es una marca",
+      "sentimentType": "POSITIVO"
+    },
     {
-      "id": "ca-001",
+      "id": "m-002",
       "brandId": "b-001",
-      "priorityLevel": 2,
-      "priorityLabel": "MEDIUM",
-      "status": "TRIGGERED",
-      "triggerType": "SENTIMENT_DROP",
-      "triggerConfidence": 0.91,
-      "detectedAt": "2026-05-07T12:05:00Z"
+      "content": "El servicio de entrega fue lento",
+      "sentimentType": "NEGATIVO"
+    },
+    {
+      "id": "m-003",
+      "brandId": "b-001",
+      "content": "Me encantan las nuevas zapatillas",
+      "sentimentType": "POSITIVO"
+    },
+    {
+      "id": "m-004",
+      "brandId": "b-001",
+      "content": "La calidad ha bajado mucho",
+      "sentimentType": "NEGATIVO"
     }
   ],
-  "keywords": [
-    { "id": "k-001", "brandId": "b-001", "keyword": "Nike", "matchType": "EXACT", "weight": 1.0, "isActive": true }
+  "patterns": [
+    { "id": "p-001", "brandId": "b-001", "correlationScore": 0.95, "mentionsAffected": 45, "detectedAt": "2026-05-08T10:00:00Z", "status": "ACTIVE" }
   ],
-  "sources": [
-    { "id": "s-001", "brandId": "b-001", "channelType": "TWITTER", "isActive": true, "lastSyncAt": "2026-05-07T11:00:00Z" }
+  "alerts": [
+    { "id": "a-001", "brandId": "b-001", "severityLevel": "HIGH", "status": "TRIGGERED" }
   ],
-  "audit": [
-    { "id": "1", "action": "LOGIN", "userId": "1", "timestamp": "2026-05-08T10:00:00Z" }
+  "incidents": [
+    { "id": "i-001", "brandId": "b-001", "status": "OPEN", "createdAt": "2026-05-07T12:00:00Z" }
   ],
-  "sessions": [],
-  "audit-logs": []
+  "reports": [
+    { "id": "r-001", "brandId": "b-001", "type": "PDF", "status": "GENERATED" }
+  ],
+  "auditLogs": [
+    { "id": "log-001", "action": "AccountRegistered", "userId": "1", "timestamp": "2026-05-08T10:00:00Z" }
+  ],
+  "sentimentHistory": [
+    { "date": "2026-05-01", "score": 80, "event": "SentimentTrendChanged" },
+    { "date": "2026-05-08", "score": 75, "event": null }
+  ],
+
+  "patterns": [
+    {
+      "id": "p-001",
+      "correlationScore": 85,
+      "mentionsAffected": 12,
+      "detectedAt": "2024-05-20T10:30:00Z",
+      "status": "ACTIVE"
+    }
+  ],
+  "auditLogs": []
+
 }

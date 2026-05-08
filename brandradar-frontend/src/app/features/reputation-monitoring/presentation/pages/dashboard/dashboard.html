@@ -1,1 +1,44 @@
-<p>dashboard works!</p>
+
+<div style="padding: 20px; font-family: sans-serif;">
+  <h1>Dashboard de Reputación - BrandRadar</h1>
+
+  <div style="margin-bottom: 20px;">
+    <button (click)="filtrar('')" [style.font-weight]="filtroActual === '' ? 'bold' : 'normal'">TODOS</button>
+    <button (click)="filtrar('POSITIVO')" style="margin-left: 5px; color: green;" [style.font-weight]="filtroActual === 'POSITIVO' ? 'bold' : 'normal'">POSITIVO</button>
+    <button (click)="filtrar('NEUTRO')" style="margin-left: 5px; color: gray;" [style.font-weight]="filtroActual === 'NEUTRO' ? 'bold' : 'normal'">NEUTRO</button>
+    <button (click)="filtrar('NEGATIVO')" style="margin-left: 5px; color: red;" [style.font-weight]="filtroActual === 'NEGATIVO' ? 'bold' : 'normal'">NEGATIVO</button>
+  </div>
+
+  <div *ngIf="errorMessage === 'SIN_INCIDENTES_EN_CATEGORÍA'"
+       style="background: #d1ecf1; color: #0c5460; padding: 15px; margin-bottom: 20px; border: 1px solid #bee5eb; border-radius: 4px;">
+    <i class="info-icon">ℹ️</i> {{ errorMessage }}
+  </div>
+
+  <div *ngIf="errorMessage === 'ERROR_DE_CONEXIÓN_API'"
+       style="background: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+    <strong>Error:</strong> No se pudo conectar con el servidor.
+  </div>
+
+  <table *ngIf="mentions.length > 0" border="1" style="width: 100%; border-collapse: collapse;">
+    <thead style="background: #343a40; color: white;">
+    <tr>
+      <th style="padding: 12px;">ID</th>
+      <th style="padding: 12px;">Comentario</th>
+      <th style="padding: 12px;">Sentimiento</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let m of mentions">
+      <td style="padding: 10px; text-align: center;">{{ m.id }}</td>
+      <td style="padding: 10px;">{{ m.content }}</td>
+      <td style="padding: 10px; text-align: center; font-weight: bold;">
+          <span [style.color]="m.sentimentType === 'NEGATIVO' ? 'red' : (m.sentimentType === 'NEUTRO' ? 'gray' : 'green')">
+            {{ m.sentimentType }}
+          </span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="isLoading && mentions.length === 0 && !errorMessage">Actualizando flujo de menciones...</p>
+</div>
