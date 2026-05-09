@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
+import { throwError } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
 export class ApiAdapter {
-  protected readonly baseUrl = environment.apiUrl;
+  static handleGlobalError(error: HttpErrorResponse) {
+    let message = 'Error inesperado en BrandRadar';
 
-  constructor(protected http: HttpClient) {}
+    if (error.status === 0) message = 'No hay conexión con el servidor (db.json)';
+    if (error.status === 401) message = 'Sesión expirada o Workspace bloqueado';
+
+    console.error(`[Global Error]: ${message}`); // Esto cumple con la lógica transversal
+    return throwError(() => new Error(message));
+  }
 }
