@@ -1,69 +1,78 @@
-<div *ngIf="activeAlerts.length > 0"
-     style="background: #ff4d4d; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; border-bottom: 3px solid #b30000;">
-  <span>⚠️ ¡ALERTA CRÍTICA! Se detectó un incidente de alta prioridad (Severity: {{ activeAlerts[0]?.severityLevel }}).</span>
-  <button (click)="atenderCrisis(activeAlerts[0]?.id)"
-          style="background: white; color: #ff4d4d; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">
-    ATENDER AHORA
-  </button>
-</div>
+<div class="dashboard-wrapper">
 
-<div style="padding: 20px; font-family: 'Segoe UI', sans-serif; color: #333;">
+  <div *ngIf="activeAlerts.length > 0" class="crisis-banner">
+    <div>
+      <span style="color: #ff4d4d">●</span>
+      <strong> ALERTA DE CRISIS:</strong> Nivel {{ activeAlerts[0]?.severityLevel }} detectado en Nike Peru.
+    </div>
+    <button (click) ="atenderCrisis(activeAlerts[0]?.id)" class="btn-crisis">GESTIONAR INCIDENTE</button>
+  </div>
 
-  <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h1>Dashboard de Reputación - BrandRadar</h1>
-    <div style="font-size: 0.9em; color: #666;">Estado: <span style="color: #27ae60; font-weight: bold;">ACTIVA</span></div>
+  <header class="brand-header">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <h2 style="margin:0; font-weight: 800; letter-spacing: -1px;">BRANDRADAR</h2>
+      <span class="module-badge">Sentiment Analysis Engine</span>
+    </div>
+    <div style="color: var(--lavender-light); font-size: 0.8rem;">
+      Workspace: <strong style="color: white">ACTIVA</strong>
+    </div>
   </header>
 
-  <section style="background: white; border: 1px solid #e1e4e8; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h3 style="margin: 0; color: #586069;">Reputation Score</h3>
-        <div style="font-size: 32px; font-weight: bold; color: #2ecc71;">{{ reputationScore }}%</div>
-        <p style="font-size: 12px; color: #6a737d;">Basado en eventos: <strong>SentimentTrendChanged</strong></p>
+  <main class="sentiment-container">
+
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--navy-deep); margin:0;">Flujo de Análisis en Tiempo Real</h3>
+        <nav style="display: flex; gap: 8px;">
+          <button (click)="filtrar('')" class="btn-nav" [class.active]="filtroActual === ''">TODOS</button>
+          <button (click)="filtrar('POSITIVO')" class="btn-nav" [class.active]="filtroActual === 'POSITIVO'">POSITIVO</button>
+          <button (click)="filtrar('NEGATIVO')" class="btn-nav" [class.active]="filtroActual === 'NEGATIVO'">NEGATIVO</button>
+        </nav>
       </div>
 
-      <select (change)="filtrarPorRango($event)" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd; background: #fdfdfd; cursor: pointer;">
-        <option value="30">Últimos 30 días</option>
-        <option value="7">Últimos 7 días</option>
-        <option value="24">Últimas 24 horas</option>
-      </select>
-    </div>
-
-    <div style="display: flex; align-items: flex-end; height: 120px; gap: 10px; margin-top: 20px; border-bottom: 2px solid #eee; padding-bottom: 5px;">
-      <div *ngFor="let h of currentChartData.barHeights"
-           [style.height]="h"
-           style="background: #2ecc71; width: 30px; border-radius: 4px 4px 0 0; transition: height 0.4s ease-in-out;">
-      </div>
-    </div>
-  </section>
-
-  <nav style="margin-bottom: 20px; display: flex; gap: 10px;">
-    <button (click)="filtrar('')" [style.background]="filtroActual === '' ? '#343a40' : 'white'" [style.color]="filtroActual === '' ? 'white' : 'black'" style="padding: 8px 15px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer;">TODOS</button>
-    <button (click)="filtrar('POSITIVO')" style="color: #27ae60; border: 1px solid #27ae60; background: white; padding: 8px 15px; border-radius: 6px; cursor: pointer;">POSITIVO</button>
-    <button (click)="filtrar('NEUTRO')" style="color: #7f8c8d; border: 1px solid #7f8c8d; background: white; padding: 8px 15px; border-radius: 6px; cursor: pointer;">NEUTRO</button>
-    <button (click)="filtrar('NEGATIVO')" style="color: #e74c3c; border: 1px solid #e74c3c; background: white; padding: 8px 15px; border-radius: 6px; cursor: pointer;">NEGATIVO</button>
-  </nav>
-
-  <div *ngIf="errorMessage === 'SIN_INCIDENTES_EN_CATEGORÍA'"
-       style="background: #e3f2fd; color: #0d47a1; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #bbdefb; margin-bottom: 20px;">
-    <p style="margin: 0; font-weight: bold;">ℹ️ {{ errorMessage }}</p>
-  </div>
-
-  <div *ngIf="mentions.length > 0" style="overflow-x: auto; border: 1px solid #e1e4e8; border-radius: 12px;">
-    <table style="width: 100%; border-collapse: collapse; background: white;">
-      <thead style="background: #f6f8fa; border-bottom: 2px solid #e1e4e8;">
-      <tr><th style="padding: 15px; text-align: left;">Comentario</th><th style="padding: 15px; text-align: center;">Sentimiento</th></tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let m of mentions" style="border-bottom: 1px solid #eee;">
-        <td style="padding: 15px;">{{ m.content }} [cite: 27]</td>
-        <td style="padding: 15px; text-align: center; font-weight: bold;">
-            <span [style.color]="m.sentiment === 'NEGATIVO' ? '#e74c3c' : (m.sentiment === 'NEUTRO' ? '#7f8c8d' : '#27ae60')">
-              {{ m.sentiment }} [cite: 28]
+      <div *ngIf="mentions.length > 0; else noData">
+        <div *ngFor="let m of mentions" class="mention-card" [ngClass]="m.sentiment.toLowerCase()">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span [style.color]="'var(--slate-text)'" style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">Mención ID: {{m.id}}</span>
+            <span style="font-size: 0.8rem; font-weight: 800;"
+                  [style.color]="m.sentiment === 'NEGATIVO' ? '#e74c3c' : '#27ae60'">
+              {{ m.sentiment }}
             </span>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+          </div>
+          <p style="margin: 0; color: var(--navy-deep); line-height: 1.5;">{{ m.content }}</p>
+        </div>
+      </div>
+
+      <ng-template #noData>
+        <div style="padding: 40px; text-align: center; background: var(--off-white); border-radius: 12px; color: var(--slate-text);">
+          {{ errorMessage || 'Esperando flujo de datos...' }}
+        </div>
+      </ng-template>
+    </section>
+
+    <aside>
+      <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--lavender-light); margin-bottom: 25px; text-align: center;">
+        <h4 style="margin-top: 0; color: var(--slate-text);">Global Reputation</h4>
+        <div class="score-circle">{{ reputationScore }}%</div>
+        <p style="font-size: 0.7rem; color: var(--lavender-light); margin-top: 10px;">Cálculo basado en 24h de actividad</p>
+      </div>
+
+      <div *ngIf="patterns.length > 0" style="background: var(--midnight-blue); color: white; padding: 20px; border-radius: 16px;">
+        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+          <span style="color: var(--accent-violet)">🔍</span> Patrones Detectados
+        </h4>
+        <div *ngFor="let p of patterns" style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 0.85rem;">
+          <div style="font-weight: bold;">{{ p.patternName }}</div>
+          <div style="color: var(--lavender-light); font-size: 0.75rem;">Fuerza: {{ p.correlationScore }}%</div>
+          <button (click)="descartarPatron(p.id)" style="background: transparent; border: 1px solid white; color: white; margin-top: 8px; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer;">DESCARTAR</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 25px; display: grid; gap: 10px;">
+        <button (click)="exportarReporte('PDF')" class="btn-nav" style="border-color: #e74c3c; color: #e74c3c;">Exportar Análisis PDF</button>
+        <button (click)="exportarReporte('CSV')" class="btn-nav" style="border-color: #27ae60; color: #27ae60;">Exportar Data CSV</button>
+      </div>
+    </aside>
+
+  </main>
 </div>

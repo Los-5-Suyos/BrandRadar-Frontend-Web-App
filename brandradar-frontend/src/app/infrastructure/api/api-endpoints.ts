@@ -17,9 +17,10 @@ export const ENDPOINTS = {
   SENTIMENT_HISTORY: (brandId: string) => `${API_BASE_URL}/sentimentHistory?brandId=${brandId}`,
 
   // Detección de Crisis (Patrones e Incidentes)
-  PATTERNS: `${API_BASE_URL}/patterns`,
+  // AJUSTADO: Ahora recibe brandId para cumplir con el requerimiento
+  PATTERNS: (brandId: string) => `${API_BASE_URL}/patterns?brandId=${brandId}`,
   PATTERNS_DISMISS: (id: string) => `${API_BASE_URL}/patterns/${id}`,
-  INCIDENTS: `${API_BASE_URL}/incidents`,
+  INCIDENTS: (brandId: string) => `${API_BASE_URL}/incidents?brandId=${brandId}`,
 
   // Alertas y Reglas
   ALERTS: `${API_BASE_URL}/alerts`,

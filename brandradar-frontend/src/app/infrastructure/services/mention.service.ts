@@ -10,34 +10,26 @@ import { Mention } from '../../features/reputation-monitoring/domain/models/ment
   providedIn: 'root',
 })
 export class MentionService {
+  private readonly brandId = 'b-001';
+
   constructor(
     private http: HttpClient,
     private adapter: MentionAdapter,
   ) {}
 
   getMentionsWithPolling(): Observable<Mention[]> {
-    // Usamos un ID por defecto para el brandId ya que el endpoint lo requiere
-    const brandId = 'b-001';
-
     return timer(0, 10000).pipe(
-      switchMap((): Observable<any[]> => {
-        // CORRECCIÓN: Llamamos a la función MENTIONS pasando el brandId
-        return this.http.get<any[]>(ENDPOINTS.MENTIONS(brandId));
-      }),
-      map((apiData: any[]): Mention[] => {
-        // Transformamos y ordenamos
-        const mentions = this.adapter.adaptResponse(apiData);
-        return this.ordenarPorCriticidad(mentions);
-      }),
-      catchError((error) => {
-        console.error('Error cargando menciones:', error);
-        return of([]); // Si falla, devolvemos una lista vacía para no romper el flujo
-      }),
+      switchMap(() => this.http.get<any[]>(ENDPOINTS.MENTIONS(this.brandId))),
+      map((data) => this.adapter.adaptResponse(data)),
+      catchError(() => of([])),
     );
   }
 
-  private ordenarPorCriticidad(lista: Mention[]): Mention[] {
-    const orden: Record<string, number> = { NEGATIVO: 1, NEUTRO: 2, POSITIVO: 3 };
-    return lista.sort((a, b) => (orden[a.sentiment] || 4) - (orden[b.sentiment] || 4));
+  // ESTE ES EL QUE NECESITA EL DASHBOARD PARA FILTRAR SIN BUCLES
+  getMentions(): Observable<Mention[]> {
+    return this.http.get<any[]>(ENDPOINTS.MENTIONS(this.brandId)).pipe(
+      map((data) => this.adapter.adaptResponse(data)),
+      catchError(() => of([])),
+    );
   }
 }
