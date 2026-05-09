@@ -336,6 +336,63 @@
       "userId": "u-001",
       "timestamp": "2026-05-09T13:47:43.115Z",
       "id": "z-atNgo-uhI"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-09T15:06:34.073Z",
+      "userId": "u-001",
+      "id": "VzuF_-5TFyY"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:06:37.465Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:06:37.465Z",
+      "id": "mKMAv4swbKo"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-09T15:06:44.896Z",
+      "userId": "u-001",
+      "id": "57Qzh-4ccGw"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:02.441Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:02.441Z",
+      "id": "64pw0U3BSr0"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "CSV",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:12.001Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:12.001Z",
+      "id": "d1sIq9kM87I"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-09T15:07:35.477Z",
+      "userId": "u-001",
+      "id": "86SZyq2dESg"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "CSV",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:52.033Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:52.033Z",
+      "id": "oBrfW1mePWU"
     }
   ],
   "sentimentHistory": [
