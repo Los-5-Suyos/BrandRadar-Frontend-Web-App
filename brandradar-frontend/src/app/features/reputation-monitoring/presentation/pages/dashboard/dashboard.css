@@ -1,0 +1,178 @@
+:host {
+  /* Style Guide Colors */
+  --primary-purple: #5B5FEE;
+  --navy-deep: #0D1033;
+  --midnight-blue: #1A2155;
+  --accent-violet: #9B3CF7;
+  --accent-blue: #4B6EF5;
+  --off-white: #ECEDF5;
+  --ghost-white: #F5F5FA;
+  --slate-text: #3D4466;
+  --lavender-light: #C5C7E0;
+  --white: #FFFFFF;
+  --success-green: #27ae60;
+  --error-red: #e74c3c;
+}
+
+.dashboard-wrapper {
+  background-color: #FAFAFA;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--navy-deep);
+}
+
+/* Header Estilo BrandRadar */
+.brand-header {
+  background: var(--navy-deep);
+  color: var(--white);
+  padding: 1.2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.module-badge {
+  background: var(--primary-purple);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Banner de Alerta Crítica (Midnight Blue) */
+.crisis-banner {
+  background: var(--midnight-blue);
+  border-bottom: 4px solid var(--error-red);
+  color: white;
+  padding: 18px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.btn-crisis {
+  background: var(--error-red);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-crisis:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+/* Layout de Sentiment Analysis */
+.sentiment-container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Feed de Menciones (Cards) */
+.mention-card {
+  background: var(--white);
+  border: 1px solid var(--lavender-light);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+  transition: transform 0.2s ease;
+  border-left: 6px solid var(--lavender-light);
+}
+
+.mention-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.mention-card.positivo { border-left-color: var(--success-green); background: #f0fdf4; }
+.mention-card.neutro { border-left-color: var(--slate-text); }
+.mention-card.negativo { border-left-color: var(--error-red); background: #fff5f5; }
+
+/* Score Circular con Animación */
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 10px solid var(--off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--midnight-blue);
+  margin: 20px auto;
+  position: relative;
+  background: white;
+  animation: pulse-glow 3s infinite;
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(91, 95, 238, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(91, 95, 238, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(91, 95, 238, 0); }
+}
+
+/* Navegación y Filtros */
+.btn-nav {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--lavender-light);
+  background: white;
+  color: var(--slate-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-nav.active {
+  background: var(--primary-purple);
+  color: white;
+  border-color: var(--primary-purple);
+}
+
+.btn-nav:hover:not(.active) {
+  background: var(--ghost-white);
+  border-color: var(--primary-purple);
+}
+
+/* Columna Lateral (Aside) */
+aside h4 {
+  color: var(--slate-text);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.pattern-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsivo */
+@media (max-width: 992px) {
+  .sentiment-container {
+    grid-template-columns: 1fr;
+  }
+}
