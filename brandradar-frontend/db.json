@@ -393,6 +393,55 @@
       "userId": "u-001",
       "timestamp": "2026-05-09T15:07:52.033Z",
       "id": "oBrfW1mePWU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:21:36.756Z",
+      "userId": "u-001",
+      "id": "4tDJ5f48vfc"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-11T00:21:39.530Z",
+      "userId": "u-001",
+      "id": "FZTRjr1LnOo"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:21:41.828Z",
+      "userId": "u-001",
+      "id": "oXUbCW2mz1s"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-11T00:21:42.536Z",
+      "userId": "u-001",
+      "id": "R1FrhJK6Xsw"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:29:14.083Z",
+      "userId": "u-001",
+      "id": "ljzjMKLwANU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-11T00:29:14.686Z",
+      "userId": "u-001",
+      "id": "qq_S2XG-50k"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-11T00:29:15.494Z",
+      "userId": "u-001",
+      "id": "y8oZOXOxYSI"
     }
   ],
   "sentimentHistory": [
