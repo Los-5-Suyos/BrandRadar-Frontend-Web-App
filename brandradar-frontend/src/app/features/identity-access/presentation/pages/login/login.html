@@ -1,121 +1,99 @@
-<div class="auth-layout">
-  <div class="auth-card">
+<header class="simple-header">
+  <a routerLink="/" class="header__back-btn" aria-label="Volver al inicio">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+  </a>
+  <div class="lang-toggle">
+    <span class="lang-toggle__opt active">ES</span>
+    <span class="lang-toggle__opt">EN</span>
+  </div>
+</header>
 
-    <!-- LEFT PANEL -->
-    <div class="auth-card__panel auth-card__panel--brand">
-      <div class="brand-logo">
-        <div class="brand-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="15" stroke="url(#lg)" stroke-width="2"/>
-            <path d="M10 22 L16 6 L22 22" stroke="url(#lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12.5 17h7" stroke="url(#lg)" stroke-width="2" stroke-linecap="round"/>
-            <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#A855F7"/><stop offset="1" stop-color="#06B6D4"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <span class="brand-name">Brand<span class="brand-accent">Radar</span></span>
-      </div>
-      <div class="brand-content">
-        <h1>Hola, <br>¡Bienvenido!</h1>
-        <p>Inicia sesión para gestionar tu monitoreo en tiempo real.</p>
-        <div class="brand-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
+<main class="auth-container">
+  <div class="auth-card-wrapper">
+    <div class="auth-mobile-logo">
+      <img src="assets/images/light-logo.png" alt="BrandRadar" />
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="auth-card__panel auth-card__panel--form">
-      <div class="form-header">
-        <h2>Login</h2>
+    <div class="auth-card">
+      <!-- Panel izquierdo hero -->
+      <div class="auth-hero-panel">
+        <div class="auth-hero__logo">
+          <img src="assets/images/light-logo.png" alt="BrandRadar" />
+        </div>
+        <div class="auth-hero__content">
+          <h1 class="auth-title">Hola, ¡Bienvenido!</h1>
+          <p class="auth-hero__desc">Inicia sesión para gestionar tu monitoreo en tiempo real.</p>
+        </div>
+        <div></div>
       </div>
 
-      <app-account-blocked-banner [visible]="isLocked" />
-
-      @if (networkError) {
-        <div class="network-error" role="alert">{{ networkError }}</div>
-      }
-
-      @if (failedAttempts > 0 && !isLocked) {
-        <div class="attempts-warning" role="alert">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          Credenciales incorrectas. Te quedan <strong>{{ attemptsLeft }}</strong> intento(s).
-        </div>
-      }
-
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
-        <div class="field-group">
-          <label class="field-label" for="email">Correo electrónico</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="field-input"
-            [class.field-input--error]="form.get('email')?.touched && form.get('email')?.invalid"
-            placeholder="hola&#64;tudominio.com"
-            autocomplete="email"
-          />
-          <app-inline-field-error [control]="form.get('email')" label="El correo" />
+      <!-- Panel derecho formulario -->
+      <div class="auth-form-panel">
+        <div class="auth-header">
+          <h2 class="auth-title" style="margin-bottom:0">Login</h2>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="password">Contraseña</label>
-          <div class="input-password-wrapper">
+        <!-- Banner de bloqueo (DDD: el componente reacciona al estado del servicio) -->
+        <app-account-blocked-banner *ngIf="isBlocked" />
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form" novalidate *ngIf="!isBlocked">
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label" for="email">Correo electrónico</label>
             <input
-              id="password"
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
-              class="field-input"
-              [class.field-input--error]="form.get('password')?.touched && form.get('password')?.invalid"
-              placeholder="••••••••"
-              autocomplete="current-password"
-            />
-            <button type="button" class="toggle-password" (click)="showPassword = !showPassword" aria-label="Toggle password">
-              @if (showPassword) {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-              } @else {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              }
-            </button>
+              type="email" id="email" formControlName="email"
+              class="form-input" placeholder="hola@tudominio.com"
+              autocomplete="username" />
+            <app-inline-field-error [message]="emailError" />
+            <app-inline-field-error *ngIf="loginError && !emailError" [message]="loginError" />
           </div>
-          <app-inline-field-error [control]="form.get('password')" label="La contraseña" />
+
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label class="form-label" for="password">Contraseña</label>
+            <input
+              type="password" id="password" formControlName="password"
+              class="form-input" placeholder="••••••••"
+              autocomplete="current-password" />
+            <app-inline-field-error [message]="passError" />
+          </div>
+
+          <!-- Intentos restantes -->
+          <div class="attempts-warning" *ngIf="failedAttempts > 0 && !isBlocked">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Te quedan <strong>{{ remainingAttempts }}</strong> intento(s).
+          </div>
+
+          <!-- Forgot password -->
+          <div class="auth-actions">
+            <a routerLink="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn--submit" [disabled]="form.invalid || isLoading">
+            <app-loading-spinner *ngIf="isLoading" [size]="18" />
+            <span>{{ isLoading ? 'Iniciando sesión…' : 'Iniciar sesión' }}</span>
+          </button>
+        </form>
+
+        <!-- Acción disponible incluso si bloqueado -->
+        <div class="auth-actions blocked-action" *ngIf="isBlocked" style="justify-content:center;margin-top:16px">
+          <a routerLink="/auth/forgot-password">Recuperar acceso →</a>
         </div>
 
-        <div class="form-footer-link">
-          <a routerLink="/auth/forgot-password" class="link-muted">¿Olvidaste tu contraseña?</a>
+        <div class="auth-footer">
+          ¿No tienes una cuenta? <a routerLink="/auth/register">Regístrate</a>
         </div>
-
-        <button
-          type="submit"
-          class="btn-primary"
-          [disabled]="form.invalid || isLoading || isLocked"
-        >
-          @if (isLoading) {
-            <app-loading-spinner size="sm" />
-            <span>Verificando...</span>
-          } @else {
-            <span>Iniciar sesión</span>
-          }
-        </button>
-
-        <p class="form-switch">
-          ¿No tienes una cuenta? <a routerLink="/auth/register" class="link-accent">Regístrate</a>
-        </p>
-      </form>
+      </div>
     </div>
   </div>
+</main>
 
-  <footer class="auth-footer">© 2026 BrandRadar. Todos los derechos reservados.</footer>
-</div>
+<footer><p class="footer__copy">© 2026 BrandRadar. Todos los derechos reservados.</p></footer>
+
+<app-snackbar />

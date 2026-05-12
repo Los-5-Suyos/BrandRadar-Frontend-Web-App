@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,8 +6,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './account-blocked-banner.html',
-  styleUrl: './account-blocked-banner.css'
+  styleUrl: './account-blocked-banner.css',
 })
-export class AccountBlockedBanner {
-  @Input() visible: boolean = false;
-}
+export class AccountBlockedBanner {}

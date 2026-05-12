@@ -1,171 +1,118 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AuthAdapter } from '../../infrastructure/adapters/auth.adapter';
-import { RegisterRequestDto, LoginRequestDto } from '../../infrastructure/dto/auth.dto';
-import { UserModel } from '../../domain/models/user.model';
-import { UserStatus } from '../../domain/enums/user-status.enum';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AccountType } from '../../domain/enums/account-type.enum';
-import { AccountRegistered, AccountActivated, AccountLocked } from '../../domain/events/domain-events';
+import { UserStatus } from '../../domain/enums/user-status.enum';
+import { UserModel } from '../../domain/models/user.model';
+import { RegisterRequestDto } from '../../infrastructure/dto/register.dto';
+import { LoginRequestDto, LoginResponseDto } from '../../infrastructure/dto/login.dto';
 
-export const MAX_LOGIN_ATTEMPTS = 3;
+const API_BASE = 'http://localhost:3000';
 
-export interface SessionState {
+export interface AuthState {
   user: UserModel | null;
+  token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
+  failedAttempts: number;
+  isBlocked: boolean;
 }
 
+/**
+ * AuthService — Application Service (T-04, T21)
+ *
+ * Centraliza toda la lógica de autenticación:
+ * - register() → llama POST /auth/register (fake API: json-server + auth-middleware.js)
+ * - login()    → llama POST /auth/login, maneja intentos fallidos y bloqueo
+ * - El bloqueo NO es lógica de UI: vive aquí (DDD)
+ * - Emite Domain Events conceptuales: AccountRegistered, AccountLocked
+ *
+ * Fake API: npx json-server db.json --middlewares auth-middleware.js --port 3000
+ * Usuario de prueba: luis@upc.edu.pe / password123
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // ── In-memory token (never localStorage) ──
-  private _token: string | null = null;
+  private readonly http   = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  // ── Session State ──
-  private readonly _session$ = new BehaviorSubject<SessionState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null
-  });
+  private readonly TOKEN_KEY   = 'brandradar_token';
+  private readonly USER_KEY    = 'brandradar_user';
+  private readonly MAX_ATTEMPTS = 3;
 
-  // ── Account lock state ──
-  private readonly _failedAttempts$ = new BehaviorSubject<number>(0);
-  private readonly _accountLocked$  = new BehaviorSubject<boolean>(false);
+  private _failedAttempts = 0;
+  private _isBlocked      = false;
 
-  // ── Public streams ──
-  readonly session$        = this._session$.asObservable();
-  readonly failedAttempts$ = this._failedAttempts$.asObservable();
-  readonly accountLocked$  = this._accountLocked$.asObservable();
-
-  constructor(
-    private readonly adapter: AuthAdapter,
-    private readonly router: Router
-  ) {}
-
-  // ──────────────────────────────────────────────
-  // REGISTER
-  // ──────────────────────────────────────────────
-  register(dto: RegisterRequestDto): Observable<any> {
-    this._setLoading(true);
-    return this.adapter.register(dto).pipe(
-      tap(res => {
-        this._setLoading(false);
-        // Emit domain event (logically)
-        const event: AccountRegistered = {
-          type: 'AccountRegistered',
-          userId: res.id,
+  // ── Registro ────────────────────────────────────────────────
+  register(payload: RegisterRequestDto): Observable<{ email: string }> {
+    return this.http.post<any>(`${API_BASE}/auth/register`, payload).pipe(
+      tap((res) => {
+        // Domain Event: AccountRegistered
+        console.info('[DomainEvent] AccountRegistered', {
           email: res.email,
-          accountType: res.accountType,
-          occurredAt: new Date()
-        };
-        console.log('[DomainEvent]', event);
-        this.router.navigate(['/auth/verify-email'], { state: { email: dto.email } });
-      }),
-      catchError((err: HttpErrorResponse) => {
-        this._setLoading(false);
-        return throwError(() => err);
-      })
-    );
-  }
-
-  // ──────────────────────────────────────────────
-  // LOGIN
-  // ──────────────────────────────────────────────
-  login(dto: LoginRequestDto): Observable<any> {
-    if (this._accountLocked$.value) {
-      return throwError(() => new Error('Account is locked'));
-    }
-
-    this._setLoading(true);
-    return this.adapter.login(dto).pipe(
-      tap(res => {
-        this._token = res.token;
-        this._failedAttempts$.next(0);
-        this._accountLocked$.next(false);
-
+          accountType: payload.accountType,
+        });
         const user: UserModel = {
-          id: res.id,
-          fullName: res.fullName,
-          email: res.email,
-          accountType: res.accountType as AccountType,
-          status: res.status as UserStatus,
-          token: res.token
+          id: res.id ?? 'pending',
+          name: payload.name,
+          email: payload.email,
+          status: UserStatus.PENDING_VERIFICATION,
+          accountType: payload.accountType as AccountType,
         };
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        if (res.token) localStorage.setItem(this.TOKEN_KEY, res.token);
+      }),
+      map((res) => ({ email: res.email ?? payload.email })),
+      catchError((err: HttpErrorResponse) => throwError(() => err)),
+    );
+  }
 
-        this._session$.next({ user, isAuthenticated: true, isLoading: false, error: null });
-        this.router.navigate(['/workspace/select']);
+  // ── Login ────────────────────────────────────────────────────
+  login(credentials: LoginRequestDto): Observable<LoginResponseDto> {
+    return this.http.post<LoginResponseDto>(`${API_BASE}/auth/login`, credentials).pipe(
+      tap((res) => {
+        this._failedAttempts = 0;
+        this._isBlocked      = false;
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(res.user));
       }),
       catchError((err: HttpErrorResponse) => {
-        this._setLoading(false);
-        this._handleLoginFailure(dto.email);
+        if (err.status === 401 || err.status === 403) {
+          this._failedAttempts++;
+          if (this._failedAttempts >= this.MAX_ATTEMPTS) {
+            this._isBlocked = true;
+            // Domain Event: AccountLocked
+            console.info('[DomainEvent] AccountLocked', {
+              reason: 'MAX_FAILED_ATTEMPTS',
+              attemptCount: this._failedAttempts,
+            });
+          }
+        }
         return throwError(() => err);
-      })
+      }),
     );
   }
 
-  // ──────────────────────────────────────────────
-  // VERIFY EMAIL
-  // ──────────────────────────────────────────────
-  verifyEmail(token: string): Observable<any> {
-    return this.adapter.verifyEmail(token).pipe(
-      tap(() => {
-        const event: AccountActivated = {
-          type: 'AccountActivated',
-          userId: 'unknown',
-          occurredAt: new Date()
-        };
-        console.log('[DomainEvent]', event);
-      })
-    );
+  get failedAttempts(): number  { return this._failedAttempts; }
+  get isBlocked(): boolean       { return this._isBlocked; }
+  get remainingAttempts(): number {
+    return Math.max(0, this.MAX_ATTEMPTS - this._failedAttempts);
   }
 
-  resendVerification(email: string): Observable<any> {
-    return this.adapter.resendVerification(email);
-  }
-
-  // ──────────────────────────────────────────────
-  // LOGOUT
-  // ──────────────────────────────────────────────
   logout(): void {
-    this._token = null;
-    this._session$.next({ user: null, isAuthenticated: false, isLoading: false, error: null });
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem('brandradar_workspace');
     this.router.navigate(['/auth/login']);
   }
 
-  getToken(): string | null { return this._token; }
-
-  isAuthenticated(): boolean { return !!this._token; }
-
-  isVerified(): boolean {
-    const user = this._session$.value.user;
-    return user?.status === UserStatus.ACTIVE;
+  getCurrentUser(): UserModel | null {
+    const raw = localStorage.getItem(this.USER_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw) as UserModel; } catch { return null; }
   }
 
-  // ──────────────────────────────────────────────
-  // PRIVATE
-  // ──────────────────────────────────────────────
-  private _setLoading(isLoading: boolean): void {
-    this._session$.next({ ...this._session$.value, isLoading });
-  }
-
-  private _handleLoginFailure(userId: string): void {
-    const attempts = this._failedAttempts$.value + 1;
-    this._failedAttempts$.next(attempts);
-
-    if (attempts >= MAX_LOGIN_ATTEMPTS) {
-      this._accountLocked$.next(true);
-      const event: AccountLocked = {
-        type: 'AccountLocked',
-        userId,
-        reason: 'MAX_ATTEMPTS_REACHED',
-        attemptCount: attempts,
-        occurredAt: new Date()
-      };
-      console.log('[DomainEvent]', event);
-    }
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem(this.TOKEN_KEY);
   }
 }

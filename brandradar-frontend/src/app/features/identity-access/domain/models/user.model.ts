@@ -3,9 +3,11 @@ import { UserStatus } from '../enums/user-status.enum';
 
 export interface UserModel {
   id: string;
-  fullName: string;
+  name: string;
   email: string;
-  accountType: AccountType;
   status: UserStatus;
-  token?: string;
+  accountType: AccountType;
+  assignedBrandIds?: string[];   // marcas visibles para este usuario
+  failedAttempts?: number;
+  createdAt?: string;
 }

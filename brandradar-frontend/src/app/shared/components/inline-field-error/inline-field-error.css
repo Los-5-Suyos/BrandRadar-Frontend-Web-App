@@ -1,14 +1,11 @@
-.field-error {
+.inline-error {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  color: var(--color-danger);
-  font-size: 0.8rem;
-  margin-top: 0.35rem;
-  animation: slideIn 0.15s ease;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: #fca5a5;
+  margin-top: 4px;
+  animation: fadeIn 0.2s ease;
 }
-.field-error svg { flex-shrink: 0; }
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+svg { flex-shrink: 0; }

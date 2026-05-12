@@ -1,1 +1,24 @@
-<p>workspace-select works!</p>
+<main class="ws-page">
+  <div class="ws-card">
+    <img src="assets/images/light-logo.png" alt="BrandRadar" class="ws-logo" />
+    <h2 class="ws-title">Selecciona tu workspace</h2>
+    <p class="ws-desc">Elige el workspace al que deseas acceder.</p>
+
+    <div class="ws-list">
+      <div *ngFor="let ws of workspaces" class="ws-item" (click)="select(ws)">
+        <div class="ws-item__icon">{{ ws.name.charAt(0) }}</div>
+        <div class="ws-item__info">
+          <strong>{{ ws.name }}</strong>
+          <span class="ws-item__status" [class.active]="ws.status === 'ACTIVA'">{{ ws.status }}</span>
+        </div>
+        <svg class="ws-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </div>
+
+    <button class="ws-logout" (click)="logout()">Cerrar sesión</button>
+  </div>
+</main>
+
+<footer><p class="footer__copy">© 2026 BrandRadar. Todos los derechos reservados.</p></footer>
