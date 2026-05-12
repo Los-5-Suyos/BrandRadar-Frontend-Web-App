@@ -1,0 +1,16 @@
+@import url('../auth-shared.css');
+
+.attempts-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #fbbf24;
+  background: rgba(251,191,36,.1);
+  border: 1px solid rgba(251,191,36,.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.attempts-warning strong { font-weight: 700; }
+
+.blocked-action a { color: #a78bfa; font-size: .9rem; }

@@ -1,1 +1,105 @@
-<p>register works!</p>
+<header class="simple-header">
+  <a routerLink="/" class="header__back-btn" aria-label="Volver al inicio">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+  </a>
+  <div class="lang-toggle">
+    <span class="lang-toggle__opt active">ES</span>
+    <span class="lang-toggle__opt">EN</span>
+  </div>
+</header>
+
+<main class="auth-container">
+  <div class="auth-card-wrapper">
+    <div class="auth-mobile-logo">
+      <img src="assets/images/light-logo.png" alt="BrandRadar" />
+    </div>
+
+    <div class="auth-card">
+      <!-- Panel izquierdo hero -->
+      <div class="auth-hero-panel">
+        <div class="auth-hero__logo">
+          <img src="assets/images/light-logo.png" alt="BrandRadar" />
+        </div>
+        <div class="auth-hero__content">
+          <h1 class="auth-title">Crea tu cuenta</h1>
+          <p class="auth-hero__desc">Regístrate para empezar a monitorear tu marca en tiempo real.</p>
+        </div>
+        <div></div>
+      </div>
+
+      <!-- Panel derecho formulario -->
+      <div class="auth-form-panel">
+        <div class="auth-header">
+          <h2 class="auth-title" style="margin-bottom:0">Sign up</h2>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+
+          <!-- Nombre completo -->
+          <div class="form-group">
+            <label class="form-label" for="regName">Nombre completo</label>
+            <input type="text" id="regName" formControlName="name"
+              class="form-input" placeholder="Ej. Juan Pérez" autocomplete="name" />
+            <app-inline-field-error [message]="nameError" />
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Correo electrónico</label>
+            <input type="email" id="regEmail" formControlName="email"
+              class="form-input" placeholder="hola@tudominio.com" autocomplete="username"
+              (input)="emailTakenError = null" />
+            <app-inline-field-error [message]="emailError" />
+          </div>
+
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Contraseña</label>
+            <input type="password" id="regPassword" formControlName="password"
+              class="form-input" placeholder="••••••••" autocomplete="new-password" />
+            <app-password-strength-meter [password]="passwordValue" />
+            <app-inline-field-error [message]="passError" />
+          </div>
+
+          <!-- Tipo de cuenta (Value Object del dominio) -->
+          <div class="form-group">
+            <label class="form-label" for="accountType">Tipo de cuenta</label>
+            <div class="account-type-selector">
+              <label
+                *ngFor="let opt of accountTypes"
+                class="account-type-card"
+                [class.selected]="accountCtrl.value === opt.value">
+                <input type="radio" formControlName="accountType" [value]="opt.value" hidden />
+                <span class="account-type-card__icon">
+                  <svg *ngIf="opt.value === 'individual'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  <svg *ngIf="opt.value === 'empresa'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </span>
+                <span class="account-type-card__label">{{ opt.label }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn--submit" [disabled]="form.invalid || isLoading">
+            <app-loading-spinner *ngIf="isLoading" [size]="18" />
+            <span>{{ isLoading ? 'Creando cuenta…' : 'Crear cuenta' }}</span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          ¿Ya tienes una cuenta? <a routerLink="/auth/login">Iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><p class="footer__copy">© 2026 BrandRadar. Todos los derechos reservados.</p></footer>
+
+<app-snackbar />
