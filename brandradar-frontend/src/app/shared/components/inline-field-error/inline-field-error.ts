@@ -1,13 +1,9 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-inline-field-error',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './inline-field-error.html',
   styleUrl: './inline-field-error.css',
 })
-export class InlineFieldError {
-  @Input() message: string | null = null;
-}
+export class InlineFieldError {}

@@ -475,20 +475,5 @@
       "isActive": true
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json",
-  "auth": [],
-  "registered_users": [
-    {
-      "id": "u-001",
-      "email": "luis@upc.edu.pe",
-      "password": "password123",
-      "name": "Luis Developer",
-      "status": "ACTIVE",
-      "accountType": "empresa",
-      "failedAttempts": 0,
-      "assignedBrandIds": [
-        "b-001"
-      ]
-    }
-  ]
+  "$schema": "./node_modules/json-server/schema.json"
 }
