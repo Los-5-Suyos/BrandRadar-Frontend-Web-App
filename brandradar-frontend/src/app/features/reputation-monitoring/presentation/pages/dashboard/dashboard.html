@@ -1,265 +1,232 @@
-<div class="app-shell">
+<!-- ══════════════════════════════════════════════════════════
+     TOOLBAR  (estilo ACME: gris oscuro, nav links a la derecha)
+══════════════════════════════════════════════════════════ -->
+<mat-toolbar class="app-toolbar">
+  <span class="toolbar-brand">BrandRadar</span>
+  <span class="toolbar-spacer"></span>
+  <nav class="toolbar-nav">
+    <span class="nav-item nav-item--active">Dashboard</span>
+    <span class="nav-item">Incidentes</span>
+    <span class="nav-item">Menciones</span>
+    <span class="nav-item">Marcas</span>
+  </nav>
+  <div class="rep-badge" [style.color]="getReputationColor()">
+    <mat-icon class="rep-icon">speed</mat-icon>
+    <span>{{ reputationScore }}</span>
+  </div>
+  <button mat-icon-button matTooltip="Cerrar sesión" (click)="logout()" class="logout-btn">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SIDEBAR
-  ══════════════════════════════════════════════════════════ -->
-  <aside class="sidebar" [class.open]="sidebarOpen">
-    <div class="sidebar__logo">
-      <img src="assets/images/light-logo.png" alt="BrandRadar" />
+<!-- ══════════════════════════════════════════════════════════
+     CONTENIDO PRINCIPAL
+══════════════════════════════════════════════════════════ -->
+<div class="page-content">
+
+  <!-- Breadcrumb / título de sección -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard de Reputación</h1>
+      <p class="page-sub">
+        {{ workspaceName }} / {{ brandName }} &nbsp;·&nbsp;
+        <span class="live-badge"><span class="live-dot"></span> Monitoreo activo</span>
+        &nbsp;·&nbsp; {{ today }}
+      </p>
     </div>
+    <button mat-stroked-button color="primary" (click)="verIncidentes()">
+      <mat-icon>open_in_new</mat-icon> Ver todos los incidentes
+    </button>
+  </div>
 
-    <nav class="sidebar__nav">
-      <p class="sidebar__section-label">PRINCIPAL</p>
-      <a *ngFor="let item of navItems.slice(0,3)"
-         class="sidebar__link" [class.active]="activeNav === item.label"
-         (click)="activeNav = item.label">
-        <svg *ngIf="item.icon==='dashboard'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <svg *ngIf="item.icon==='incident'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <svg *ngIf="item.icon==='mention'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        {{ item.label }}
-        <span *ngIf="item.badge && item.badge > 0" class="sidebar__badge">{{ item.badge }}</span>
-      </a>
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate" color="primary"></mat-progress-bar>
 
-      <p class="sidebar__section-label" style="margin-top:24px">CONFIGURACIÓN</p>
-      <a *ngFor="let item of navItems.slice(3)"
-         class="sidebar__link" [class.active]="activeNav === item.label"
-         (click)="activeNav = item.label">
-        <svg *ngIf="item.icon==='brand'"  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <svg *ngIf="item.icon==='rule'"   width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <svg *ngIf="item.icon==='report'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <svg *ngIf="item.icon==='infra'"  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        {{ item.label }}
-      </a>
-    </nav>
+  <ng-container *ngIf="!isLoading">
 
-    <div class="sidebar__footer" (click)="logout()">
-      <div class="sidebar__workspace-avatar">{{ workspaceName.charAt(0) }}</div>
-      <div class="sidebar__workspace-info">
-        <span>{{ workspaceName }}</span>
-        <small>Cerrar sesión</small>
-      </div>
-    </div>
-  </aside>
+    <!-- ══════════════════════════════════════════════════════
+         TABLA 1 — INCIDENTES ACTIVOS  (mat-table)
+    ══════════════════════════════════════════════════════ -->
+    <h2 class="section-title">Incidentes activos</h2>
 
-  <!-- ══════════════════════════════════════════════════════════
-       MAIN CONTENT
-  ══════════════════════════════════════════════════════════ -->
-  <div class="main-content">
+    <div class="table-container">
+      <table mat-table [dataSource]="activeAlerts" class="mat-elevation-z1 full-table">
 
-    <!-- ── TOPBAR / HEADER ──────────────────────────────────── -->
-    <!-- Spec T30: workspace activo + marca seleccionada + Reputation Index con semáforo -->
-    <header class="topbar">
-      <div class="topbar__left">
-        <div class="topbar__breadcrumb">
-          <span class="topbar__workspace">{{ workspaceName }}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="topbar__brand">{{ brandName }}</span>
-        </div>
-        <h1 class="topbar__title">Dashboard de Reputación</h1>
-        <div class="topbar__meta">
-          <span class="topbar__date">Hoy, {{ today }}</span>
-          <span class="topbar__live">
-            <span class="live-dot"></span>
-            Monitoreo activo
-          </span>
-        </div>
-      </div>
-      <div class="topbar__right">
-        <!-- Reputation Index con color semáforo -->
-        <div class="reputation-index" [ngClass]="getReputationClass()">
-          <span class="reputation-index__label">Reputation Index</span>
-          <span class="reputation-index__value">{{ reputationScore || 74 }}</span>
-        </div>
-        <button class="topbar__btn" (click)="exportarReporte('PDF')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar
-        </button>
-      </div>
-    </header>
+        <!-- Severidad -->
+        <ng-container matColumnDef="severity">
+          <th mat-header-cell *matHeaderCellDef>Severidad</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip-set>
+              <mat-chip [class]="'chip-sev chip-' + (row.severityLevel | lowercase)">
+                {{ getSeverityLabel(row.severityLevel) }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-state">
-      <div class="loading-spinner"></div>
-      <span>Cargando datos…</span>
-    </div>
+        <!-- Marca -->
+        <ng-container matColumnDef="brand">
+          <th mat-header-cell *matHeaderCellDef>Marca</th>
+          <td mat-cell *matCellDef="let row">{{ row.brandId }}</td>
+        </ng-container>
 
-    <div *ngIf="!isLoading" class="dashboard-body">
-
-      <!-- ══════════════════════════════════════════════════════
-           SECCIÓN 1 — INCIDENTES ACTIVOS
-           Spec: últimos 5, badge severidad, fuente, tiempo, botón "Ver"
-      ══════════════════════════════════════════════════════ -->
-      <section class="dash-section">
-        <div class="dash-section__header">
-          <h2 class="dash-section__title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Incidentes activos
-          </h2>
-          <button class="dash-section__link" (click)="verIncidentes()">Ver todos →</button>
-        </div>
-
-        <div class="incidents-list" *ngIf="activeAlerts.length > 0">
-          <div *ngFor="let alert of activeAlerts.slice(0,5)"
-               class="incident-card"
-               [class.incident-card--critical]="alert.severityLevel === 'CRITICAL'"
-               [class.incident-card--high]="alert.severityLevel === 'HIGH'"
-               [class.incident-card--medium]="alert.severityLevel === 'MEDIUM'"
-               [class.incident-card--low]="alert.severityLevel === 'LOW'">
-            <div class="incident-card__header">
-              <div class="incident-card__meta">
-                <span class="badge" [ngClass]="getSeverityClass(alert.severityLevel)">
-                  {{ getSeverityLabel(alert.severityLevel) }}
-                </span>
-                <strong class="incident-card__brand">{{ alert.brandId || brandName }}</strong>
-                <span class="badge badge--source">
-                  {{ getSourceIcon(alert.platform) }} {{ alert.platform || 'Web' }}
-                </span>
-              </div>
-              <span class="incident-card__time">{{ getTimeAgo(alert.createdAt) }}</span>
-            </div>
-            <p class="incident-card__desc">{{ alert.message || alert.description }}</p>
-            <div class="incident-card__footer">
-              <span class="status-badge status-badge--active">● Activo</span>
-              <div class="incident-card__actions">
-                <button class="action-btn action-btn--primary" (click)="verIncidentes()">Ver</button>
-                <button class="action-btn" (click)="atenderCrisis(alert.id)">Resolver</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="activeAlerts.length === 0" class="empty-state">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <p>Sin incidentes activos en este momento.</p>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════════════════════
-           GRID: Secciones 2, 3 y 4 en layout de 2 columnas
-      ══════════════════════════════════════════════════════ -->
-      <div class="dash-grid">
-
-        <!-- ── SECCIÓN 2 — REGLAS DISPARADAS HOY ──────────── -->
-        <!-- Spec: keywords que activaron alertas hoy + cuántas veces -->
-        <section class="dash-section dash-section--card">
-          <div class="dash-section__header">
-            <h2 class="dash-section__title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              Reglas disparadas hoy
-            </h2>
-          </div>
-
-          <div class="rules-list" *ngIf="firedRules.length > 0">
-            <div *ngFor="let rule of firedRules" class="rule-item">
-              <div class="rule-item__keyword">
-                <span class="rule-item__dot"></span>
-                "{{ rule.keyword }}"
-              </div>
-              <div class="rule-item__count-wrap">
-                <div class="rule-item__bar">
-                  <div class="rule-item__bar-fill"
-                       [style.width.%]="(rule.count / firedRules[0].count) * 100"></div>
-                </div>
-                <span class="rule-item__count">{{ rule.count }}x</span>
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="firedRules.length === 0" class="empty-state empty-state--sm">
-            <p>Sin reglas disparadas hoy.</p>
-          </div>
-        </section>
-
-        <!-- ── SECCIÓN 3 — ESTADO DE FUENTES ──────────────── -->
-        <!-- Spec: Twitter/X, Instagram, Google Reviews — verde/rojo/amarillo -->
-        <section class="dash-section dash-section--card">
-          <div class="dash-section__header">
-            <h2 class="dash-section__title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              Estado de fuentes
-            </h2>
-          </div>
-
-          <div class="sources-list">
-            <div *ngFor="let src of sourceStatuses"
-                 class="source-item"
-                 [ngClass]="getSourceStatusClass(src.status)">
-              <div class="source-item__left">
-                <span class="source-item__icon">{{ src.icon }}</span>
-                <div>
-                  <strong class="source-item__name">{{ src.name }}</strong>
-                  <span class="source-item__check">Verificado {{ src.lastCheck }}</span>
-                </div>
-              </div>
-              <div class="source-item__status">
-                <span class="source-dot" [ngClass]="getSourceStatusClass(src.status)"></span>
-                {{ getSourceStatusLabel(src.status) }}
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div><!-- /dash-grid -->
-
-      <!-- ══════════════════════════════════════════════════════
-           SECCIÓN 4 — TENDENCIA DE SENTIMIENTO (7 días)
-           Spec: gráfica simple de línea positivo vs negativo
-      ══════════════════════════════════════════════════════ -->
-      <section class="dash-section dash-section--card">
-        <div class="dash-section__header">
-          <h2 class="dash-section__title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Tendencia de sentimiento — últimos 7 días
-          </h2>
-          <div class="chart-legend">
-            <span class="legend-item legend-item--positive">
-              <span class="legend-dot"></span> Positivo
+        <!-- Fuente -->
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef>Fuente</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="source-cell">
+              <mat-icon class="icon-xs">{{ getSourceIcon(row.platform) }}</mat-icon>
+              {{ row.platform }}
             </span>
-            <span class="legend-item legend-item--negative">
-              <span class="legend-dot"></span> Negativo
-            </span>
-          </div>
+          </td>
+        </ng-container>
+
+        <!-- Descripción -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let row" class="desc-cell">{{ row.message }}</td>
+        </ng-container>
+
+        <!-- Tiempo -->
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Detectado</th>
+          <td mat-cell *matCellDef="let row">{{ getTimeAgo(row.createdAt) }}</td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="primary" matTooltip="Ver" (click)="verIncidentes()">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Resolver" (click)="resolverIncidente(row.id)">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="incidentColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: incidentColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         FILA 2: Reglas + Fuentes
+    ══════════════════════════════════════════════════════ -->
+    <div class="two-col">
+
+      <!-- TABLA 2 — REGLAS DISPARADAS HOY -->
+      <div>
+        <h2 class="section-title">Reglas disparadas hoy</h2>
+        <div class="table-container">
+          <table mat-table [dataSource]="firedRules" class="mat-elevation-z1 full-table">
+
+            <ng-container matColumnDef="keyword">
+              <th mat-header-cell *matHeaderCellDef>Keyword</th>
+              <td mat-cell *matCellDef="let row">"{{ row.keyword }}"</td>
+            </ng-container>
+
+            <ng-container matColumnDef="bar">
+              <th mat-header-cell *matHeaderCellDef>Activaciones</th>
+              <td mat-cell *matCellDef="let row">
+                <mat-progress-bar mode="determinate" color="accent"
+                  [value]="getRuleBarValue(row.count)" class="rule-bar">
+                </mat-progress-bar>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="count">
+              <th mat-header-cell *matHeaderCellDef>Veces</th>
+              <td mat-cell *matCellDef="let row" class="count-cell">{{ row.count }}x</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="ruleColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ruleColumns;"></tr>
+          </table>
         </div>
+      </div>
 
-        <div class="chart-wrap" *ngIf="sentimentTrend.length > 0">
-          <svg class="trend-chart" viewBox="0 0 420 100" preserveAspectRatio="none">
-            <!-- Líneas de guía horizontales -->
-            <line x1="20" y1="20" x2="400" y2="20" stroke="#f3f4f6" stroke-width="1"/>
-            <line x1="20" y1="50" x2="400" y2="50" stroke="#f3f4f6" stroke-width="1"/>
-            <line x1="20" y1="80" x2="400" y2="80" stroke="#f3f4f6" stroke-width="1"/>
+      <!-- TABLA 3 — ESTADO DE FUENTES -->
+      <div>
+        <h2 class="section-title">Estado de fuentes</h2>
+        <div class="table-container">
+          <table mat-table [dataSource]="sourceStatuses" class="mat-elevation-z1 full-table">
 
-            <!-- Línea de positivos -->
-            <path [attr.d]="getTrendPath('positive')"
-                  fill="none" stroke="#10b981" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round"/>
+            <ng-container matColumnDef="source">
+              <th mat-header-cell *matHeaderCellDef>Canal</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="source-cell">
+                  <mat-icon class="icon-xs">{{ row.icon }}</mat-icon>
+                  {{ row.name }}
+                </span>
+              </td>
+            </ng-container>
 
-            <!-- Línea de negativos -->
-            <path [attr.d]="getTrendPath('negative')"
-                  fill="none" stroke="#ef4444" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round"/>
+            <ng-container matColumnDef="lastCheck">
+              <th mat-header-cell *matHeaderCellDef>Última verificación</th>
+              <td mat-cell *matCellDef="let row">{{ row.lastCheck }}</td>
+            </ng-container>
 
-            <!-- Puntos positivos -->
-            <circle *ngFor="let pt of getTrendPoints('positive')"
-                    [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                    fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let row">
+                <mat-chip-set>
+                  <mat-chip [class]="'chip-src chip-src--' + row.status">
+                    <mat-icon class="icon-xs">
+                      {{ row.status==='online' ? 'check_circle' : row.status==='degraded' ? 'warning' : 'cancel' }}
+                    </mat-icon>
+                    {{ row.status==='online' ? 'Conectado' : row.status==='degraded' ? 'Degradado' : 'Sin conexión' }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+            </ng-container>
 
-            <!-- Puntos negativos -->
-            <circle *ngFor="let pt of getTrendPoints('negative')"
-                    [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                    fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
-          </svg>
-
-          <!-- Etiquetas de días -->
-          <div class="chart-labels">
-            <span *ngFor="let pt of sentimentTrend" class="chart-label">{{ pt.label }}</span>
-          </div>
+            <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: sourceColumns;"></tr>
+          </table>
         </div>
+      </div>
 
-        <div *ngIf="sentimentTrend.length === 0" class="empty-state empty-state--sm">
-          <p>Sin datos de tendencia disponibles.</p>
-        </div>
-      </section>
+    </div><!-- /two-col -->
 
-    </div><!-- /dashboard-body -->
-  </div><!-- /main-content -->
-</div><!-- /app-shell -->
+    <!-- ══════════════════════════════════════════════════════
+         GRÁFICA — TENDENCIA DE SENTIMIENTO
+    ══════════════════════════════════════════════════════ -->
+    <h2 class="section-title">
+      Tendencia de sentimiento — últimos 7 días
+      <span class="legend">
+        <span class="leg-dot leg-pos"></span> Positivo
+        <span class="leg-dot leg-neg"></span> Negativo
+      </span>
+    </h2>
+    <div class="table-container chart-card">
+      <svg class="trend-svg" viewBox="0 0 420 80" preserveAspectRatio="none">
+        <line x1="20" y1="15" x2="400" y2="15" stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="20" y1="40" x2="400" y2="40" stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="20" y1="65" x2="400" y2="65" stroke="#e5e7eb" stroke-width="1"/>
+        <path [attr.d]="getTrendPath('positive')" fill="none" stroke="#10b981"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path [attr.d]="getTrendPath('negative')" fill="none" stroke="#ef4444"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle *ngFor="let pt of getTrendPoints('positive')"
+                [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
+                fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+        <circle *ngFor="let pt of getTrendPoints('negative')"
+                [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
+                fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
+      </svg>
+      <div class="chart-labels">
+        <span *ngFor="let pt of sentimentTrend" class="chart-label">{{ pt.label }}</span>
+      </div>
+    </div>
+
+  </ng-container>
+</div><!-- /page-content -->
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER  (estilo ACME: oscuro, centrado)
+══════════════════════════════════════════════════════════ -->
+<footer class="app-footer">
+  <p>Copyright © 2026 BrandRadar. All rights reserved.</p>
+  <p class="footer-sub">Powered by <a href="https://material.angular.io" target="_blank">Angular Material</a></p>
+</footer>

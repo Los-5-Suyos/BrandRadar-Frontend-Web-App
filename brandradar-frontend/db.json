@@ -106,6 +106,7 @@
       "title": "Retraso Logístico masivo"
     }
   ],
+
   "reports": [
     {
       "id": "r-001",
@@ -442,6 +443,15 @@
       "timestamp": "2026-05-11T00:29:15.494Z",
       "userId": "u-001",
       "id": "y8oZOXOxYSI"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-12T19:46:47.604Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-12T19:46:47.605Z",
+      "id": "iUBni6_"
     }
   ],
   "sentimentHistory": [
