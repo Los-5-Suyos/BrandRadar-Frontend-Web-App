@@ -4,4 +4,9 @@ export interface Mention {
   sentiment: string;
   isCritical: boolean;
   date: Date;
+  // Fields used by dashboard template
+  brandId?: string;
+  source?: string;
+  timestamp?: Date;
+  authorHandle?: string;
 }
