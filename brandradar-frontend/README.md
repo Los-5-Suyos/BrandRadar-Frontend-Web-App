@@ -1,59 +1,77 @@
 # BrandradarFrontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Este proyecto es una aplicación frontend desarrollada con Angular para monitoreo de reputación de marcas y gestión de dashboards interactivos.
 
-## Development server
+La aplicación utiliza una Fake API con json-server para simular el backend durante el desarrollo.
 
-To start a local development server, run:
+### Tecnologías utilizadas
+- Angular
 
-```bash
-ng serve
-```
+- TypeScript
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular Material
 
-## Code scaffolding
+- JSON Server
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
-```bash
-ng generate component component-name
-```
+### Requisitos previos
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
-```bash
-ng generate --help
-```
+- Node.js
+- npm
+- Angular CLI
 
-## Building
+**Instalación de Angular CLI**
 
-To build the project run:
+> npm install -g @angular/cli
 
-```bash
-ng build
-```
+**Clonar el proyecto**
+> git clone https://github.com/Los-5-Suyos/BrandRadar-Frontend-Web-App.git
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+**Entrar al proyecto:**
 
-## Running unit tests
+> cd BrandRadar-Frontend-Web-App
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+**Instalar dependencias**
 
-```bash
-ng test
-```
+> npm install
 
-## Running end-to-end tests
+**Instalar JSON Server**
 
-For end-to-end (e2e) testing, run:
+> npm install -g json-server
 
-```bash
-ng e2e
-```
+**o también localmente:**
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+> npm install json-server --save-dev
 
-## Additional Resources
+**Ejecutar la Fake API**
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Ubícate en la raíz del proyecto y ejecuta:
+
+> json-server --watch db.json --port 3000
+
+**La Fake API estará disponible en:**
+
+> http://localhost:3000
+
+### Ejecutar el proyecto Angular
+
+En otra terminal:
+
+> ng serve
+
+o
+
+> ng serve --o
+
+La aplicación se abrirá en:
+
+> http://localhost:4200
+
+
+## Credenciales de prueba
+
+> email: luis@upc.edu.pe
+
+>password: password123

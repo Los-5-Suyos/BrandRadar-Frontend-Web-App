@@ -63,15 +63,20 @@
             <app-inline-field-error [message]="passError" />
           </div>
 
-          <!-- Tipo de cuenta (Value Object del dominio) -->
+          <!-- Tipo de cuenta -->
           <div class="form-group">
-            <label class="form-label" for="accountType">Tipo de cuenta</label>
+            <label class="form-label">Tipo de cuenta</label>
             <div class="account-type-selector">
-              <label
+              <div
                 *ngFor="let opt of accountTypes"
                 class="account-type-card"
-                [class.selected]="accountCtrl.value === opt.value">
-                <input type="radio" formControlName="accountType" [value]="opt.value" hidden />
+                [class.selected]="accountCtrl.value === opt.value"
+                (click)="accountCtrl.setValue(opt.value)"
+                role="radio"
+                [attr.aria-checked]="accountCtrl.value === opt.value"
+                tabindex="0"
+                (keydown.enter)="accountCtrl.setValue(opt.value)"
+                (keydown.space)="$event.preventDefault(); accountCtrl.setValue(opt.value)">
                 <span class="account-type-card__icon">
                   <svg *ngIf="opt.value === 'individual'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -81,7 +86,7 @@
                   </svg>
                 </span>
                 <span class="account-type-card__label">{{ opt.label }}</span>
-              </label>
+              </div>
             </div>
           </div>
 
