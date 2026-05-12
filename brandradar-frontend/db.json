@@ -442,59 +442,6 @@
       "timestamp": "2026-05-11T00:29:15.494Z",
       "userId": "u-001",
       "id": "y8oZOXOxYSI"
-    },
-    {
-      "action": "MonitoringRuleUpdated",
-      "filter": "POSITIVO",
-      "timestamp": "2026-05-12T06:34:23.700Z",
-      "userId": "u-001",
-      "id": "gGar-C_"
-    },
-    {
-      "action": "MonitoringRuleUpdated",
-      "filter": "NEGATIVO",
-      "timestamp": "2026-05-12T06:34:24.678Z",
-      "userId": "u-001",
-      "id": "Lk2NXnS"
-    },
-    {
-      "action": "MonitoringRuleUpdated",
-      "filter": "TODOS",
-      "timestamp": "2026-05-12T06:34:25.757Z",
-      "userId": "u-001",
-      "id": "7evTmP0"
-    },
-    {
-      "action": "MonitoringRuleUpdated",
-      "filter": "POSITIVO",
-      "timestamp": "2026-05-12T08:00:49.614Z",
-      "userId": "u-001",
-      "id": "0itqkq1"
-    },
-    {
-      "action": "MonitoringRuleUpdated",
-      "filter": "NEGATIVO",
-      "timestamp": "2026-05-12T08:00:50.178Z",
-      "userId": "u-001",
-      "id": "6raPf7_"
-    },
-    {
-      "action": "ReputationReportGenerated",
-      "format": "CSV",
-      "brandId": "b-001",
-      "generatedAt": "2026-05-12T08:00:52.604Z",
-      "userId": "u-001",
-      "timestamp": "2026-05-12T08:00:52.604Z",
-      "id": "EbFCkll"
-    },
-    {
-      "action": "ReputationReportGenerated",
-      "format": "PDF",
-      "brandId": "b-001",
-      "generatedAt": "2026-05-12T08:00:55.100Z",
-      "userId": "u-001",
-      "timestamp": "2026-05-12T08:00:55.100Z",
-      "id": "RRa7xHi"
     }
   ],
   "sentimentHistory": [

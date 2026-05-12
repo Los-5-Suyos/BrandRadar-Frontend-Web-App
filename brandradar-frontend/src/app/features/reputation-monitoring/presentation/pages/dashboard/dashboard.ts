@@ -1,8 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-
-// Imports de Servicios e Infraestructura
 import { MentionService } from '../../../../../infrastructure/services/mention.service';
 import { AlertService } from '../../../../../infrastructure/services/alert.service';
 import { AuditLogService } from '../../../../../infrastructure/services/audit-log.service';
@@ -18,17 +16,38 @@ import { Mention } from '../../../domain/models/mention.entity';
   styleUrls: ['./dashboard.css'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  // Estado del Dashboard
   mentions: Mention[] = [];
   activeAlerts: any[] = [];
   patterns: any[] = [];
-  reputationScore: number = 0;
+  reputationScore = 0;
+  isLoading = true;
+  filtroActual = '';
+  sidebarOpen = false;
+  activeNav = 'Incidentes';
+  private subs = new Subscription();
 
-  // UI State
-  errorMessage: string = '';
-  isLoading: boolean = true;
-  filtroActual: string = '';
-  private subscriptions: Subscription = new Subscription();
+  today = new Date().toLocaleDateString('es-PE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  workspace = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('brandradar_workspace') || '{}');
+    } catch {
+      return {};
+    }
+  })();
+
+  navItems = [
+    { label: 'Dashboard', icon: 'dashboard' },
+    { label: 'Incidentes', icon: 'incident', badge: 3 },
+    { label: 'Menciones', icon: 'mention' },
+    { label: 'Mis Marcas', icon: 'brand' },
+    { label: 'Reglas', icon: 'rule' },
+    { label: 'Reportes', icon: 'report' },
+    { label: 'Infraestructura', icon: 'infra' },
+  ];
 
   constructor(
     private mentionService: MentionService,
@@ -42,14 +61,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.iniciarSincronizacion();
   }
-
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   iniciarSincronizacion(): void {
-    // 1. Polling de Menciones (Sincronización automática cada 5-10s configurada en el service)
-    this.subscriptions.add(
+    this.subs.add(
       this.mentionService.getMentionsWithPolling().subscribe((data) => {
         this.isLoading = false;
         this.mentions = this.filtroActual
@@ -58,26 +75,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }),
     );
-
-    // 2. Polling de Reputation Score (Brand Data)
-    this.subscriptions.add(
+    this.subs.add(
       this.brandService.getBrandById('b-001').subscribe((brand) => {
         this.reputationScore = brand.reputationScore;
         this.cdr.detectChanges();
       }),
     );
-
-    // 3. Polling de Alertas Críticas
-    this.subscriptions.add(
+    this.subs.add(
       this.alertService.getActiveAlerts().subscribe((alerts) => {
-        // Solo mostrar alertas que no han sido resueltas
         this.activeAlerts = alerts.filter((a) => a.status !== 'RESOLVED');
         this.cdr.detectChanges();
       }),
     );
-
-    // 4. Polling de Patrones Sospechosos
-    this.subscriptions.add(
+    this.subs.add(
       this.patternService.getPatterns('b-001').subscribe((data) => {
         this.patterns = data.filter((p) => p.status === 'ACTIVE');
         this.cdr.detectChanges();
@@ -85,72 +95,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Filtra las menciones y registra la acción en el Audit Log
-   */
   filtrar(sentimiento: string): void {
     this.filtroActual = sentimiento;
     this.mentionService.getMentions().subscribe((data) => {
       this.mentions = sentimiento ? data.filter((m) => m.sentiment === sentimiento) : data;
-
-      // Requerimiento DDD: Mensaje específico si no hay datos
-      this.errorMessage = this.mentions.length === 0 ? 'SIN_INCIDENTES_EN_CATEGORÍA' : '';
-
-      // REGISTRO AUTOMÁTICO EN AUDIT LOG
       this.auditLogService
         .logAction('MonitoringRuleUpdated', {
           filter: sentimiento || 'TODOS',
           timestamp: new Date().toISOString(),
         })
         .subscribe();
-
       this.cdr.detectChanges();
     });
   }
 
-  /**
-   * Resuelve una alerta de crisis y registra el evento
-   */
   atenderCrisis(alertaId: string): void {
     this.alertService.resolverAlerta(alertaId).subscribe(() => {
       this.activeAlerts = this.activeAlerts.filter((a) => a.id !== alertaId);
-
-      // REGISTRO AUTOMÁTICO EN AUDIT LOG
       this.auditLogService
-        .logAction('AlertAcknowledged', {
-          alertId: alertaId,
-          status: 'RESOLVED',
-        })
+        .logAction('AlertAcknowledged', { alertId: alertaId, status: 'RESOLVED' })
         .subscribe();
-
       this.cdr.detectChanges();
     });
   }
 
-  /**
-   * Descarta un patrón detectado y guarda la trazabilidad
-   */
   descartarPatron(id: string): void {
     this.patternService.dismissPattern(id).subscribe(() => {
       this.patterns = this.patterns.filter((p) => p.id !== id);
-
-      // REGISTRO AUTOMÁTICO EN AUDIT LOG
       this.auditLogService
-        .logAction('PatternDismissed', {
-          patternId: id,
-          reason: 'Manual Dismissal by User',
-        })
+        .logAction('PatternDismissed', { patternId: id, reason: 'Manual Dismissal by User' })
         .subscribe();
-
       this.cdr.detectChanges();
     });
   }
 
-  /**
-   * Simula la exportación y registra la generación del reporte
-   */
   exportarReporte(formato: string): void {
-    // REGISTRO AUTOMÁTICO EN AUDIT LOG
     this.auditLogService
       .logAction('ReputationReportGenerated', {
         format: formato,
@@ -158,9 +137,84 @@ export class DashboardComponent implements OnInit, OnDestroy {
         generatedAt: new Date().toISOString(),
       })
       .subscribe(() => {
-        alert(
-          `Reporte ${formato} generado exitosamente. Se ha registrado en la bitácora de auditoría.`,
-        );
+        alert(`Reporte ${formato} generado exitosamente.`);
       });
+  }
+
+  getSeverityLabel(s: string): string {
+    const map: Record<string, string> = {
+      CRITICAL: 'Crítico',
+      HIGH: 'Alto',
+      MEDIUM: 'Medio',
+      LOW: 'Bajo',
+    };
+    return map[s] || s;
+  }
+  getSeverityClass(s: string): string {
+    const map: Record<string, string> = {
+      CRITICAL: 'badge--critical',
+      HIGH: 'badge--high',
+      MEDIUM: 'badge--medium',
+      LOW: 'badge--low',
+    };
+    return map[s] || '';
+  }
+  getSourceIcon(source?: string): string {
+    if (!source) return '🌐';
+
+    switch (source.toLowerCase()) {
+      case 'twitter':
+        return '🐦';
+      case 'facebook':
+        return '📘';
+      case 'instagram':
+        return '📸';
+      default:
+        return '🌐';
+    }
+  }
+
+  getTimeAgo(timestamp?: Date | string): string {
+    if (!timestamp) return 'Sin fecha';
+
+    const date = new Date(timestamp);
+    const now = new Date();
+
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+
+    if (diffMin < 60) {
+      return `${diffMin} min`;
+    }
+
+    const diffHours = Math.floor(diffMin / 60);
+
+    if (diffHours < 24) {
+      return `${diffHours} h`;
+    }
+
+    const diffDays = Math.floor(diffHours / 24);
+
+    return `${diffDays} d`;
+  }
+
+  get criticalCount(): number {
+    return this.activeAlerts.filter((a) => a.severityLevel === 'CRITICAL').length;
+  }
+  get highCount(): number {
+    return this.activeAlerts.filter((a) => a.severityLevel === 'HIGH').length;
+  }
+  get mediumCount(): number {
+    return this.activeAlerts.filter((a) => a.severityLevel === 'MEDIUM').length;
+  }
+  get resolvedCount(): number {
+    return this.mentions.filter((m) => m.sentiment === 'POSITIVO').length;
+  }
+
+  logout(): void {
+    localStorage.removeItem('brandradar_token');
+    localStorage.removeItem('brandradar_user');
+    localStorage.removeItem('brandradar_workspace');
+    window.location.href = '/auth/login';
   }
 }

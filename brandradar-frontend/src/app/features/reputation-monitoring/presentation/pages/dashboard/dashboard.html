@@ -1,78 +1,247 @@
-<div class="dashboard-wrapper">
+<div class="app-shell">
 
-  <div *ngIf="activeAlerts.length > 0" class="crisis-banner">
-    <div>
-      <span style="color: #ff4d4d">●</span>
-      <strong> ALERTA DE CRISIS:</strong> Nivel {{ activeAlerts[0]?.severityLevel }} detectado en Nike Peru.
+  <!-- ── Sidebar ─────────────────────────────────── -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar__logo">
+      <img src="assets/images/light-logo.png" alt="BrandRadar" />
     </div>
-    <button (click) ="atenderCrisis(activeAlerts[0]?.id)" class="btn-crisis">GESTIONAR INCIDENTE</button>
-  </div>
 
-  <header class="brand-header">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <h2 style="margin:0; font-weight: 800; letter-spacing: -1px;">BRANDRADAR</h2>
-      <span class="module-badge">Sentiment Analysis Engine</span>
-    </div>
-    <div style="color: var(--lavender-light); font-size: 0.8rem;">
-      Workspace: <strong style="color: white">ACTIVA</strong>
-    </div>
-  </header>
+    <nav class="sidebar__nav">
+      <p class="sidebar__section-label">PRINCIPAL</p>
+      <a *ngFor="let item of navItems.slice(0,3)"
+         class="sidebar__link" [class.active]="activeNav === item.label"
+         (click)="activeNav = item.label">
+        <!-- Dashboard icon -->
+        <svg *ngIf="item.icon==='dashboard'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <!-- Incident icon -->
+        <svg *ngIf="item.icon==='incident'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <!-- Mention icon -->
+        <svg *ngIf="item.icon==='mention'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        {{ item.label }}
+        <span *ngIf="item.badge" class="sidebar__badge">{{ item.badge }}</span>
+      </a>
 
-  <main class="sentiment-container">
+      <p class="sidebar__section-label" style="margin-top:24px">CONFIGURACIÓN</p>
+      <a *ngFor="let item of navItems.slice(3)"
+         class="sidebar__link" [class.active]="activeNav === item.label"
+         (click)="activeNav = item.label">
+        <svg *ngIf="item.icon==='brand'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg *ngIf="item.icon==='rule'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <svg *ngIf="item.icon==='report'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg *ngIf="item.icon==='infra'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        {{ item.label }}
+      </a>
+    </nav>
 
-    <section>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="color: var(--navy-deep); margin:0;">Flujo de Análisis en Tiempo Real</h3>
-        <nav style="display: flex; gap: 8px;">
-          <button (click)="filtrar('')" class="btn-nav" [class.active]="filtroActual === ''">TODOS</button>
-          <button (click)="filtrar('POSITIVO')" class="btn-nav" [class.active]="filtroActual === 'POSITIVO'">POSITIVO</button>
-          <button (click)="filtrar('NEGATIVO')" class="btn-nav" [class.active]="filtroActual === 'NEGATIVO'">NEGATIVO</button>
-        </nav>
+    <div class="sidebar__footer" (click)="logout()">
+      <div class="sidebar__workspace-avatar">{{ (workspace.name || 'B').charAt(0) }}</div>
+      <div class="sidebar__workspace-info">
+        <span>{{ workspace.name || 'BrandRadar Agency' }}</span>
+        <small>Plan Pro</small>
       </div>
+    </div>
+  </aside>
 
-      <div *ngIf="mentions.length > 0; else noData">
-        <div *ngFor="let m of mentions" class="mention-card" [ngClass]="m.sentiment.toLowerCase()">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span [style.color]="'var(--slate-text)'" style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">Mención ID: {{m.id}}</span>
-            <span style="font-size: 0.8rem; font-weight: 800;"
-                  [style.color]="m.sentiment === 'NEGATIVO' ? '#e74c3c' : '#27ae60'">
-              {{ m.sentiment }}
+  <!-- ── Main content ─────────────────────────────── -->
+  <div class="main-content">
+
+    <!-- Header -->
+    <header class="topbar">
+      <div class="topbar__left">
+        <h1 class="topbar__title">Incidentes</h1>
+        <div class="topbar__meta">
+          <span class="topbar__date">Hoy, {{ today }}</span>
+          <span class="topbar__live">
+            <span class="live-dot"></span>
+            Monitoreo activo — último evento hace 4 min
+          </span>
+        </div>
+      </div>
+      <div class="topbar__right">
+        <button class="topbar__btn" (click)="exportarReporte('PDF')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar
+        </button>
+      </div>
+    </header>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <span>Cargando datos…</span>
+    </div>
+
+    <div *ngIf="!isLoading" class="dashboard-body">
+
+      <!-- Metric cards -->
+      <section class="metrics-row">
+        <div class="metric-card metric-card--critical">
+          <span class="metric-card__number">{{ criticalCount || 2 }}</span>
+          <div class="metric-card__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Críticos
+          </div>
+        </div>
+        <div class="metric-card metric-card--high">
+          <span class="metric-card__number">{{ highCount || 5 }}</span>
+          <div class="metric-card__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            Altos
+          </div>
+        </div>
+        <div class="metric-card metric-card--medium">
+          <span class="metric-card__number">{{ mediumCount || 12 }}</span>
+          <div class="metric-card__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Medios
+          </div>
+        </div>
+        <div class="metric-card metric-card--resolved">
+          <span class="metric-card__number">{{ resolvedCount || 31 }}</span>
+          <div class="metric-card__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Resueltos hoy
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter bar -->
+      <section class="filter-bar">
+        <div class="filter-bar__tabs">
+          <button class="filter-tab" [class.active]="filtroActual === ''" (click)="filtrar('')">Todos</button>
+          <button class="filter-tab" [class.active]="filtroActual === 'NEGATIVO'" (click)="filtrar('NEGATIVO')">Activos</button>
+          <button class="filter-tab" (click)="filtrar('NEUTRAL')">En revisión</button>
+          <button class="filter-tab" [class.active]="filtroActual === 'POSITIVO'" (click)="filtrar('POSITIVO')">Resueltos</button>
+        </div>
+        <div class="filter-bar__right">
+          <button class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Todas las marcas
+          </button>
+          <button class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Todos los filtros
+          </button>
+        </div>
+      </section>
+
+      <!-- Incident list + side panel -->
+      <section class="incidents-layout">
+        <div class="incidents-list">
+
+          <!-- Active alerts as incidents -->
+          <div *ngFor="let alert of activeAlerts" class="incident-card"
+               [class.incident-card--critical]="alert.severityLevel === 'CRITICAL'"
+               [class.incident-card--high]="alert.severityLevel === 'HIGH'">
+            <div class="incident-card__header">
+              <div class="incident-card__meta">
+                <strong class="incident-card__brand">{{ alert.brandId || 'Acme Principal' }}</strong>
+                <span class="badge badge--source">🗺️ {{ alert.platform || 'Google Maps' }}</span>
+                <span class="badge" [ngClass]="getSeverityClass(alert.severityLevel)">{{ getSeverityLabel(alert.severityLevel) }}</span>
+              </div>
+              <span class="incident-card__time">{{ getTimeAgo(alert.createdAt) }}</span>
+            </div>
+            <p class="incident-card__desc">{{ alert.message || alert.description }}</p>
+            <div class="incident-card__footer">
+              <span class="status-badge status-badge--active">● Activo</span>
+              <div class="incident-card__actions">
+                <button class="action-btn action-btn--primary" (click)="atenderCrisis(alert.id)">Ver detalle</button>
+                <button class="action-btn">Escalar</button>
+                <button class="action-btn" (click)="atenderCrisis(alert.id)">Descartar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patterns as incidents -->
+          <div *ngFor="let pattern of patterns" class="incident-card incident-card--high">
+            <div class="incident-card__header">
+              <div class="incident-card__meta">
+                <strong class="incident-card__brand">{{ pattern.brandId || 'Acme Principal' }}</strong>
+                <span class="badge badge--source">📸 Instagram</span>
+                <span class="badge badge--critical">Crítico</span>
+              </div>
+              <span class="incident-card__time">Hace 1 h</span>
+            </div>
+            <p class="incident-card__desc">{{ pattern.description || 'Patrón coordinado detectado — posible campaña de desinformación' }}</p>
+            <div class="incident-card__footer">
+              <span class="status-badge status-badge--review">● En revisión</span>
+              <div class="incident-card__actions">
+                <button class="action-btn action-btn--primary">Analizar patrón</button>
+                <button class="action-btn" (click)="descartarPatron(pattern.id)">Escalar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mentions as low-priority incidents -->
+          <div *ngFor="let m of mentions.slice(0,4)" class="incident-card"
+               [class.incident-card--medium]="m.sentiment === 'NEUTRAL'"
+               [class.incident-card--low]="m.sentiment === 'POSITIVO'">
+            <div class="incident-card__header">
+              <div class="incident-card__meta">
+                <strong class="incident-card__brand">Acme {{ m.brandId || 'Sur' }}</strong>
+                <span class="badge badge--source">{{ getSourceIcon(m.source) }} {{ m.source }}</span>
+                <span class="badge" [ngClass]="m.sentiment === 'NEGATIVO' ? 'badge--high' : 'badge--medium'">
+                  {{ m.sentiment === 'NEGATIVO' ? 'Alto' : 'Medio' }}
+                </span>
+              </div>
+              <span class="incident-card__time">{{ getTimeAgo(m.timestamp) }}</span>
+            </div>
+            <p class="incident-card__desc">{{ m.content }}</p>
+            <div class="incident-card__footer">
+              <span class="status-badge status-badge--active">● Activo</span>
+              <div class="incident-card__actions">
+                <button class="action-btn action-btn--primary">Ver tendencia</button>
+                <button class="action-btn">Descartar</button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="mentions.length === 0 && activeAlerts.length === 0 && patterns.length === 0" class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p>Sin incidentes activos en este momento.</p>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <aside class="side-panel">
+          <div class="side-panel__section">
+            <h3 class="side-panel__title">Pico anómalo — Acme Principal</h3>
+            <p class="side-panel__desc">47 reseñas negativas en 2h detectadas en Google Maps</p>
+          </div>
+
+          <div class="side-panel__section">
+            <h3 class="side-panel__title">Línea de tiempo</h3>
+            <div class="timeline">
+              <div class="timeline__item" *ngFor="let m of mentions.slice(0,4)">
+                <div class="timeline__dot" [class.dot--purple]="true"></div>
+                <div class="timeline__body">
+                  <span class="timeline__time">{{ getTimeAgo(m.timestamp) }}</span>
+                  <p class="timeline__text">{{ m.content | slice:0:60 }}…</p>
+                </div>
+              </div>
+              <div class="timeline__item" *ngIf="mentions.length === 0">
+                <div class="timeline__dot dot--gray"></div>
+                <div class="timeline__body"><p class="timeline__text">Sin eventos recientes</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-panel__section">
+            <h3 class="side-panel__title">Menciones relacionadas</h3>
+            <div *ngFor="let m of mentions.slice(0,3)" class="related-mention">
+              <p class="related-mention__text">"{{ m.content | slice:0:50 }}…"</p>
+              <span class="related-mention__author">@{{ m.authorHandle || 'usuario' }}</span>
+            </div>
+          </div>
+
+          <div class="side-panel__score">
+            <span class="score-label">Reputation Score</span>
+            <span class="score-value" [class.score--good]="reputationScore > 60" [class.score--bad]="reputationScore <= 60">
+              {{ reputationScore || 74 }}
             </span>
           </div>
-          <p style="margin: 0; color: var(--navy-deep); line-height: 1.5;">{{ m.content }}</p>
-        </div>
-      </div>
-
-      <ng-template #noData>
-        <div style="padding: 40px; text-align: center; background: var(--off-white); border-radius: 12px; color: var(--slate-text);">
-          {{ errorMessage || 'Esperando flujo de datos...' }}
-        </div>
-      </ng-template>
-    </section>
-
-    <aside>
-      <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--lavender-light); margin-bottom: 25px; text-align: center;">
-        <h4 style="margin-top: 0; color: var(--slate-text);">Global Reputation</h4>
-        <div class="score-circle">{{ reputationScore }}%</div>
-        <p style="font-size: 0.7rem; color: var(--lavender-light); margin-top: 10px;">Cálculo basado en 24h de actividad</p>
-      </div>
-
-      <div *ngIf="patterns.length > 0" style="background: var(--midnight-blue); color: white; padding: 20px; border-radius: 16px;">
-        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
-          <span style="color: var(--accent-violet)">🔍</span> Patrones Detectados
-        </h4>
-        <div *ngFor="let p of patterns" style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 0.85rem;">
-          <div style="font-weight: bold;">{{ p.patternName }}</div>
-          <div style="color: var(--lavender-light); font-size: 0.75rem;">Fuerza: {{ p.correlationScore }}%</div>
-          <button (click)="descartarPatron(p.id)" style="background: transparent; border: 1px solid white; color: white; margin-top: 8px; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer;">DESCARTAR</button>
-        </div>
-      </div>
-
-      <div style="margin-top: 25px; display: grid; gap: 10px;">
-        <button (click)="exportarReporte('PDF')" class="btn-nav" style="border-color: #e74c3c; color: #e74c3c;">Exportar Análisis PDF</button>
-        <button (click)="exportarReporte('CSV')" class="btn-nav" style="border-color: #27ae60; color: #27ae60;">Exportar Data CSV</button>
-      </div>
-    </aside>
-
-  </main>
+        </aside>
+      </section>
+    </div>
+  </div>
 </div>
