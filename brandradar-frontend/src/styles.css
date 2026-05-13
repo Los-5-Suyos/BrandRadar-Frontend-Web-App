@@ -1,1 +1,46 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --br-purple:    #7C3AED;
+  --br-purple-lt: #A855F7;
+  --br-bg:        #05070f;
+  --br-text:      #ffffff;
+  --br-muted:     #9ca3af;
+  --br-border:    rgba(255, 255, 255, 0.12);
+}
+
+html, body {
+  min-height: 100%;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #05070f;
+  color: #ffffff;
+}
+
+/* Dark gradient background for all auth pages */
+body {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+    #05070f;
+  background-attachment: fixed;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
