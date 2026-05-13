@@ -1,0 +1,190 @@
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.register-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-header h1 {
+  color: #1a237e;
+  font-size: 2rem;
+  margin: 0 0 0.25rem;
+}
+
+.register-header p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.4rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #1a237e;
+}
+
+/* Botones tipo de cuenta */
+.account-type-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.account-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: left;
+  gap: 0.1rem;
+}
+
+.account-btn strong {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.account-btn span {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.account-btn:hover {
+  border-color: #1a237e;
+}
+
+.account-btn.selected {
+  border-color: #1a237e;
+  background: #e8eaf6;
+}
+
+.account-btn.selected strong {
+  color: #1a237e;
+}
+
+.account-btn.selected span {
+  color: #3949ab;
+}
+
+.error-msg {
+  background: #fdecea;
+  color: #c62828;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.875rem;
+  background: #1a237e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.25rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #283593;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.link {
+  color: #1a237e;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Pantalla éxito */
+.success-screen {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 50%;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.success-screen h2 {
+  color: #2e7d32;
+  margin: 0 0 0.75rem;
+}
+
+.success-screen p {
+  color: #555;
+  line-height: 1.6;
+}

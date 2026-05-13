@@ -1,1 +1,91 @@
-<p>register works!</p>
+<div class="register-wrapper">
+  <div class="register-card">
+
+    @if (success) {
+      <div class="success-screen">
+        <div class="success-icon">✓</div>
+        <h2>¡Cuenta creada!</h2>
+        <p>Tu cuenta fue registrada correctamente.<br>Redirigiendo al login...</p>
+      </div>
+    }
+
+    @if (!success) {
+      <div class="register-header">
+        <h1>BrandRadar</h1>
+        <p>Crea tu cuenta</p>
+      </div>
+
+      <form (ngSubmit)="register()" novalidate>
+
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input
+            type="text"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Ej. Juan Pérez"
+            autocomplete="name"
+            required />
+        </div>
+
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="hola&#64;tudominio.com"
+            autocomplete="email"
+            required />
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Mínimo 6 caracteres"
+            autocomplete="new-password"
+            required />
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de cuenta</label>
+          <div class="account-type-group">
+            <button
+              type="button"
+              class="account-btn"
+              [class.selected]="accountType === 'freelance'"
+              (click)="selectAccountType('freelance')">
+              <strong>Individual</strong>
+              <span>uso personal</span>
+            </button>
+            <button
+              type="button"
+              class="account-btn"
+              [class.selected]="accountType === 'empresa'"
+              (click)="selectAccountType('empresa')">
+              <strong>Empresa</strong>
+              <span>acceso organizacional</span>
+            </button>
+          </div>
+        </div>
+
+        @if (error) {
+          <div class="error-msg">{{ error }}</div>
+        }
+
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Registrando...' : 'Crear cuenta' }}
+        </button>
+
+      </form>
+
+      <div class="register-footer">
+        <p>¿Ya tienes cuenta? <a (click)="goToLogin()" class="link">Iniciar sesión</a></p>
+      </div>
+    }
+
+  </div>
+</div>
