@@ -1,0 +1,88 @@
+<main class="ws-page">
+  <div class="ws-card">
+    <img src="assets/images/light-logo.png" alt="BrandRadar" class="ws-logo" />
+
+    <!-- ── Estado: cargando ──────────────────────────── -->
+    <ng-container *ngIf="isLoading">
+      <div class="ws-loading">
+        <div class="ws-spinner"></div>
+      </div>
+      <span class="ws-loading-text">Cargando workspaces…</span>
+    </ng-container>
+
+    <!-- ── Estado: sin acceso a ningún workspace ─────── -->
+    <ng-container *ngIf="!isLoading && hasError">
+      <div class="ws-error-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h2 class="ws-title">Sin acceso a workspaces</h2>
+      <p class="ws-desc">
+        No tienes acceso a ningún workspace activo.<br>
+        Contacta al administrador para que te invite.
+      </p>
+      <a href="mailto:soporte@brandradar.io" class="ws-support-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Contactar soporte
+      </a>
+      <button class="ws-logout" (click)="logout()">Cerrar sesión</button>
+    </ng-container>
+
+    <!-- ── Estado: lista de workspaces ───────────────── -->
+    <ng-container *ngIf="!isLoading && !hasError && workspaces.length > 0">
+      <h2 class="ws-title">Selecciona tu workspace</h2>
+      <p class="ws-desc">Elige el workspace al que deseas acceder.</p>
+
+      <div class="ws-list">
+        <div *ngFor="let ws of workspaces"
+             class="ws-item"
+             (click)="select(ws)"
+             role="button"
+             [attr.aria-label]="'Acceder a ' + ws.name">
+
+          <!-- Avatar con inicial -->
+          <div class="ws-item__icon">{{ ws.name.charAt(0).toUpperCase() }}</div>
+
+          <!-- Info principal -->
+          <div class="ws-item__info">
+            <strong class="ws-item__name">{{ ws.name }}</strong>
+            <div class="ws-item__meta">
+              <!-- Badge de plan -->
+              <span class="ws-item__plan" [ngClass]="getPlanClass(ws.plan)">
+                {{ getPlanLabel(ws.plan) }}
+              </span>
+              <!-- Número de marcas activas -->
+              <span class="ws-item__brands">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                {{ ws.activeBrandsCount }} marca{{ ws.activeBrandsCount !== 1 ? 's' : '' }}
+              </span>
+              <!-- Estado del workspace -->
+              <span class="ws-item__status" [class.active]="ws.status === 'ACTIVA'">
+                {{ ws.status }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Flecha -->
+          <svg class="ws-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </div>
+      </div>
+
+      <button class="ws-logout" (click)="logout()">Cerrar sesión</button>
+    </ng-container>
+  </div>
+</main>
+
+<footer>
+  <p class="footer__copy">© 2026 BrandRadar. Todos los derechos reservados.</p>
+</footer>

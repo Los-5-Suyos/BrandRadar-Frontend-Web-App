@@ -1,0 +1,494 @@
+{
+  "users": [
+    {
+      "id": "u-001",
+      "email": "luis@upc.edu.pe",
+      "password": "password123",
+      "status": "ACTIVE",
+      "failedAttempts": 0
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "w-001",
+      "name": "BrandRadar Agency",
+      "status": "ACTIVA",
+      "ownerId": "u-001"
+    }
+  ],
+  "brands": [
+    {
+      "id": "b-001",
+      "workspaceId": "w-001",
+      "name": "Nike Peru",
+      "reputationScore": 90,
+      "isActive": true
+    }
+  ],
+  "mentions": [
+    {
+      "id": "m-001",
+      "brandId": "b-001",
+      "content": "El servicio de entrega fue lento",
+      "sentimentType": "NEGATIVO",
+      "criticidad": 1
+    },
+    {
+      "id": "m-002",
+      "brandId": "b-001",
+      "content": "BIEN LA ATENCION PERO EL SERVICIO FUE LENTO",
+      "sentimentType": "NEUTRO",
+      "criticidad": 1
+    },
+    {
+      "id": "m-003",
+      "brandId": "b-001",
+      "content": "BUENAS ZAPATILLAS PERO CARAS",
+      "sentimentType": "NEUTRO",
+      "timestamp": "2026-05-09T10:00:00Z",
+      "criticidad": 1
+    },
+    {
+      "id": "m-004",
+      "brandId": "b-001",
+      "content": "Zapatillas muy buenas, me encantan",
+      "sentimentType": "POSITIVO",
+      "criticidad": 2
+    },
+    {
+      "id": "m-005",
+      "brandId": "b-001",
+      "content": "Adidas es buena marca",
+      "sentimentType": "POSITIVO",
+      "criticidad": 1
+    },
+    {
+      "id": "m-006",
+      "brandId": "b-001",
+      "content": "Nike es una marca líder",
+      "sentimentType": "POSITIVO",
+      "criticidad": 1
+    }
+  ],
+  "patterns": [
+    {
+      "id": "p-001",
+      "brandId": "b-001",
+      "correlationScore": 95,
+      "mentionsAffected": 45,
+      "detectedAt": "2026-05-08T10:00:00Z",
+      "status": "ACTIVE",
+      "type": "Bot Attack"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "a-001",
+      "brandId": "b-001",
+      "severityLevel": "HIGH",
+      "status": "RESOLVED",
+      "message": "Pico de menciones negativas detectado"
+    },
+    {
+      "id": "a-002",
+      "brandId": "b-001",
+      "severityLevel": "MEDIUM",
+      "status": "RESOLVED",
+      "message": "Cambio en tendencia de sentimiento"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "i-001",
+      "brandId": "b-001",
+      "status": "OPEN",
+      "createdAt": "2026-05-07T12:00:00Z",
+      "title": "Retraso Logístico masivo"
+    }
+  ],
+  "reports": [
+    {
+      "id": "r-001",
+      "brandId": "b-001",
+      "type": "PDF",
+      "status": "GENERATED",
+      "createdAt": "2026-05-08T09:00:00Z",
+      "downloadUrl": "/files/report-01.pdf"
+    },
+    {
+      "id": "r-002",
+      "brandId": "b-001",
+      "type": "CSV",
+      "status": "PENDING",
+      "createdAt": "2026-05-08T11:00:00Z",
+      "downloadUrl": null
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log-001",
+      "action": "AccountRegistered",
+      "userId": "u-001",
+      "timestamp": "2026-05-08T10:00:00Z",
+      "reason": "Initial Setup"
+    },
+    {
+      "id": "log-002",
+      "action": "BrandCreated",
+      "userId": "u-001",
+      "timestamp": "2026-05-08T10:30:00Z",
+      "reason": "Added Nike Peru brand"
+    },
+    {
+      "id": "log-003",
+      "action": "MentionAdded",
+      "userId": "u-001",
+      "timestamp": "2026-05-08T11:00:00Z",
+      "reason": "Added initial mentions for Nike Peru"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:20:44.252Z",
+      "id": "RCC9VZlD7Xg"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "CSV",
+      "brandId": "b-001",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:20:49.147Z",
+      "id": "krQbxCa4U5w"
+    },
+    {
+      "action": "INCIDENT_RESOLVED",
+      "incidentId": "a-002",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:22:41.027Z",
+      "id": "LtDRwnfmweo"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:38:45.644Z",
+      "id": "3_tCQ5jp7-Q"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:04.595Z",
+      "id": "ElQmP0emfK4"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:05.571Z",
+      "id": "_EedRrMEJrU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:05.739Z",
+      "id": "o_72bTbdsy0"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEUTRO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:06.563Z",
+      "id": "Lgmc56Fwc1U"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:07.307Z",
+      "id": "VGTzZUXZiHg"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:08.595Z",
+      "id": "AKSybph3Xbc"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:09.987Z",
+      "id": "w78fXZ1MJgM"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:49.411Z",
+      "id": "qCetR09QseU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:50.339Z",
+      "id": "korDGBeAGGE"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:40:51.075Z",
+      "id": "uc3KaNAnrnM"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:41:30.571Z",
+      "id": "cHWBsmlb7KY"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:41:45.883Z",
+      "id": "VveeWYXV904"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:41:55.323Z",
+      "id": "tErM44XFiJU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:41:58.723Z",
+      "id": "-3eAP9Yfr98"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEUTRO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:43:51.196Z",
+      "id": "t9uV3joqEU8"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:43:52.355Z",
+      "id": "Qgb2m6rwM9k"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:44:38.403Z",
+      "id": "pzCelL-Y3-0"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:44:39.235Z",
+      "id": "pE1gzqwO4z4"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:45:18.043Z",
+      "id": "JoM-zSOfTEA"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:45:27.899Z",
+      "id": "2P50BP5WAhE"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:47:13.723Z",
+      "id": "riz0IgFnm6U"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:47:42.003Z",
+      "id": "PGF1uZEobkY"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEUTRO",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T13:47:43.115Z",
+      "id": "z-atNgo-uhI"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-09T15:06:34.073Z",
+      "userId": "u-001",
+      "id": "VzuF_-5TFyY"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:06:37.465Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:06:37.465Z",
+      "id": "mKMAv4swbKo"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-09T15:06:44.896Z",
+      "userId": "u-001",
+      "id": "57Qzh-4ccGw"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "PDF",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:02.441Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:02.441Z",
+      "id": "64pw0U3BSr0"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "CSV",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:12.001Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:12.001Z",
+      "id": "d1sIq9kM87I"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-09T15:07:35.477Z",
+      "userId": "u-001",
+      "id": "86SZyq2dESg"
+    },
+    {
+      "action": "ReputationReportGenerated",
+      "format": "CSV",
+      "brandId": "b-001",
+      "generatedAt": "2026-05-09T15:07:52.033Z",
+      "userId": "u-001",
+      "timestamp": "2026-05-09T15:07:52.033Z",
+      "id": "oBrfW1mePWU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:21:36.756Z",
+      "userId": "u-001",
+      "id": "4tDJ5f48vfc"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-11T00:21:39.530Z",
+      "userId": "u-001",
+      "id": "FZTRjr1LnOo"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:21:41.828Z",
+      "userId": "u-001",
+      "id": "oXUbCW2mz1s"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-11T00:21:42.536Z",
+      "userId": "u-001",
+      "id": "R1FrhJK6Xsw"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "POSITIVO",
+      "timestamp": "2026-05-11T00:29:14.083Z",
+      "userId": "u-001",
+      "id": "ljzjMKLwANU"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "NEGATIVO",
+      "timestamp": "2026-05-11T00:29:14.686Z",
+      "userId": "u-001",
+      "id": "qq_S2XG-50k"
+    },
+    {
+      "action": "MonitoringRuleUpdated",
+      "filter": "TODOS",
+      "timestamp": "2026-05-11T00:29:15.494Z",
+      "userId": "u-001",
+      "id": "y8oZOXOxYSI"
+    }
+  ],
+  "sentimentHistory": [
+    {
+      "brandId": "b-001",
+      "date": "2026-05-01",
+      "score": 80,
+      "event": "Campaign Launch",
+      "id": "EMrBiq-I2XA"
+    },
+    {
+      "brandId": "b-001",
+      "date": "2026-05-04",
+      "score": 70,
+      "event": "Service Downtime",
+      "id": "bVtaG6UKlI8"
+    },
+    {
+      "brandId": "b-001",
+      "date": "2026-05-08",
+      "score": 75,
+      "event": null,
+      "id": "0Ah1aYPYVW0"
+    }
+  ],
+  "monitoringRules": [
+    {
+      "id": "rule-001",
+      "brandId": "b-001",
+      "keyword": "Nike",
+      "isActive": true
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json",
+  "auth": [],
+  "registered_users": [
+    {
+      "id": "u-001",
+      "email": "luis@upc.edu.pe",
+      "password": "password123",
+      "name": "Luis Developer",
+      "status": "ACTIVE",
+      "accountType": "empresa",
+      "failedAttempts": 0,
+      "assignedBrandIds": [
+        "b-001"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+<header class="simple-header">
+  <a routerLink="/auth/login" class="header__back-btn" aria-label="Volver">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+  </a>
+  <div class="lang-toggle">
+    <span class="lang-toggle__opt" [class.active]="lang === 'es'" (click)="setLang('es')">ES</span>
+    <span class="lang-toggle__opt" [class.active]="lang === 'en'" (click)="setLang('en')">EN</span>
+  </div>
+</header>
+
+<main class="auth-container">
+  <div class="auth-card-wrapper">
+    <div class="auth-card">
+      <!-- Hero panel -->
+      <div class="auth-hero-panel">
+        <div class="auth-hero__logo">
+          <img src="assets/images/light-logo.png" alt="BrandRadar" />
+        </div>
+        <div class="auth-hero__content">
+          <h1 class="auth-hero__title">{{ t.heroTitle }}</h1>
+          <p class="auth-hero__desc">{{ t.heroDesc }}</p>
+        </div>
+        <div></div>
+      </div>
+
+      <!-- Form panel -->
+      <div class="auth-form-panel">
+        <h2 class="auth-form-title">{{ t.formTitle }}</h2>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="regName">{{ t.labelName }}</label>
+            <input type="text" id="regName" formControlName="name"
+              class="form-input" placeholder="Ej. Juan Pérez" autocomplete="name" />
+            <app-inline-field-error [message]="nameError" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">{{ t.labelEmail }}</label>
+            <input type="email" id="regEmail" formControlName="email"
+              class="form-input" placeholder="hola@tudominio.com" autocomplete="email" />
+            <app-inline-field-error [message]="emailError" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPass">{{ t.labelPass }}</label>
+            <input type="password" id="regPass" formControlName="password"
+              class="form-input" placeholder="••••••••" autocomplete="new-password" />
+            <app-password-strength-meter [password]="passwordValue" />
+            <app-inline-field-error [message]="passError" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ t.labelType }}</label>
+            <div class="account-type-selector">
+              <label
+                *ngFor="let opt of accountTypes"
+                class="account-type-option"
+                [class.selected]="accountCtrl.value === opt.value">
+                <input type="radio" formControlName="accountType" [value]="opt.value" hidden />
+                <div class="account-type-option__radio"></div>
+                <span>{{ opt.label }}</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn--submit" [disabled]="form.invalid || isLoading">
+            <app-loading-spinner *ngIf="isLoading" [size]="18" />
+            <span>{{ isLoading ? t.submitting : t.submit }}</span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          {{ t.haveAccount }} <a routerLink="/auth/login">{{ t.login }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><p class="footer__copy">© 2026 BrandRadar. Todos los derechos reservados.</p></footer>
+<app-snackbar />
