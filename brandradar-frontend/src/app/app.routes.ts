@@ -23,6 +23,8 @@ export const routes: Routes = [
       import('./features/brand-workspace/presentation/pages/brand-management/brand-management').then(
         (m) => m.BrandManagement,
       ),
+  },
+
   // Root redirect
   {
     path: '',
