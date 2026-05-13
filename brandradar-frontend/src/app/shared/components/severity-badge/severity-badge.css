@@ -1,0 +1,13 @@
+.badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Un borde muy sutil */
+}
+
+.conectada { background-color: #d4edda; color: #155724; }    /* Verde */
+.desconectada { background-color: #e2e3e5; color: #383d41; } /* Gris */
+.error { background-color: #fff3cd; color: #856404; }       /* Amarillo */
+.crítica { background-color: #f8d7da; color: #721c24; }      /* Rojo */
