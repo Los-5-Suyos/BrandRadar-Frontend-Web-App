@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
+// Entrega final Joaquin
 export class SourceApi {
   // Datos simulados para la US15
   private mockSources = [

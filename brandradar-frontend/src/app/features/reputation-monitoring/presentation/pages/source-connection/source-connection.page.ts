@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SourceApi } from '../../../infrastructure/adapters/source-api';
 import { SeverityBadge } from '../../../../../shared/components/severity-badge/severity-badge';
 import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
-
+// Entrega final Joaquin
 @Component({
   selector: 'app-source-connection',
   standalone: true,

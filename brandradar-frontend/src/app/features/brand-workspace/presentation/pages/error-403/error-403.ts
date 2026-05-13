@@ -16,7 +16,7 @@ export class Error403 implements OnInit {
   ngOnInit() {
     this.recordUnauthorizedAttempt();
   }
-
+  // Entrega final Joaquin
   private recordUnauthorizedAttempt() {
     const auditEvent = {
       event: 'UNAUTHORIZED_ACCESS_ATTEMPT',

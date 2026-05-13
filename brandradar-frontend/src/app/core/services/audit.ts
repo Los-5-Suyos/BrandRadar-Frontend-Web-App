@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class Audit {
   private http = inject(HttpClient);
-
+  // Entrega final Joaquin
   // POST /audit/brand-deactivated solicitado en el requerimiento
   logBrandDeactivation(brandId: string) {
     const payload = {
