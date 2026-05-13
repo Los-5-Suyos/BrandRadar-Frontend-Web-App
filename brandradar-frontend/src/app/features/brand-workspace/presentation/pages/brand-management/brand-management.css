@@ -1,0 +1,34 @@
+.danger-zone {
+  margin: 40px auto;
+  max-width: 800px; /* Para que no ocupe todo el ancho de la pantalla */
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: left;
+}
+
+.danger-zone h3 {
+  color: #f87171;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+/* El botón de desactivar marca */
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+}
