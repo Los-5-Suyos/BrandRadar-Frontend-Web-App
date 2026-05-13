@@ -1,0 +1,1 @@
+import{Da as s,Ua as a,Va as o,db as c}from"./chunk-JLXQE6XE.js";var n=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=s({type:t,selectors:[["app-workspace-select"]],decls:2,vars:0,template:function(e,r){e&1&&(a(0,"p"),c(1,"workspace-select works!"),o())},encapsulation:2})};export{n as WorkspaceSelect};

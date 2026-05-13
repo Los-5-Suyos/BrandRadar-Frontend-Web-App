@@ -1,0 +1,1 @@
+import{Da as t,Ua as i,Va as s,db as a}from"./chunk-JLXQE6XE.js";var c=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-incidents"]],decls:2,vars:0,template:function(e,p){e&1&&(i(0,"p"),a(1,"incidents works!"),s())},encapsulation:2})};export{c as Incidents};

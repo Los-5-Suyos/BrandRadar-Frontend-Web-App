@@ -1,0 +1,1 @@
+import{Da as t,Ua as s,Va as a,db as r}from"./chunk-JLXQE6XE.js";var n=class e{static \u0275fac=function(o){return new(o||e)};static \u0275cmp=t({type:e,selectors:[["app-forgot-password"]],decls:2,vars:0,template:function(o,i){o&1&&(s(0,"p"),r(1,"forgot-password works!"),a())},encapsulation:2})};export{n as ForgotPassword};

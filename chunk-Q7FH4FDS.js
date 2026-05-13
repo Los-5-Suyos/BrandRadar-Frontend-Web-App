@@ -1,0 +1,1 @@
+import{Da as t,Ua as a,Va as n,db as r}from"./chunk-JLXQE6XE.js";var m=class i{static \u0275fac=function(e){return new(e||i)};static \u0275cmp=t({type:i,selectors:[["app-verify-email"]],decls:2,vars:0,template:function(e,o){e&1&&(a(0,"p"),r(1,"verify-email works!"),n())},encapsulation:2})};export{m as VerifyEmail};
