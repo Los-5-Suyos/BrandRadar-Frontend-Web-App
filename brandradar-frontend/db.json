@@ -106,7 +106,6 @@
       "title": "Retraso Logístico masivo"
     }
   ],
-
   "reports": [
     {
       "id": "r-001",
@@ -443,15 +442,6 @@
       "timestamp": "2026-05-11T00:29:15.494Z",
       "userId": "u-001",
       "id": "y8oZOXOxYSI"
-    },
-    {
-      "action": "ReputationReportGenerated",
-      "format": "PDF",
-      "brandId": "b-001",
-      "generatedAt": "2026-05-12T19:46:47.604Z",
-      "userId": "u-001",
-      "timestamp": "2026-05-12T19:46:47.605Z",
-      "id": "iUBni6_"
     }
   ],
   "sentimentHistory": [
@@ -485,20 +475,5 @@
       "isActive": true
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json",
-  "auth": [],
-  "registered_users": [
-    {
-      "id": "u-001",
-      "email": "luis@upc.edu.pe",
-      "password": "password123",
-      "name": "Luis Developer",
-      "status": "ACTIVE",
-      "accountType": "empresa",
-      "failedAttempts": 0,
-      "assignedBrandIds": [
-        "b-001"
-      ]
-    }
-  ]
+  "$schema": "./node_modules/json-server/schema.json"
 }

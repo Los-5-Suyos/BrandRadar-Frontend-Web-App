@@ -1,232 +1,78 @@
-<!-- ══════════════════════════════════════════════════════════
-     TOOLBAR  (estilo ACME: gris oscuro, nav links a la derecha)
-══════════════════════════════════════════════════════════ -->
-<mat-toolbar class="app-toolbar">
-  <span class="toolbar-brand">BrandRadar</span>
-  <span class="toolbar-spacer"></span>
-  <nav class="toolbar-nav">
-    <span class="nav-item nav-item--active">Dashboard</span>
-    <span class="nav-item">Incidentes</span>
-    <span class="nav-item">Menciones</span>
-    <span class="nav-item">Marcas</span>
-  </nav>
-  <div class="rep-badge" [style.color]="getReputationColor()">
-    <mat-icon class="rep-icon">speed</mat-icon>
-    <span>{{ reputationScore }}</span>
-  </div>
-  <button mat-icon-button matTooltip="Cerrar sesión" (click)="logout()" class="logout-btn">
-    <mat-icon>logout</mat-icon>
-  </button>
-</mat-toolbar>
+<div class="dashboard-wrapper">
 
-<!-- ══════════════════════════════════════════════════════════
-     CONTENIDO PRINCIPAL
-══════════════════════════════════════════════════════════ -->
-<div class="page-content">
-
-  <!-- Breadcrumb / título de sección -->
-  <div class="page-header">
+  <div *ngIf="activeAlerts.length > 0" class="crisis-banner">
     <div>
-      <h1 class="page-title">Dashboard de Reputación</h1>
-      <p class="page-sub">
-        {{ workspaceName }} / {{ brandName }} &nbsp;·&nbsp;
-        <span class="live-badge"><span class="live-dot"></span> Monitoreo activo</span>
-        &nbsp;·&nbsp; {{ today }}
-      </p>
+      <span style="color: #ff4d4d">●</span>
+      <strong> ALERTA DE CRISIS:</strong> Nivel {{ activeAlerts[0]?.severityLevel }} detectado en Nike Peru.
     </div>
-    <button mat-stroked-button color="primary" (click)="verIncidentes()">
-      <mat-icon>open_in_new</mat-icon> Ver todos los incidentes
-    </button>
+    <button (click) ="atenderCrisis(activeAlerts[0]?.id)" class="btn-crisis">GESTIONAR INCIDENTE</button>
   </div>
 
-  <mat-progress-bar *ngIf="isLoading" mode="indeterminate" color="primary"></mat-progress-bar>
+  <header class="brand-header">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <h2 style="margin:0; font-weight: 800; letter-spacing: -1px;">BRANDRADAR</h2>
+      <span class="module-badge">Sentiment Analysis Engine</span>
+    </div>
+    <div style="color: var(--lavender-light); font-size: 0.8rem;">
+      Workspace: <strong style="color: white">ACTIVA</strong>
+    </div>
+  </header>
 
-  <ng-container *ngIf="!isLoading">
+  <main class="sentiment-container">
 
-    <!-- ══════════════════════════════════════════════════════
-         TABLA 1 — INCIDENTES ACTIVOS  (mat-table)
-    ══════════════════════════════════════════════════════ -->
-    <h2 class="section-title">Incidentes activos</h2>
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--navy-deep); margin:0;">Flujo de Análisis en Tiempo Real</h3>
+        <nav style="display: flex; gap: 8px;">
+          <button (click)="filtrar('')" class="btn-nav" [class.active]="filtroActual === ''">TODOS</button>
+          <button (click)="filtrar('POSITIVO')" class="btn-nav" [class.active]="filtroActual === 'POSITIVO'">POSITIVO</button>
+          <button (click)="filtrar('NEGATIVO')" class="btn-nav" [class.active]="filtroActual === 'NEGATIVO'">NEGATIVO</button>
+        </nav>
+      </div>
 
-    <div class="table-container">
-      <table mat-table [dataSource]="activeAlerts" class="mat-elevation-z1 full-table">
-
-        <!-- Severidad -->
-        <ng-container matColumnDef="severity">
-          <th mat-header-cell *matHeaderCellDef>Severidad</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-chip-set>
-              <mat-chip [class]="'chip-sev chip-' + (row.severityLevel | lowercase)">
-                {{ getSeverityLabel(row.severityLevel) }}
-              </mat-chip>
-            </mat-chip-set>
-          </td>
-        </ng-container>
-
-        <!-- Marca -->
-        <ng-container matColumnDef="brand">
-          <th mat-header-cell *matHeaderCellDef>Marca</th>
-          <td mat-cell *matCellDef="let row">{{ row.brandId }}</td>
-        </ng-container>
-
-        <!-- Fuente -->
-        <ng-container matColumnDef="source">
-          <th mat-header-cell *matHeaderCellDef>Fuente</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="source-cell">
-              <mat-icon class="icon-xs">{{ getSourceIcon(row.platform) }}</mat-icon>
-              {{ row.platform }}
+      <div *ngIf="mentions.length > 0; else noData">
+        <div *ngFor="let m of mentions" class="mention-card" [ngClass]="m.sentiment.toLowerCase()">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span [style.color]="'var(--slate-text)'" style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">Mención ID: {{m.id}}</span>
+            <span style="font-size: 0.8rem; font-weight: 800;"
+                  [style.color]="m.sentiment === 'NEGATIVO' ? '#e74c3c' : '#27ae60'">
+              {{ m.sentiment }}
             </span>
-          </td>
-        </ng-container>
-
-        <!-- Descripción -->
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Descripción</th>
-          <td mat-cell *matCellDef="let row" class="desc-cell">{{ row.message }}</td>
-        </ng-container>
-
-        <!-- Tiempo -->
-        <ng-container matColumnDef="time">
-          <th mat-header-cell *matHeaderCellDef>Detectado</th>
-          <td mat-cell *matCellDef="let row">{{ getTimeAgo(row.createdAt) }}</td>
-        </ng-container>
-
-        <!-- Acciones -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-icon-button color="primary" matTooltip="Ver" (click)="verIncidentes()">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" matTooltip="Resolver" (click)="resolverIncidente(row.id)">
-              <mat-icon>check_circle</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="incidentColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: incidentColumns;"></tr>
-      </table>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════════
-         FILA 2: Reglas + Fuentes
-    ══════════════════════════════════════════════════════ -->
-    <div class="two-col">
-
-      <!-- TABLA 2 — REGLAS DISPARADAS HOY -->
-      <div>
-        <h2 class="section-title">Reglas disparadas hoy</h2>
-        <div class="table-container">
-          <table mat-table [dataSource]="firedRules" class="mat-elevation-z1 full-table">
-
-            <ng-container matColumnDef="keyword">
-              <th mat-header-cell *matHeaderCellDef>Keyword</th>
-              <td mat-cell *matCellDef="let row">"{{ row.keyword }}"</td>
-            </ng-container>
-
-            <ng-container matColumnDef="bar">
-              <th mat-header-cell *matHeaderCellDef>Activaciones</th>
-              <td mat-cell *matCellDef="let row">
-                <mat-progress-bar mode="determinate" color="accent"
-                  [value]="getRuleBarValue(row.count)" class="rule-bar">
-                </mat-progress-bar>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="count">
-              <th mat-header-cell *matHeaderCellDef>Veces</th>
-              <td mat-cell *matCellDef="let row" class="count-cell">{{ row.count }}x</td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="ruleColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: ruleColumns;"></tr>
-          </table>
+          </div>
+          <p style="margin: 0; color: var(--navy-deep); line-height: 1.5;">{{ m.content }}</p>
         </div>
       </div>
 
-      <!-- TABLA 3 — ESTADO DE FUENTES -->
-      <div>
-        <h2 class="section-title">Estado de fuentes</h2>
-        <div class="table-container">
-          <table mat-table [dataSource]="sourceStatuses" class="mat-elevation-z1 full-table">
+      <ng-template #noData>
+        <div style="padding: 40px; text-align: center; background: var(--off-white); border-radius: 12px; color: var(--slate-text);">
+          {{ errorMessage || 'Esperando flujo de datos...' }}
+        </div>
+      </ng-template>
+    </section>
 
-            <ng-container matColumnDef="source">
-              <th mat-header-cell *matHeaderCellDef>Canal</th>
-              <td mat-cell *matCellDef="let row">
-                <span class="source-cell">
-                  <mat-icon class="icon-xs">{{ row.icon }}</mat-icon>
-                  {{ row.name }}
-                </span>
-              </td>
-            </ng-container>
+    <aside>
+      <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--lavender-light); margin-bottom: 25px; text-align: center;">
+        <h4 style="margin-top: 0; color: var(--slate-text);">Global Reputation</h4>
+        <div class="score-circle">{{ reputationScore }}%</div>
+        <p style="font-size: 0.7rem; color: var(--lavender-light); margin-top: 10px;">Cálculo basado en 24h de actividad</p>
+      </div>
 
-            <ng-container matColumnDef="lastCheck">
-              <th mat-header-cell *matHeaderCellDef>Última verificación</th>
-              <td mat-cell *matCellDef="let row">{{ row.lastCheck }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>Estado</th>
-              <td mat-cell *matCellDef="let row">
-                <mat-chip-set>
-                  <mat-chip [class]="'chip-src chip-src--' + row.status">
-                    <mat-icon class="icon-xs">
-                      {{ row.status==='online' ? 'check_circle' : row.status==='degraded' ? 'warning' : 'cancel' }}
-                    </mat-icon>
-                    {{ row.status==='online' ? 'Conectado' : row.status==='degraded' ? 'Degradado' : 'Sin conexión' }}
-                  </mat-chip>
-                </mat-chip-set>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: sourceColumns;"></tr>
-          </table>
+      <div *ngIf="patterns.length > 0" style="background: var(--midnight-blue); color: white; padding: 20px; border-radius: 16px;">
+        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+          <span style="color: var(--accent-violet)">🔍</span> Patrones Detectados
+        </h4>
+        <div *ngFor="let p of patterns" style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 0.85rem;">
+          <div style="font-weight: bold;">{{ p.patternName }}</div>
+          <div style="color: var(--lavender-light); font-size: 0.75rem;">Fuerza: {{ p.correlationScore }}%</div>
+          <button (click)="descartarPatron(p.id)" style="background: transparent; border: 1px solid white; color: white; margin-top: 8px; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer;">DESCARTAR</button>
         </div>
       </div>
 
-    </div><!-- /two-col -->
-
-    <!-- ══════════════════════════════════════════════════════
-         GRÁFICA — TENDENCIA DE SENTIMIENTO
-    ══════════════════════════════════════════════════════ -->
-    <h2 class="section-title">
-      Tendencia de sentimiento — últimos 7 días
-      <span class="legend">
-        <span class="leg-dot leg-pos"></span> Positivo
-        <span class="leg-dot leg-neg"></span> Negativo
-      </span>
-    </h2>
-    <div class="table-container chart-card">
-      <svg class="trend-svg" viewBox="0 0 420 80" preserveAspectRatio="none">
-        <line x1="20" y1="15" x2="400" y2="15" stroke="#e5e7eb" stroke-width="1"/>
-        <line x1="20" y1="40" x2="400" y2="40" stroke="#e5e7eb" stroke-width="1"/>
-        <line x1="20" y1="65" x2="400" y2="65" stroke="#e5e7eb" stroke-width="1"/>
-        <path [attr.d]="getTrendPath('positive')" fill="none" stroke="#10b981"
-              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path [attr.d]="getTrendPath('negative')" fill="none" stroke="#ef4444"
-              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle *ngFor="let pt of getTrendPoints('positive')"
-                [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                fill="#10b981" stroke="#fff" stroke-width="1.5"/>
-        <circle *ngFor="let pt of getTrendPoints('negative')"
-                [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
-      </svg>
-      <div class="chart-labels">
-        <span *ngFor="let pt of sentimentTrend" class="chart-label">{{ pt.label }}</span>
+      <div style="margin-top: 25px; display: grid; gap: 10px;">
+        <button (click)="exportarReporte('PDF')" class="btn-nav" style="border-color: #e74c3c; color: #e74c3c;">Exportar Análisis PDF</button>
+        <button (click)="exportarReporte('CSV')" class="btn-nav" style="border-color: #27ae60; color: #27ae60;">Exportar Data CSV</button>
       </div>
-    </div>
+    </aside>
 
-  </ng-container>
-</div><!-- /page-content -->
-
-<!-- ══════════════════════════════════════════════════════════
-     FOOTER  (estilo ACME: oscuro, centrado)
-══════════════════════════════════════════════════════════ -->
-<footer class="app-footer">
-  <p>Copyright © 2026 BrandRadar. All rights reserved.</p>
-  <p class="footer-sub">Powered by <a href="https://material.angular.io" target="_blank">Angular Material</a></p>
-</footer>
+  </main>
+</div>
