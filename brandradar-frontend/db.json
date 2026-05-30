@@ -14,6 +14,15 @@
       "name": "BrandRadar Agency",
       "status": "ACTIVA",
       "ownerId": "u-001"
+    },
+    {
+      "name": "Mi Empresa S.A.",
+      "domain": "miempresa",
+      "timezone": "(GMT-05:00) Lima",
+      "ownerId": "u-demo-1780163115625",
+      "status": "ACTIVA",
+      "plan": "free",
+      "id": "Ks6i06vGqcE"
     }
   ],
   "brands": [
@@ -475,7 +484,6 @@
       "isActive": true
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json",
   "auth": [],
   "registered_users": [
     {
@@ -490,5 +498,35 @@
         "b-001"
       ]
     }
-  ]
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "name": "Básico",
+      "price_monthly": 0,
+      "price_annual": 0
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price_monthly": 49,
+      "price_annual": 39
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "price_monthly": null,
+      "price_annual": null
+    }
+  ],
+  "subscriptions": [],
+  "verification_codes": [
+    {
+      "email": "demo@brandradar.com",
+      "code": "123456",
+      "verified": false,
+      "id": "TbtgQk2VBKo"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

@@ -1,0 +1,60 @@
+<div class="sub-page">
+  <div class="sub-header">
+    <h1 class="sub-title">Elige tu<br><span class="grad-text">Plan de suscripción</span></h1>
+    <p class="sub-desc">Escala tu gestión de reputación con monitoreo en tiempo real y análisis de sentimiento especializado.</p>
+  </div>
+
+  <!-- Billing toggle -->
+  <div class="billing-toggle">
+    <button [class.active]="billing() === 'monthly'" (click)="billing.set('monthly')">Mensual</button>
+    <button [class.active]="billing() === 'annual'" (click)="billing.set('annual')">
+      Anual <span class="save-badge">AHORRA 20%</span>
+    </button>
+  </div>
+
+  <!-- Plans -->
+  <div class="plans-grid">
+    <div class="plan-card" *ngFor="let plan of plans"
+      [class.popular]="plan.popular"
+      [class.selected]="selectedPlan() === plan.id"
+      (click)="selectPlan(plan.id)">
+      <div class="popular-badge" *ngIf="plan.popular">MÁS POPULAR</div>
+      <div class="plan-tag">{{ plan.tag }}</div>
+      <h2 class="plan-name">{{ plan.name }}</h2>
+      <p class="plan-desc">{{ plan.desc }}</p>
+
+      <div class="plan-price" *ngIf="plan.price.monthly !== null">
+        <span class="price-dollar">$</span>
+        <span class="price-num">{{ billing() === 'monthly' ? plan.price.monthly : plan.price.annual }}</span>
+        <span class="price-suffix">{{ plan.priceSuffix }}</span>
+        <span class="price-badge" *ngIf="plan.badge">{{ plan.badge }}</span>
+      </div>
+      <div class="plan-price custom" *ngIf="plan.price.monthly === null">
+        <span class="price-custom">Personalizado</span>
+      </div>
+
+      <ul class="plan-features">
+        <li *ngFor="let f of plan.features">
+          <span class="material-symbols-outlined check">check_circle</span>
+          {{ f }}
+        </li>
+      </ul>
+
+      <button class="plan-cta" [class.primary]="plan.popular" (click)="selectPlan(plan.id); continue()">
+        {{ plan.cta }}
+      </button>
+      <p class="plan-note" *ngIf="plan.ctaNote">{{ plan.ctaNote }}</p>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <div class="bottom-links">
+      <a href="#">Política de Privacidad</a>
+      <a href="#">Centro de Ayuda</a>
+    </div>
+    <button class="btn-continue" (click)="continue()">
+      CONTINUAR <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+</div>

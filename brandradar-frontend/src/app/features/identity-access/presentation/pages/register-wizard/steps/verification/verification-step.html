@@ -1,0 +1,38 @@
+<div class="verify-page">
+  <div class="verify-center">
+    <div class="verify-icon">
+      <span class="material-symbols-outlined">shield</span>
+    </div>
+    <h1 class="verify-title">Verificar cuenta</h1>
+    <p class="verify-desc">
+      Hemos enviado un código de seguridad de 6 dígitos<br>
+      a su dirección de correo electrónico registrada.
+    </p>
+
+    <div class="verify-card">
+      <!-- OTP inputs -->
+      <div class="otp-row">
+        <input *ngFor="let c of code; let i = index"
+          class="otp-input"
+          type="text" maxlength="1"
+          [id]="'code-' + i"
+          [value]="c"
+          (input)="onInput($event, i)"
+          (keydown)="onKeydown($event, i)">
+      </div>
+
+      <div class="error-bar" *ngIf="error()">{{ error() }}</div>
+      <div class="success-bar" *ngIf="resent()">¡Código reenviado!</div>
+
+      <button class="btn-verify" (click)="verify()" [disabled]="loading()">
+        <span *ngIf="!loading()">VERIFICAR</span>
+        <span *ngIf="loading()" class="material-symbols-outlined spin">sync</span>
+      </button>
+
+      <p class="resend-row">
+        ¿No recibiste el código?
+        <button class="resend-btn" (click)="resendCode()" type="button">Reenviar código</button>
+      </p>
+    </div>
+  </div>
+</div>

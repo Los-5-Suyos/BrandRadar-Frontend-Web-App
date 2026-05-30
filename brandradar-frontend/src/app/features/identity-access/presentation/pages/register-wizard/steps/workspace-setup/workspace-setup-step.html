@@ -1,0 +1,78 @@
+<div class="ws-page">
+  <div class="ws-id-bar">ID: BR-{{ (userId || '4829').slice(-4) }}</div>
+
+  <div class="ws-header">
+    <h1 class="ws-title">Configura tu Workspace</h1>
+    <p class="ws-desc">Crea el centro de mando para tu análisis de reputación. Aquí es donde centralizarás todos tus monitoreos y métricas.</p>
+  </div>
+
+  <div class="ws-grid">
+    <!-- Workspace details -->
+    <div class="ws-card">
+      <div class="ws-card-header">
+        <span class="material-symbols-outlined">workspaces</span>
+        <h3>Detalles del Workspace</h3>
+      </div>
+
+      <div class="field">
+        <label>NOMBRE DEL WORKSPACE</label>
+        <input type="text" [(ngModel)]="workspaceName" placeholder="Mi Empresa S.A.">
+      </div>
+
+      <div class="field">
+        <label>DOMINIO PERSONALIZADO</label>
+        <div class="domain-row">
+          <input type="text" [(ngModel)]="domain" placeholder="miempresa">
+          <span class="domain-suffix">.brandradar.com</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>ZONA HORARIA</label>
+        <div class="select-wrap">
+          <select [(ngModel)]="timezone">
+            <option *ngFor="let tz of timezones" [value]="tz">{{ tz }}</option>
+          </select>
+          <span class="material-symbols-outlined select-arrow">expand_more</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="ws-card">
+      <div class="ws-card-header">
+        <span class="material-symbols-outlined">group_add</span>
+        <h3>Gestión de Equipo</h3>
+      </div>
+      <p class="team-desc">Añade colaboradores a tu terminal. Recibirán una invitación por correo electrónico para unirse a este workspace.</p>
+
+      <div class="email-add-row">
+        <input type="email" placeholder="email@ejemplo.com" [(ngModel)]="teamEmail" (keyup.enter)="addEmail()">
+        <button class="add-btn" (click)="addEmail()" type="button">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
+
+      <div class="team-tags" *ngIf="teamEmails().length > 0">
+        <div class="team-tag" *ngFor="let e of teamEmails()">
+          {{ e }}
+          <button (click)="removeEmail(e)"><span class="material-symbols-outlined">close</span></button>
+        </div>
+      </div>
+
+      <div class="member-count">
+        <span>MIEMBROS SELECCIONADOS</span>
+        <span>{{ teamEmails().length }}/10</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ws-footer">
+    <div class="footer-links"><a href="#">Política de Privacidad</a><a href="#">Centro de Ayuda</a></div>
+    <span class="footer-copy">© 2026 BrandRadar</span>
+    <button class="btn-finish" (click)="onDone()" [disabled]="loading()">
+      <span *ngIf="!loading()">FINALIZAR CONFIGURACIÓN <span class="material-symbols-outlined">rocket_launch</span></span>
+      <span *ngIf="loading()" class="material-symbols-outlined spin">sync</span>
+    </button>
+  </footer>
+</div>

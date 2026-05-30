@@ -1,0 +1,94 @@
+<div class="account-page">
+  <!-- Header -->
+  <div class="page-header">
+    <img src="assets/images/light-logo.png" alt="BrandRadar" class="top-logo">
+    <p class="page-tagline">Conoce lo que dicen de tu marca antes que nadie</p>
+  </div>
+
+  <div class="card">
+    <button class="back-link" (click)="backToLogin.emit()">
+      <span class="material-symbols-outlined">arrow_back</span> VOLVER
+    </button>
+
+    <h1 class="card-title">Crea tu cuenta</h1>
+
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="step active"><div class="step-num">1</div><span>Cuenta</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">2</div><span>Verificación</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">3</div><span>Suscripción</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">4</div><span>Workspace</span></div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-bar" *ngIf="error()">
+      <span class="material-symbols-outlined">error</span> {{ error() }}
+    </div>
+
+    <!-- Form -->
+    <div class="field">
+      <label>Nombre completo</label>
+      <input type="text" placeholder="Ej. Ana García" [(ngModel)]="name">
+    </div>
+    <div class="field">
+      <label>Nombre de usuario</label>
+      <input type="text" placeholder="Ej. ana.garcia" [(ngModel)]="username">
+    </div>
+    <div class="field">
+      <label>Email corporativo</label>
+      <input type="email" placeholder="ana@tuempresa.com" [(ngModel)]="email">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <div class="input-row">
+        <input [type]="showPassword() ? 'text' : 'password'" placeholder="••••••••" [(ngModel)]="password">
+        <button type="button" class="eye-btn" (click)="togglePassword()">
+          <span class="material-symbols-outlined">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+        </button>
+      </div>
+      <!-- Strength bar -->
+      <div class="strength-bar" *ngIf="password">
+        <div class="strength-fill" [style.width.%]="passwordStrength() * 33.3" [style.background]="strengthColor()"></div>
+      </div>
+      <span class="strength-label" *ngIf="password" [style.color]="strengthColor()">{{ strengthLabel() }}</span>
+    </div>
+    <div class="field">
+      <label>Confirmar contraseña</label>
+      <input type="password" placeholder="••••••••" [(ngModel)]="confirmPassword">
+    </div>
+
+    <!-- Account Type -->
+    <div class="field">
+      <label class="section-label">TIPO DE CUENTA</label>
+      <div class="account-types">
+        <button
+          class="type-card"
+          *ngFor="let t of accountTypes"
+          [class.selected]="accountType() === t.value"
+          (click)="selectType(t.value)"
+          type="button">
+          <span class="material-symbols-outlined type-icon">{{ t.icon }}</span>
+          <div class="type-info">
+            <strong>{{ t.label }}</strong>
+            <p>{{ t.desc }}</p>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-submit" (click)="onSubmit()" [disabled]="loading()">
+      <span *ngIf="!loading()">Continuar <span class="material-symbols-outlined">arrow_forward</span></span>
+      <span *ngIf="loading()" class="material-symbols-outlined spin">sync</span>
+    </button>
+
+    <p class="login-hint">¿Ya tienes cuenta? <a routerLink="/auth/login">Inicia sesión</a></p>
+  </div>
+
+  <footer class="page-footer">
+    <span>© 2026 BrandRadar.</span>
+    <nav><a href="#">Privacy Policy</a> <a href="#">Terms of Service</a> <a href="#">Help Center</a></nav>
+  </footer>
+</div>

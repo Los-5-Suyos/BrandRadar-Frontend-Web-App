@@ -1,0 +1,82 @@
+<div class="pay-page">
+  <div class="pay-content">
+    <!-- Form -->
+    <div class="pay-form-section">
+      <h2 class="pay-title">Método de Pago</h2>
+      <p class="pay-sub">Configure su facturación para activar las herramientas avanzadas.</p>
+
+      <div class="billing-toggle">
+        <button [class.active]="billingTab() === 'monthly'" (click)="billingTab.set('monthly')">Mensual</button>
+        <button [class.active]="billingTab() === 'annual'" (click)="billingTab.set('annual')">
+          Anual <span class="save-badge">AHORRA 20%</span>
+        </button>
+      </div>
+
+      <div class="pay-card">
+        <div class="error-bar" *ngIf="error()">{{ error() }}</div>
+
+        <div class="field">
+          <label>NOMBRE EN LA TARJETA</label>
+          <input type="text" placeholder="AJ NEVELDMINE" [(ngModel)]="cardName">
+        </div>
+        <div class="field">
+          <label>NÚMERO DE TARJETA</label>
+          <div class="card-input-wrap">
+            <input type="text" placeholder="0000-0000-0000-0000" [value]="cardNumber" (input)="formatCard($event)" maxlength="19">
+            <span class="material-symbols-outlined card-icon">credit_card</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>EXPIRACIÓN (MM/AA)</label>
+            <input type="text" placeholder="04 / 28" [(ngModel)]="expiry" maxlength="7">
+          </div>
+          <div class="field">
+            <label>CVC / CVV</label>
+            <input type="text" placeholder="···" [(ngModel)]="cvv" maxlength="4">
+          </div>
+        </div>
+
+        <div class="secure-note">
+          <span class="material-symbols-outlined">lock</span>
+          Sus datos están cifrados bajo estándares bancarios AES-256.
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="pay-summary">
+      <div class="summary-hero">
+        <p class="summary-title">Resumen del Plan</p>
+      </div>
+      <div class="summary-body">
+        <div class="summary-plan">
+          <p class="plan-name">Plan Pro</p>
+          <p class="plan-billing">FACTURACIÓN {{ billingTab() === 'monthly' ? 'MENSUAL' : 'ANUAL' }}</p>
+          <p class="plan-price">${{ price }}.00 <span>/ mes</span></p>
+        </div>
+        <ul class="summary-features">
+          <li><span class="material-symbols-outlined">check_circle</span> 5 marcas y 30 palabras clave por marca</li>
+          <li><span class="material-symbols-outlined">check_circle</span> Gestión completa de incidentes y crisis</li>
+          <li><span class="material-symbols-outlined">check_circle</span> Reportes automáticos semanales en PDF</li>
+          <li><span class="material-symbols-outlined">check_circle</span> Alertas en tiempo real (email + push)</li>
+          <li><span class="material-symbols-outlined">check_circle</span> Hasta 5 usuarios con roles</li>
+        </ul>
+        <div class="summary-totals">
+          <div class="total-row"><span>Subtotal</span><strong>${{ price }}.00</strong></div>
+          <div class="total-row"><span>Impuestos (0%)</span><strong>$0.00</strong></div>
+          <div class="total-row grand"><span>TOTAL</span><strong>${{ price }}.00</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="pay-footer">
+    <div class="footer-links"><a href="#">Política de Privacidad</a><a href="#">Centro de Ayuda</a></div>
+    <button class="btn-pay" (click)="pay()" [disabled]="loading()">
+      <span *ngIf="!loading()">PAGAR Y CONTINUAR <span class="material-symbols-outlined">arrow_forward</span></span>
+      <span *ngIf="loading()" class="material-symbols-outlined spin">sync</span>
+    </button>
+  </div>
+</div>

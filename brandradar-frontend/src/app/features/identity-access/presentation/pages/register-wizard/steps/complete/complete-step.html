@@ -1,0 +1,37 @@
+<div class="complete-root">
+  <!-- Sidebar with all steps done -->
+  <aside class="complete-sidebar">
+    <img src="assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+    <div class="done-steps">
+      <div class="done-step" *ngFor="let s of ['Cuenta','Verificación','Suscripción','Workspace']">
+        <div class="done-icon"><span class="material-symbols-outlined">check_circle</span></div>
+        <div>
+          <p class="done-label">{{ s }}</p>
+          <p class="done-sub">Completado</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="complete-main">
+    <div class="success-glow"></div>
+    <div class="success-icon-wrap">
+      <div class="success-icon">
+        <span class="material-symbols-outlined">check_circle</span>
+      </div>
+    </div>
+
+    <div class="success-card">
+      <h1 class="success-title">¡Registro Completado!</h1>
+      <p class="success-desc">
+        Tu cuenta ha sido configurada con éxito. Ya tienes acceso total a todas nuestras herramientas de monitoreo avanzado.
+      </p>
+    </div>
+
+    <button class="btn-dashboard" (click)="goToDashboard.emit()">
+      ENTRAR AL DASHBOARD
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </main>
+</div>

@@ -1,0 +1,81 @@
+<div class="wizard-root">
+  <!-- Sidebar (steps 1-4) -->
+  <aside class="sidebar" *ngIf="currentStep() >= 1 && currentStep() <= 4">
+    <div class="sidebar-brand">
+      <img src="assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <p class="sidebar-sub">Configuración paso a paso</p>
+    </div>
+    <nav class="sidebar-steps">
+      <div class="sidebar-step" [class.active]="currentStep() === 1" [class.done]="currentStep() > 1">
+        <div class="step-icon"><span class="material-symbols-outlined">{{ currentStep() > 1 ? 'check_circle' : 'person' }}</span></div>
+        <div class="step-info"><span class="step-label">Cuenta</span><span class="step-sub" *ngIf="currentStep() > 1">Completado</span></div>
+      </div>
+      <div class="sidebar-step" [class.active]="currentStep() === 1" [class.done]="currentStep() > 1">
+        <div class="step-icon"><span class="material-symbols-outlined">{{ currentStep() > 1 ? 'check_circle' : 'shield' }}</span></div>
+        <div class="step-info"><span class="step-label">Verificación</span><span class="step-sub" *ngIf="currentStep() > 1">Completado</span></div>
+      </div>
+      <div class="sidebar-step" [class.active]="currentStep() === 2 || currentStep() === 3" [class.done]="currentStep() > 3">
+        <div class="step-icon"><span class="material-symbols-outlined">{{ currentStep() > 3 ? 'check_circle' : 'subscriptions' }}</span></div>
+        <div class="step-info"><span class="step-label">Suscripción</span><span class="step-sub" *ngIf="currentStep() > 3">Completado</span></div>
+      </div>
+      <div class="sidebar-step" [class.active]="currentStep() === 4">
+        <div class="step-icon"><span class="material-symbols-outlined">workspaces</span></div>
+        <div class="step-info"><span class="step-label">Workspace</span></div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">© 2026 BrandRadar</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="wizard-main" [class.full-width]="currentStep() === 0 || currentStep() === 5">
+
+    <!-- Back button (steps 1-4) -->
+    <div class="topbar-back" *ngIf="currentStep() >= 1 && currentStep() <= 4">
+      <button class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span> VOLVER
+      </button>
+    </div>
+
+    <!-- STEP 0: Account -->
+    <app-account-step
+      *ngIf="currentStep() === 0"
+      (next)="onAccountNext($event)"
+      (backToLogin)="router.navigate(['/auth/login'])">
+    </app-account-step>
+
+    <!-- STEP 1: Verification -->
+    <app-verification-step
+      *ngIf="currentStep() === 1"
+      [email]="data().email"
+      (verified)="onVerified()">
+    </app-verification-step>
+
+    <!-- STEP 2: Subscription -->
+    <app-subscription-step
+      *ngIf="currentStep() === 2"
+      (planSelected)="onPlanSelected($event.plan, $event.billing)">
+    </app-subscription-step>
+
+    <!-- STEP 3: Payment -->
+    <app-payment-step
+      *ngIf="currentStep() === 3"
+      [plan]="data().plan"
+      [billing]="data().billingCycle"
+      (paymentDone)="onPaymentDone()">
+    </app-payment-step>
+
+    <!-- STEP 4: Workspace Setup -->
+    <app-workspace-setup-step
+      *ngIf="currentStep() === 4"
+      [userId]="data().userId || ''"
+      (done)="onWorkspaceDone($event)">
+    </app-workspace-setup-step>
+
+    <!-- STEP 5: Complete -->
+    <app-complete-step
+      *ngIf="currentStep() === 5"
+      (goToDashboard)="goToDashboard()">
+    </app-complete-step>
+
+  </main>
+</div>
