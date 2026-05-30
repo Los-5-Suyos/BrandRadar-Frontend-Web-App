@@ -1,265 +1,265 @@
-<div class="app-shell">
-
-  <!-- ══════════════════════════════════════════════════════════
-       SIDEBAR
-  ══════════════════════════════════════════════════════════ -->
-  <aside class="sidebar" [class.open]="sidebarOpen">
-    <div class="sidebar__logo">
-      <img src="assets/images/light-logo.png" alt="BrandRadar" />
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo" />
     </div>
 
-    <nav class="sidebar__nav">
-      <p class="sidebar__section-label">PRINCIPAL</p>
-      <a *ngFor="let item of navItems.slice(0,3)"
-         class="sidebar__link" [class.active]="activeNav === item.label"
-         (click)="activeNav = item.label">
-        <svg *ngIf="item.icon==='dashboard'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <svg *ngIf="item.icon==='incident'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <svg *ngIf="item.icon==='mention'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        {{ item.label }}
-        <span *ngIf="item.badge && item.badge > 0" class="sidebar__badge">{{ item.badge }}</span>
-      </a>
+    <div class="workspace-badge" *ngIf="workspace">
+      <div class="ws-dot"></div>
+      <span>{{ workspace.name }}</span>
+    </div>
 
-      <p class="sidebar__section-label" style="margin-top:24px">CONFIGURACIÓN</p>
-      <a *ngFor="let item of navItems.slice(3)"
-         class="sidebar__link" [class.active]="activeNav === item.label"
-         (click)="activeNav = item.label">
-        <svg *ngIf="item.icon==='brand'"  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <svg *ngIf="item.icon==='rule'"   width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <svg *ngIf="item.icon==='report'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <svg *ngIf="item.icon==='infra'"  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        {{ item.label }}
-      </a>
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeSection() === 'dashboard'" (click)="setSection('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </button>
+      <button class="nav-item" [class.active]="activeSection() === 'mentions'" (click)="setSection('mentions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Menciones
+      </button>
+      <button class="nav-item" [class.active]="activeSection() === 'alerts'" (click)="setSection('alerts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        Alertas
+        <span class="badge" *ngIf="alerts().length">{{ alerts().length }}</span>
+      </button>
+      <button class="nav-item" [class.active]="activeSection() === 'incidents'" (click)="setSection('incidents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Incidentes
+      </button>
     </nav>
 
-    <div class="sidebar__footer" (click)="logout()">
-      <div class="sidebar__workspace-avatar">{{ workspaceName.charAt(0) }}</div>
-      <div class="sidebar__workspace-info">
-        <span>{{ workspaceName }}</span>
-        <small>Cerrar sesión</small>
+    <div class="sidebar-footer">
+      <div class="user-avatar">{{ user?.name?.charAt(0) || 'U' }}</div>
+      <div class="user-details">
+        <span class="user-name">{{ user?.name }}</span>
+        <span class="user-email-sm">{{ user?.email }}</span>
       </div>
+      <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
     </div>
   </aside>
 
-  <!-- ══════════════════════════════════════════════════════════
-       MAIN CONTENT
-  ══════════════════════════════════════════════════════════ -->
-  <div class="main-content">
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="loading-overlay" *ngIf="loading()">
+      <div class="loader"></div>
+    </div>
 
-    <!-- ── TOPBAR / HEADER ──────────────────────────────────── -->
-    <!-- Spec T30: workspace activo + marca seleccionada + Reputation Index con semáforo -->
-    <header class="topbar">
-      <div class="topbar__left">
-        <div class="topbar__breadcrumb">
-          <span class="topbar__workspace">{{ workspaceName }}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="topbar__brand">{{ brandName }}</span>
+    <!-- DASHBOARD SECTION -->
+    <div *ngIf="activeSection() === 'dashboard' && !loading()">
+      <div class="page-header">
+        <div>
+          <h1>Dashboard de Reputación</h1>
+          <p>Monitoreo en tiempo real · {{ mainBrand()?.name }}</p>
         </div>
-        <h1 class="topbar__title">Dashboard de Reputación</h1>
-        <div class="topbar__meta">
-          <span class="topbar__date">Hoy, {{ today }}</span>
-          <span class="topbar__live">
+        <div class="header-actions">
+          <span class="live-badge">
             <span class="live-dot"></span>
-            Monitoreo activo
+            EN VIVO
           </span>
         </div>
       </div>
-      <div class="topbar__right">
-        <!-- Reputation Index con color semáforo -->
-        <div class="reputation-index" [ngClass]="getReputationClass()">
-          <span class="reputation-index__label">Reputation Index</span>
-          <span class="reputation-index__value">{{ reputationScore || 74 }}</span>
-        </div>
-        <button class="topbar__btn" (click)="exportarReporte('PDF')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar
-        </button>
-      </div>
-    </header>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-state">
-      <div class="loading-spinner"></div>
-      <span>Cargando datos…</span>
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card reputation">
+          <div class="kpi-label">Score de Reputación</div>
+          <div class="kpi-value">{{ mainBrand()?.reputationScore || 0 }}</div>
+          <div class="kpi-bar">
+            <div class="kpi-bar-fill" [style.width.%]="mainBrand()?.reputationScore || 0"></div>
+          </div>
+        </div>
+        <div class="kpi-card pos">
+          <div class="kpi-icon">😊</div>
+          <div class="kpi-label">Menciones Positivas</div>
+          <div class="kpi-value positive">{{ positiveCount() }}</div>
+        </div>
+        <div class="kpi-card neg">
+          <div class="kpi-icon">😠</div>
+          <div class="kpi-label">Menciones Negativas</div>
+          <div class="kpi-value negative">{{ negativeCount() }}</div>
+        </div>
+        <div class="kpi-card neu">
+          <div class="kpi-icon">😐</div>
+          <div class="kpi-label">Menciones Neutras</div>
+          <div class="kpi-value neutral">{{ neutralCount() }}</div>
+        </div>
+      </div>
+
+      <!-- Sentiment chart (visual representation) -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Distribución de Sentimiento</h3>
+          <div class="donut-wrap">
+            <svg viewBox="0 0 120 120" class="donut-svg">
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#1e1e2e" stroke-width="18"/>
+              <!-- Positive arc -->
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#22c55e" stroke-width="18"
+                [attr.stroke-dasharray]="positiveDash() + ' 283'"
+                [attr.stroke-dashoffset]="70" transform="rotate(-90 60 60)"/>
+              <!-- Neutral arc -->
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#f59e0b" stroke-width="18"
+                [attr.stroke-dasharray]="neutralDash() + ' 283'"
+                [attr.stroke-dashoffset]="70 - positiveDash()" transform="rotate(-90 60 60)"/>
+              <!-- Negative arc -->
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#ef4444" stroke-width="18"
+                [attr.stroke-dasharray]="negativeDash() + ' 283'"
+                [attr.stroke-dashoffset]="70 - positiveDash() - neutralDash()" transform="rotate(-90 60 60)"/>
+              <text x="60" y="64" text-anchor="middle" fill="#f1f5f9" font-size="14" font-weight="700">{{ mentions().length }}</text>
+              <text x="60" y="76" text-anchor="middle" fill="#64748b" font-size="6">menciones</text>
+            </svg>
+            <div class="legend">
+              <div class="legend-item"><span class="dot pos-dot"></span> Positivo ({{ positiveCount() }})</div>
+              <div class="legend-item"><span class="dot neu-dot"></span> Neutro ({{ neutralCount() }})</div>
+              <div class="legend-item"><span class="dot neg-dot"></span> Negativo ({{ negativeCount() }})</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card alerts-card">
+          <h3>Alertas Recientes</h3>
+          <div class="alerts-list">
+            <div class="alert-item" *ngFor="let a of alerts()">
+              <div class="alert-severity" [class]="getSeverityClass(a.severityLevel)">
+                {{ a.severityLevel }}
+              </div>
+              <div class="alert-content">
+                <p>{{ a.message }}</p>
+                <span class="alert-status">{{ a.status }}</span>
+              </div>
+            </div>
+            <div class="empty-state" *ngIf="alerts().length === 0">
+              <p>Sin alertas activas</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent mentions preview -->
+      <div class="section-card">
+        <div class="section-header">
+          <h3>Últimas Menciones</h3>
+          <button class="btn-link" (click)="setSection('mentions')">Ver todas →</button>
+        </div>
+        <div class="mentions-list">
+          <div class="mention-row" *ngFor="let m of mentions().slice(0,3)">
+            <div class="sentiment-tag" [class]="getSentimentClass(m.sentimentType)">{{ m.sentimentType }}</div>
+            <p class="mention-text">{{ m.content }}</p>
+            <div class="criticidad">Crit. {{ m.criticidad }}</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="!isLoading" class="dashboard-body">
-
-      <!-- ══════════════════════════════════════════════════════
-           SECCIÓN 1 — INCIDENTES ACTIVOS
-           Spec: últimos 5, badge severidad, fuente, tiempo, botón "Ver"
-      ══════════════════════════════════════════════════════ -->
-      <section class="dash-section">
-        <div class="dash-section__header">
-          <h2 class="dash-section__title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Incidentes activos
-          </h2>
-          <button class="dash-section__link" (click)="verIncidentes()">Ver todos →</button>
+    <!-- MENTIONS SECTION -->
+    <div *ngIf="activeSection() === 'mentions' && !loading()">
+      <div class="page-header">
+        <div>
+          <h1>Menciones</h1>
+          <p>{{ filteredMentions().length }} menciones encontradas</p>
         </div>
+      </div>
 
-        <div class="incidents-list" *ngIf="activeAlerts.length > 0">
-          <div *ngFor="let alert of activeAlerts.slice(0,5)"
-               class="incident-card"
-               [class.incident-card--critical]="alert.severityLevel === 'CRITICAL'"
-               [class.incident-card--high]="alert.severityLevel === 'HIGH'"
-               [class.incident-card--medium]="alert.severityLevel === 'MEDIUM'"
-               [class.incident-card--low]="alert.severityLevel === 'LOW'">
-            <div class="incident-card__header">
-              <div class="incident-card__meta">
-                <span class="badge" [ngClass]="getSeverityClass(alert.severityLevel)">
-                  {{ getSeverityLabel(alert.severityLevel) }}
-                </span>
-                <strong class="incident-card__brand">{{ alert.brandId || brandName }}</strong>
-                <span class="badge badge--source">
-                  {{ getSourceIcon(alert.platform) }} {{ alert.platform || 'Web' }}
-                </span>
+      <div class="filter-tabs">
+        <button class="tab" [class.active]="sentimentFilter() === 'TODOS'" (click)="setFilter('TODOS')">Todos</button>
+        <button class="tab positive" [class.active]="sentimentFilter() === 'POSITIVO'" (click)="setFilter('POSITIVO')">Positivo</button>
+        <button class="tab neutral" [class.active]="sentimentFilter() === 'NEUTRO'" (click)="setFilter('NEUTRO')">Neutro</button>
+        <button class="tab negative" [class.active]="sentimentFilter() === 'NEGATIVO'" (click)="setFilter('NEGATIVO')">Negativo</button>
+      </div>
+
+      <div class="section-card">
+        <div class="mentions-full-list">
+          <div class="mention-card" *ngFor="let m of filteredMentions()">
+            <div class="mention-header">
+              <div class="sentiment-tag lg" [class]="getSentimentClass(m.sentimentType)">
+                {{ m.sentimentType }}
               </div>
-              <span class="incident-card__time">{{ getTimeAgo(alert.createdAt) }}</span>
+              <span class="crit-badge">Criticidad: {{ m.criticidad }}</span>
             </div>
-            <p class="incident-card__desc">{{ alert.message || alert.description }}</p>
-            <div class="incident-card__footer">
-              <span class="status-badge status-badge--active">● Activo</span>
-              <div class="incident-card__actions">
-                <button class="action-btn action-btn--primary" (click)="verIncidentes()">Ver</button>
-                <button class="action-btn" (click)="atenderCrisis(alert.id)">Resolver</button>
-              </div>
+            <p class="mention-content">{{ m.content }}</p>
+            <div class="mention-footer">
+              <span class="mention-id">ID: {{ m.id }}</span>
+              <span class="mention-date" *ngIf="m.timestamp">{{ m.timestamp | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
           </div>
-        </div>
-
-        <div *ngIf="activeAlerts.length === 0" class="empty-state">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <p>Sin incidentes activos en este momento.</p>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════════════════════
-           GRID: Secciones 2, 3 y 4 en layout de 2 columnas
-      ══════════════════════════════════════════════════════ -->
-      <div class="dash-grid">
-
-        <!-- ── SECCIÓN 2 — REGLAS DISPARADAS HOY ──────────── -->
-        <!-- Spec: keywords que activaron alertas hoy + cuántas veces -->
-        <section class="dash-section dash-section--card">
-          <div class="dash-section__header">
-            <h2 class="dash-section__title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              Reglas disparadas hoy
-            </h2>
+          <div class="empty-state" *ngIf="filteredMentions().length === 0">
+            <p>No hay menciones con este filtro</p>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="rules-list" *ngIf="firedRules.length > 0">
-            <div *ngFor="let rule of firedRules" class="rule-item">
-              <div class="rule-item__keyword">
-                <span class="rule-item__dot"></span>
-                "{{ rule.keyword }}"
-              </div>
-              <div class="rule-item__count-wrap">
-                <div class="rule-item__bar">
-                  <div class="rule-item__bar-fill"
-                       [style.width.%]="(rule.count / firedRules[0].count) * 100"></div>
-                </div>
-                <span class="rule-item__count">{{ rule.count }}x</span>
+    <!-- ALERTS SECTION -->
+    <div *ngIf="activeSection() === 'alerts' && !loading()">
+      <div class="page-header">
+        <h1>Alertas</h1>
+      </div>
+      <div class="section-card">
+        <div class="alerts-full-list">
+          <div class="alert-full-card" *ngFor="let a of alerts()">
+            <div class="alert-severity-badge" [class]="getSeverityClass(a.severityLevel)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              {{ a.severityLevel }}
+            </div>
+            <div class="alert-full-content">
+              <p class="alert-message">{{ a.message }}</p>
+              <div class="alert-meta">
+                <span class="status-pill" [class.resolved]="a.status === 'RESOLVED'">{{ a.status }}</span>
+                <span class="alert-id">{{ a.id }}</span>
               </div>
             </div>
           </div>
-
-          <div *ngIf="firedRules.length === 0" class="empty-state empty-state--sm">
-            <p>Sin reglas disparadas hoy.</p>
+          <div class="empty-state" *ngIf="alerts().length === 0">
+            <p>Sin alertas activas</p>
           </div>
-        </section>
+        </div>
+      </div>
+    </div>
 
-        <!-- ── SECCIÓN 3 — ESTADO DE FUENTES ──────────────── -->
-        <!-- Spec: Twitter/X, Instagram, Google Reviews — verde/rojo/amarillo -->
-        <section class="dash-section dash-section--card">
-          <div class="dash-section__header">
-            <h2 class="dash-section__title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              Estado de fuentes
-            </h2>
-          </div>
-
-          <div class="sources-list">
-            <div *ngFor="let src of sourceStatuses"
-                 class="source-item"
-                 [ngClass]="getSourceStatusClass(src.status)">
-              <div class="source-item__left">
-                <span class="source-item__icon">{{ src.icon }}</span>
-                <div>
-                  <strong class="source-item__name">{{ src.name }}</strong>
-                  <span class="source-item__check">Verificado {{ src.lastCheck }}</span>
-                </div>
-              </div>
-              <div class="source-item__status">
-                <span class="source-dot" [ngClass]="getSourceStatusClass(src.status)"></span>
-                {{ getSourceStatusLabel(src.status) }}
-              </div>
+    <!-- INCIDENTS SECTION -->
+    <div *ngIf="activeSection() === 'incidents' && !loading()">
+      <div class="page-header">
+        <h1>Incidentes</h1>
+      </div>
+      <div class="section-card">
+        <div class="incidents-list">
+          <div class="incident-card" *ngFor="let i of incidents()">
+            <div class="incident-status" [class.open]="i.status === 'OPEN'">
+              {{ i.status }}
             </div>
+            <div class="incident-info">
+              <h4>{{ i.title }}</h4>
+              <span class="incident-date">{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="incident-id">{{ i.id }}</div>
           </div>
-        </section>
-
-      </div><!-- /dash-grid -->
-
-      <!-- ══════════════════════════════════════════════════════
-           SECCIÓN 4 — TENDENCIA DE SENTIMIENTO (7 días)
-           Spec: gráfica simple de línea positivo vs negativo
-      ══════════════════════════════════════════════════════ -->
-      <section class="dash-section dash-section--card">
-        <div class="dash-section__header">
-          <h2 class="dash-section__title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Tendencia de sentimiento — últimos 7 días
-          </h2>
-          <div class="chart-legend">
-            <span class="legend-item legend-item--positive">
-              <span class="legend-dot"></span> Positivo
-            </span>
-            <span class="legend-item legend-item--negative">
-              <span class="legend-dot"></span> Negativo
-            </span>
+          <div class="empty-state" *ngIf="incidents().length === 0">
+            <p>Sin incidentes registrados</p>
           </div>
         </div>
-
-        <div class="chart-wrap" *ngIf="sentimentTrend.length > 0">
-          <svg class="trend-chart" viewBox="0 0 420 100" preserveAspectRatio="none">
-            <!-- Líneas de guía horizontales -->
-            <line x1="20" y1="20" x2="400" y2="20" stroke="#f3f4f6" stroke-width="1"/>
-            <line x1="20" y1="50" x2="400" y2="50" stroke="#f3f4f6" stroke-width="1"/>
-            <line x1="20" y1="80" x2="400" y2="80" stroke="#f3f4f6" stroke-width="1"/>
-
-            <!-- Línea de positivos -->
-            <path [attr.d]="getTrendPath('positive')"
-                  fill="none" stroke="#10b981" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-
-            <!-- Línea de negativos -->
-            <path [attr.d]="getTrendPath('negative')"
-                  fill="none" stroke="#ef4444" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-
-            <!-- Puntos positivos -->
-            <circle *ngFor="let pt of getTrendPoints('positive')"
-                    [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                    fill="#10b981" stroke="#fff" stroke-width="1.5"/>
-
-            <!-- Puntos negativos -->
-            <circle *ngFor="let pt of getTrendPoints('negative')"
-                    [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5"
-                    fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
-          </svg>
-
-          <!-- Etiquetas de días -->
-          <div class="chart-labels">
-            <span *ngFor="let pt of sentimentTrend" class="chart-label">{{ pt.label }}</span>
-          </div>
-        </div>
-
-        <div *ngIf="sentimentTrend.length === 0" class="empty-state empty-state--sm">
-          <p>Sin datos de tendencia disponibles.</p>
-        </div>
-      </section>
-
-    </div><!-- /dashboard-body -->
-  </div><!-- /main-content -->
-</div><!-- /app-shell -->
+      </div>
+    </div>
+  </main>
+</div>
