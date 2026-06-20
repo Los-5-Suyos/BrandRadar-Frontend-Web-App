@@ -1,0 +1,128 @@
+<div class="dark bg-background text-on-surface min-h-screen flex font-body-md">
+  <div class="hidden lg:flex flex-col justify-center w-1/2 p-xl relative overflow-hidden bg-surface-container-lowest">
+    <div class="absolute inset-0 z-0 bg-noise pointer-events-none"></div>
+    <div class="absolute -top-1/4 -left-1/4 w-[80%] h-[80%] bg-primary-container/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute -bottom-1/4 -right-1/4 w-[80%] h-[80%] bg-tertiary-container/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="z-10 max-w-lg mx-auto w-full">
+      <div class="mb-lg">
+        <div class="mb-md">
+          <img src="./assets/images/light-logo.png" alt="BrandRadar" class="h-12 w-auto">
+        </div>
+        <h1 class="font-headline-md text-headline-md text-on-surface leading-tight max-w-sm">
+          Conoce lo que dicen de tu marca <span class="text-primary italic">antes que nadie</span>.
+        </h1>
+      </div>
+      <div class="space-y-md mt-xl">
+        <div class="flex items-start gap-md group">
+          <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+            <span class="material-symbols-outlined text-primary">crisis_alert</span>
+          </div>
+          <div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Detecta crisis</h3>
+            <p class="font-body-md text-on-surface-variant">Alertas inteligentes en tiempo real para mitigar riesgos reputacionales instantáneamente.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-md group">
+          <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+            <span class="material-symbols-outlined text-primary">insights</span>
+          </div>
+          <div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Análisis de sentimiento</h3>
+            <p class="font-body-md text-on-surface-variant">IA avanzada para clasificar opiniones y entender la percepción real de tu audiencia.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-md group">
+          <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+            <span class="material-symbols-outlined text-primary">layers</span>
+          </div>
+          <div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Gestión multi-marca</h3>
+            <p class="font-body-md text-on-surface-variant">Centraliza el monitoreo de múltiples perfiles corporativos en un solo panel ejecutivo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-gutter lg:p-xl relative bg-surface-container-low z-10">
+    <div class="w-full max-w-md z-10">
+      <div class="glass-panel rounded-xl p-md md:p-lg shadow-2xl relative overflow-hidden">
+        <div class="relative z-10">
+          <h2 class="font-headline-md text-headline-md text-on-surface mb-xs text-center">Bienvenido de nuevo</h2>
+          <p class="font-body-sm text-on-surface-variant mb-lg text-center">Ingresa tus credenciales para acceder a la terminal.</p>
+
+          <form (ngSubmit)="onSubmit()" class="space-y-md">
+            <div>
+              <label class="block font-label-md text-on-surface-variant mb-base uppercase tracking-[0.1em]">Email corporativo</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-sm">
+                  <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
+                </span>
+                <input
+                  [(ngModel)]="email"
+                  name="email"
+                  type="email"
+                  placeholder="analista@empresa.com"
+                  required
+                  class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-lg py-sm pl-[44px] pr-sm text-on-surface font-body-md input-focus-glow transition-all placeholder:text-on-surface-variant/40">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-label-md text-on-surface-variant mb-base uppercase tracking-[0.1em]">Contraseña</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-sm">
+                  <span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+                </span>
+                <input
+                  [(ngModel)]="password"
+                  name="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  required
+                  class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-lg py-sm pl-[44px] pr-[44px] text-on-surface font-body-md input-focus-glow transition-all placeholder:text-on-surface-variant/40">
+                <button
+                  type="button"
+                  (click)="showPassword = !showPassword"
+                  class="absolute inset-y-0 right-0 flex items-center pr-sm text-outline hover:text-on-surface transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-xs">
+              <label class="flex items-center gap-xs cursor-pointer group">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="remember"
+                  name="remember"
+                  class="w-4 h-4 rounded border-outline-variant/30 bg-surface-container-highest text-primary-container">
+                <span class="font-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Recordar sesión</span>
+              </label>
+              <a href="#" class="font-body-sm text-primary hover:text-primary-container transition-colors font-medium">Olvidé mi contraseña</a>
+            </div>
+
+            @if (authStore.error()) {
+              <div class="bg-error-container text-on-error-container rounded-lg px-sm py-xs text-sm">{{ authStore.error() }}</div>
+            }
+
+            <div class="pt-md">
+              <button
+                type="submit"
+                [disabled]="authStore.isLoading()"
+                class="btn-gradient w-full font-headline-sm text-headline-sm text-white uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-sm shadow-lg shadow-primary/20 py-3 rounded-full">
+                {{ authStore.isLoading() ? 'INGRESANDO...' : 'INICIAR SESIÓN' }}
+              </button>
+            </div>
+          </form>
+
+          <div class="mt-lg text-center">
+            <a href="#" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">
+              ¿No tienes una cuenta? <span class="text-primary font-bold">Regístrate</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

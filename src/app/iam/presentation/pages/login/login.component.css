@@ -1,0 +1,22 @@
+.glass-panel {
+  background: rgba(26, 29, 38, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #5B5FEE 0%, #9B3CF7 100%);
+}
+
+.input-focus-glow:focus {
+  box-shadow: 0 0 0 2px rgba(91, 95, 238, 0.2);
+  border-color: #5B5FEE;
+  outline: none;
+}
