@@ -48,7 +48,6 @@ export class AuthStore {
     this.authApi.register(email, password, role, description).subscribe({
       next: () => {
         this.loadingSignal.set(false);
-        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.errorSignal.set('Error al registrar usuario');

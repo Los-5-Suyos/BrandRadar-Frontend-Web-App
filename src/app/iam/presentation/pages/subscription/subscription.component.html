@@ -1,0 +1,143 @@
+<div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
+  <!-- Sidebar -->
+  <aside class="hidden md:flex flex-col h-screen w-64 sticky left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 py-xl px-gutter gap-base z-50">
+    <div class="mb-lg">
+      <img src="images/light-logo.png" alt="BrandRadar" class="h-10 object-contain mb-xs">
+      <p class="font-body-md text-body-md text-on-surface-variant opacity-60">Configuración paso a paso</p>
+    </div>
+    <nav class="flex flex-col gap-base">
+      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+        <span class="material-symbols-outlined">person_add</span>
+        <span class="font-body-md text-body-md">Cuenta</span>
+      </div>
+      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+        <span class="material-symbols-outlined">verified_user</span>
+        <span class="font-body-md text-body-md">Verificación</span>
+      </div>
+      <div class="flex items-center gap-4 text-primary font-bold bg-primary-container/10 rounded-xl px-4 py-3 border-l-4 border-primary cursor-pointer">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">payments</span>
+        <span class="font-body-md text-body-md">Suscripción</span>
+      </div>
+      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+        <span class="material-symbols-outlined">workspaces</span>
+        <span class="font-body-md text-body-md">Workspace</span>
+      </div>
+    </nav>
+    <div class="mt-auto pt-lg">
+      <p class="font-label-md text-label-md text-on-surface-variant opacity-40">© 2026 BrandRadar</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 flex flex-col relative overflow-hidden bg-background">
+    <div class="absolute top-8 right-8 z-20">
+      <button (click)="router.navigate(['/verify-email'])" class="flex items-center gap-2 text-on-surface-variant hover:text-primary px-4 py-2 rounded-xl transition-all font-label-md">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span> VOLVER
+      </button>
+    </div>
+
+    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-tertiary-container/10 blur-[100px] pointer-events-none"></div>
+
+    <section class="flex-1 flex flex-col items-center px-md py-xl z-10">
+      <div class="text-center mb-lg">
+        <h1 class="text-4xl font-bold mb-md" style="font-family: 'Syne', sans-serif; background: linear-gradient(135deg, #c0c1ff, #9B3CF7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Elige tu<br>Plan de suscripción
+        </h1>
+        <p class="text-on-surface-variant max-w-md mx-auto" style="font-family: 'DM Sans', sans-serif;">
+          Escala tu gestión de reputación con monitoreo en tiempo real y <span class="text-primary">análisis de sentimiento especializado</span>.
+        </p>
+      </div>
+
+      <!-- Plans -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-md w-full max-w-4xl">
+
+        <!-- Básico -->
+        <div class="glass-card rounded-2xl p-lg flex flex-col cursor-pointer transition-all hover:border-primary/30"
+             [class.border-primary]="selectedPlan === 'basico'"
+             (click)="selectedPlan = 'basico'">
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-xs">PLAN</p>
+          <h2 class="text-2xl font-bold text-on-surface mb-xs" style="font-family: 'Syne', sans-serif;">Básico</h2>
+          <p class="text-on-surface-variant text-sm mb-md">Empieza a escuchar lo que dicen de ti</p>
+          <div class="mb-md">
+            <span class="text-3xl font-bold text-on-surface">$0</span>
+            <span class="text-on-surface-variant text-sm">/mes</span>
+            <span class="ml-2 bg-surface-container-high text-on-surface-variant text-xs px-2 py-1 rounded-full">Gratis</span>
+          </div>
+          <ul class="space-y-2 flex-1 mb-lg">
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> 1 marca monitoreada</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> 5 palabras clave</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> 500 menciones/mes</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Fuentes limitadas</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Historial de 7 días</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Alertas por email</li>
+          </ul>
+          <button class="w-full py-3 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm uppercase tracking-widest hover:border-primary hover:text-primary transition-all">
+            COMENZAR GRATIS
+          </button>
+        </div>
+
+        <!-- Pro -->
+        <div class="glass-card rounded-2xl p-lg flex flex-col cursor-pointer transition-all relative border border-primary/50"
+             [class.border-primary]="selectedPlan === 'pro'"
+             (click)="selectedPlan = 'pro'">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-widest">
+            MÁS POPULAR
+          </div>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-xs">PLAN</p>
+          <h2 class="text-2xl font-bold text-on-surface mb-xs" style="font-family: 'Syne', sans-serif;">Pro</h2>
+          <p class="text-on-surface-variant text-sm mb-md">Gestiona tu reputación antes de que ase una crisis</p>
+          <div class="mb-md">
+            <span class="text-3xl font-bold text-on-surface">$49</span>
+            <span class="text-on-surface-variant text-sm">/mes</span>
+          </div>
+          <ul class="space-y-2 flex-1 mb-lg">
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Monitorea varias marcas</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> 10,000 menciones/mes</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Fuentes: Redes + Noticias + Blogs</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Gestión y análisis completa de incidentes</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Reportes PDF</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Soporte por chat</li>
+          </ul>
+          <button class="w-full py-3 rounded-xl btn-gradient text-white font-bold text-sm uppercase tracking-widest">
+            SELECCIONAR
+          </button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="glass-card rounded-2xl p-lg flex flex-col cursor-pointer transition-all hover:border-primary/30"
+             [class.border-primary]="selectedPlan === 'enterprise'"
+             (click)="selectedPlan = 'enterprise'">
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-xs">PLAN</p>
+          <h2 class="text-2xl font-bold text-on-surface mb-xs" style="font-family: 'Syne', sans-serif;">Enterprise</h2>
+          <p class="text-on-surface-variant text-sm mb-md">Control total para agencias y corporativos</p>
+          <div class="mb-md">
+            <span class="text-3xl font-bold text-on-surface" style="font-family: 'Syne', sans-serif;">Personalizado</span>
+          </div>
+          <ul class="space-y-2 flex-1 mb-lg">
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Marcas y usuarios ilimitados</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Menciones ilimitadas</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Alertas SMS + Slack + Teams</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Reportes White-label</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Acceso completo a API</li>
+            <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Onboarding personalizado</li>
+          </ul>
+          <button class="w-full py-3 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm uppercase tracking-widest hover:border-primary hover:text-primary transition-all">
+            CONTACTAR VENTAS
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full py-base border-t border-outline-variant/10 z-10 px-md flex justify-between items-center">
+      <div class="flex gap-lg">
+        <a href="#" class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors">Política de Privacidad</a>
+        <a href="#" class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors">Centro de Ayuda</a>
+      </div>
+      <button (click)="continue()" class="btn-gradient text-white font-bold px-8 py-3 rounded-xl uppercase tracking-widest">
+        CONTINUAR
+      </button>
+    </footer>
+  </main>
+</div>

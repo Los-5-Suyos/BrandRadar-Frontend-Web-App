@@ -1,0 +1,36 @@
+.glass-card {
+  background: rgba(26, 29, 38, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gradient-button {
+  background: linear-gradient(90deg, #5B5FEE 0%, #9B3CF7 100%);
+}
+
+.gradient-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.otp-input:focus {
+  box-shadow: 0 0 15px rgba(91, 95, 238, 0.3);
+}
+
+h2 {
+  color: #e4e1ed !important;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: #c6c5d7 !important;
+}
+
+section {
+  color: #e4e1ed;
+}

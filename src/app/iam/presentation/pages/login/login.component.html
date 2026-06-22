@@ -99,7 +99,7 @@
                   class="w-4 h-4 rounded border-outline-variant/30 bg-surface-container-highest text-primary-container">
                 <span class="font-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Recordar sesión</span>
               </label>
-              <a href="#" class="font-body-sm text-primary hover:text-primary-container transition-colors font-medium">Olvidé mi contraseña</a>
+              <a [routerLink]="['/forgot-password']" class="font-body-sm text-primary hover:text-primary-container transition-colors font-medium">Olvidé mi contraseña</a>
             </div>
 
             @if (authStore.error()) {
@@ -117,7 +117,7 @@
           </form>
 
           <div class="mt-lg text-center">
-            <a href="#" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">
+            <a [routerLink]="['/register']" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">
               ¿No tienes una cuenta? <span class="text-primary font-bold">Regístrate</span>
             </a>
           </div>
