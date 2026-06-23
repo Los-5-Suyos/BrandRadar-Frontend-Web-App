@@ -1,0 +1,66 @@
+<div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
+  <!-- Sidebar -->
+  <app-onboarding-sidebar activeStep="success">
+    <div class="sidebar-header">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item nav-item--done">
+        <span class="check-circle"><span class="material-symbols-outlined">check</span></span>
+        <div>
+          <p class="nav-label">Cuenta</p>
+          <p class="nav-sublabel">Completado</p>
+        </div>
+      </div>
+      <div class="nav-item nav-item--done">
+        <span class="check-circle"><span class="material-symbols-outlined">check</span></span>
+        <div>
+          <p class="nav-label">Verificación</p>
+          <p class="nav-sublabel">Completado</p>
+        </div>
+      </div>
+      <div class="nav-item nav-item--done">
+        <span class="check-circle"><span class="material-symbols-outlined">check</span></span>
+        <div>
+          <p class="nav-label">Suscripción</p>
+          <p class="nav-sublabel">Completado</p>
+        </div>
+      </div>
+      <div class="nav-item nav-item--done">
+        <span class="check-circle"><span class="material-symbols-outlined">check</span></span>
+        <div>
+          <p class="nav-label">Workspace</p>
+          <p class="nav-sublabel">Completado</p>
+        </div>
+      </div>
+    </nav>
+  </app-onboarding-sidebar>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="glow-center"></div>
+
+    <section class="success-section">
+      <!-- Check icon -->
+      <div class="check-outer">
+        <div class="check-middle">
+          <div class="check-inner">
+            <span class="material-symbols-outlined check-icon">check</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card -->
+      <div class="success-card">
+        <h1 class="success-title">¡Registro Completado!</h1>
+        <p class="success-subtitle">Tu cuenta ha sido configurada con éxito. Ya tienes acceso total a todas nuestras herramientas de monitoreo avanzado.</p>
+      </div>
+
+      <!-- Button -->
+      <button (click)="router.navigate(['/dashboard'])" class="btn-dashboard">
+        ENTRAR AL DASHBOARD
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </section>
+  </main>
+</div>

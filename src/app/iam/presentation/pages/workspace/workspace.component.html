@@ -1,0 +1,243 @@
+<div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
+  <!-- Sidebar -->
+  <app-onboarding-sidebar activeStep="workspace">
+    <div class="sidebar-header">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <p class="sidebar-subtitle">Configuración paso a paso</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Cuenta</span>
+      </div>
+      <div class="nav-item">
+        <span class="material-symbols-outlined">verified_user</span>
+        <span>Verificación</span>
+      </div>
+      <div class="nav-item">
+        <span class="material-symbols-outlined">payments</span>
+        <span>Suscripción</span>
+      </div>
+      <div class="nav-item nav-item--active">
+        <span class="material-symbols-outlined nav-icon-filled">workspaces</span>
+        <span>Workspace</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <p>© 2026 BrandRadar</p>
+    </div>
+  </app-onboarding-sidebar>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
+
+    <section class="workspace-section">
+      <div class="workspace-header">
+        <h1 class="workspace-title">Configura tu Workspace</h1>
+        <p class="workspace-subtitle">Define los <span class="highlight">parámetros estratégicos</span> para el monitoreo de tu <span class="highlight">reputación digital</span>.</p>
+      </div>
+
+      <!-- Información General -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="material-symbols-outlined section-icon">info</span>
+          <h2 class="section-title">Información General</h2>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">NOMBRE DE LA EMPRESA</label>
+          <input [(ngModel)]="companyName" name="companyName" type="text"
+                 placeholder="Ej. BrandRadar Corp" class="form-input">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">NOMBRE DEL WORKSPACE</label>
+            <input [(ngModel)]="workspaceName" name="workspaceName" type="text"
+                   placeholder="Bembos Express" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">INDUSTRIA / SECTOR</label>
+            <select [(ngModel)]="industry" name="industry" class="form-input">
+              <option value="">Gastronomía / F&B</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="retail">Retail</option>
+              <option value="servicios">Servicios</option>
+              <option value="educacion">Educación</option>
+              <option value="salud">Salud</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reglas de Monitoreo -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="material-symbols-outlined section-icon">tune</span>
+          <h2 class="section-title">Reglas de Monitoreo</h2>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PALABRAS CLAVE DE INCLUSIÓN</label>
+          <div class="tags-wrapper">
+            @for (kw of inclusionKeywords; track $index) {
+              <span class="tag tag--inclusion">
+                {{ kw }}
+                <button (click)="removeInclusion($index)" class="tag-remove">×</button>
+              </span>
+            }
+            <input [(ngModel)]="newInclusion" name="newInclusion" type="text"
+                   placeholder="Añadir palabra..." class="tag-input"
+                   (keydown.enter)="addInclusion()">
+          </div>
+          <p class="form-hint">Términos que deben aparecer en las menciones para ser capturadas.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PALABRAS CLAVE DE EXCLUSIÓN</label>
+          <div class="tags-wrapper">
+            @for (kw of exclusionKeywords; track $index) {
+              <span class="tag tag--exclusion">
+                {{ kw }}
+                <button (click)="removeExclusion($index)" class="tag-remove">×</button>
+              </span>
+            }
+            <input [(ngModel)]="newExclusion" name="newExclusion" type="text"
+                   placeholder="Añadir exclusión..." class="tag-input"
+                   (keydown.enter)="addExclusion()">
+          </div>
+          <p class="form-hint">Filtra para ignorar menciones sobre ofertas laborales o temas irrelevantes.</p>
+        </div>
+      </div>
+
+      <!-- Canales Digitales -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="material-symbols-outlined section-icon">wifi</span>
+          <h2 class="section-title">Canales Digitales</h2>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PÁGINA WEB DE LA EMPRESA</label>
+          <input [(ngModel)]="websiteUrl" name="websiteUrl" type="url"
+                 placeholder="https://www.tuempresa.com" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">YOUTUBE</label>
+          <input [(ngModel)]="youtubeUrl" name="youtubeUrl" type="url"
+                 placeholder="Enlace al canal oficial (ej. https://youtube.com/@marca)" class="form-input">
+        </div>
+      </div>
+
+    <!-- Canales de Análisis -->
+    <div class="section-card">
+      <div class="section-title-row">
+        <span class="material-symbols-outlined section-icon">analytics</span>
+        <h2 class="section-title">Canales de Análisis</h2>
+        @if (!isPro) {
+          <span class="pro-badge">PRO</span>
+        }
+      </div>
+
+      <div class="channels-grid">
+        <!-- YouTube -->
+        <div class="channel-item">
+          <div class="channel-icon youtube">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube">
+          </div>
+          <span class="channel-name">YouTube</span>
+          <span class="channel-status channel-status--active">Activo</span>
+        </div>
+
+        <!-- Facebook -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon facebook">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+          </div>
+          <span class="channel-name">Facebook</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- Twitter/X -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon twitter">
+            <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" alt="X">
+          </div>
+          <span class="channel-name">Twitter / X</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- TikTok -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon tiktok">
+            <img src="https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80" alt="TikTok">
+          </div>
+          <span class="channel-name">TikTok</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- Instagram -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon instagram">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+          </div>
+          <span class="channel-name">Instagram</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- Noticias -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon noticias">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png" alt="Google News">
+          </div>
+          <span class="channel-name">Google News</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- Reddit -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon reddit">
+            <img src="https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" alt="Reddit">
+          </div>
+          <span class="channel-name">Reddit</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+
+        <!-- Blogs -->
+        <div class="channel-item" [class.channel-locked]="!isPro">
+          <div class="channel-icon blogs">
+            <span class="material-symbols-outlined" style="font-size: 28px; color: #5b5fee;">article</span>
+          </div>
+          <span class="channel-name">Blogs / Web</span>
+          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
+          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
+        </div>
+      </div>
+
+      @if (!isPro) {
+        <div class="upgrade-banner">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          <p>Actualiza a <strong>Pro</strong> para monitorear Facebook, Twitter, TikTok, Instagram, Noticias y más.</p>
+          <button (click)="router.navigate(['/subscription'])" class="btn-upgrade">Actualizar Plan</button>
+        </div>
+      }
+    </div>
+    <div class="finish-btn-wrapper">
+      <button (click)="finish()" class="btn-finish">
+        FINALIZAR CONFIGURACIÓN
+        <span class="material-symbols-outlined">rocket_launch</span>
+      </button>
+    </div>
+
+    </section>
+  </main>
+</div>

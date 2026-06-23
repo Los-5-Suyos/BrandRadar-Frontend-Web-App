@@ -1,0 +1,63 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+    <p class="sidebar-subtitle">Configuración paso a paso</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item" [class.nav-item--active]="activeStep === 'cuenta'" [class.nav-item--done]="isDone('cuenta')">
+      <span class="nav-indicator">
+        @if (isDone('cuenta')) {
+          <span class="material-symbols-outlined check">check</span>
+        } @else {
+          <span class="material-symbols-outlined">person_add</span>
+        }
+      </span>
+      <div>
+        <p class="nav-label">Cuenta</p>
+        @if (isDone('cuenta')) { <p class="nav-sublabel">Completado</p> }
+      </div>
+    </div>
+    <div class="nav-item" [class.nav-item--active]="activeStep === 'verificacion'" [class.nav-item--done]="isDone('verificacion')">
+      <span class="nav-indicator">
+        @if (isDone('verificacion')) {
+          <span class="material-symbols-outlined check">check</span>
+        } @else {
+          <span class="material-symbols-outlined">verified_user</span>
+        }
+      </span>
+      <div>
+        <p class="nav-label">Verificación</p>
+        @if (isDone('verificacion')) { <p class="nav-sublabel">Completado</p> }
+      </div>
+    </div>
+    <div class="nav-item" [class.nav-item--active]="activeStep === 'suscripcion'" [class.nav-item--done]="isDone('suscripcion')">
+      <span class="nav-indicator">
+        @if (isDone('suscripcion')) {
+          <span class="material-symbols-outlined check">check</span>
+        } @else {
+          <span class="material-symbols-outlined">payments</span>
+        }
+      </span>
+      <div>
+        <p class="nav-label">Suscripción</p>
+        @if (isDone('suscripcion')) { <p class="nav-sublabel">Completado</p> }
+      </div>
+    </div>
+    <div class="nav-item" [class.nav-item--active]="activeStep === 'workspace'" [class.nav-item--done]="isDone('workspace')">
+      <span class="nav-indicator">
+        @if (isDone('workspace')) {
+          <span class="material-symbols-outlined check">check</span>
+        } @else {
+          <span class="material-symbols-outlined">workspaces</span>
+        }
+      </span>
+      <div>
+        <p class="nav-label">Workspace</p>
+        @if (isDone('workspace')) { <p class="nav-sublabel">Completado</p> }
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <p>© 2026 BrandRadar</p>
+  </div>
+</aside>

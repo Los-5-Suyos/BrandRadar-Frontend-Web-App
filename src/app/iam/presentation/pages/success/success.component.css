@@ -1,0 +1,142 @@
+/* ===== MAIN ===== */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  background: #13131b;
+  overflow: hidden;
+}
+
+.glow-center {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(91, 95, 238, 0.12);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+/* ===== SECTION ===== */
+.success-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  z-index: 10;
+  padding: 48px;
+  text-align: center;
+}
+
+/* ===== CHECK ICON ===== */
+.check-outer {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(91, 95, 238, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+  pulse 2s ease-in-out 0.6s infinite;
+}
+
+.check-middle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(91, 95, 238, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-inner {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(91, 95, 238, 0.15);
+  border: 2px solid rgba(192, 193, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  font-size: 36px;
+  color: #c0c1ff;
+  font-variation-settings: 'wght' 700;
+}
+
+/* ===== CARD ===== */
+.success-card {
+  background: rgba(26, 29, 38, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 40px 48px;
+  max-width: 500px;
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.success-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #e4e1ed;
+  margin-bottom: 16px;
+}
+
+.success-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: #908fa0;
+  line-height: 1.6;
+}
+
+/* ===== BUTTON ===== */
+.btn-dashboard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #5B5FEE 0%, #9B3CF7 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 40px;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: fadeInUp 0.6s ease 0.7s both;
+}
+
+.btn-dashboard:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(91, 95, 238, 0.4);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.2); }
+  50% { box-shadow: 0 0 0 20px rgba(192, 193, 255, 0); }
+}

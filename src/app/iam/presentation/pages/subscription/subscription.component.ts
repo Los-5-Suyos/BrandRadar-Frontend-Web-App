@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { OnboardingSidebarComponent } from './../../../../shared/components/onboarding-sidebar/onboarding-sidebar.component';
 
 @Component({
   selector: 'app-subscription',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, OnboardingSidebarComponent],
   templateUrl: './subscription.component.html',
   styleUrl: './subscription.component.css'
 })
@@ -26,7 +27,7 @@ export class SubscriptionComponent {
       return;
     }
     if (this.selectedPlan === 'basico') {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/workspace']);
       return;
     }
     this.router.navigate(['/payment']);

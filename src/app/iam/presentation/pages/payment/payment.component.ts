@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { OnboardingSidebarComponent } from './../../../../shared/components/onboarding-sidebar/onboarding-sidebar.component';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OnboardingSidebarComponent],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
@@ -30,7 +31,7 @@ export class PaymentComponent {
     if (typeof window !== 'undefined') {
       localStorage.setItem('selectedPlan', this.selectedPlan);
     }
-    this.router.navigate(['/payment']);
+    this.router.navigate(['/workspace']);
   }
 
 }

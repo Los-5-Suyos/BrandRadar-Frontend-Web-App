@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApi } from '../../../infrastructure/auth-api';
 
+
 @Component({
   selector: 'app-register',
   standalone: true,

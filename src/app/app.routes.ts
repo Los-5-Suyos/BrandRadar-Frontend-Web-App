@@ -32,5 +32,15 @@ export const routes: Routes = [
     loadComponent: () => import('./iam/presentation/pages/payment/payment.component')
       .then(m => m.PaymentComponent)
   },
+  {
+    path: 'workspace',
+    loadComponent: () => import('./iam/presentation/pages/workspace/workspace.component')
+      .then(m => m.WorkspaceComponent)
+  },
+  {
+    path: 'success',
+    loadComponent: () => import('./iam/presentation/pages/success/success.component')
+      .then(m => m.SuccessComponent)
+  },
   { path: '**', redirectTo: 'login' }
 ];
