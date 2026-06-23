@@ -53,7 +53,7 @@
 
           <form (ngSubmit)="onSubmit()" class="space-y-md">
             <div>
-              <label class="block font-label-md text-on-surface-variant mb-base uppercase tracking-[0.1em]">Email corporativo</label>
+              <label class="block font-label-md text-on-surface-variant mb-base uppercase tracking-[0.1em]">correo electrónico</label>
               <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-sm">
                   <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
@@ -125,4 +125,7 @@
       </div>
     </div>
   </div>
+  @if (authStore.isLoading()) {
+    <app-loading></app-loading>
+  }
 </div>

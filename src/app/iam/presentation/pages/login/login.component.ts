@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthStore } from '../../../application/auth.store';
 import {RouterLink} from '@angular/router';
+import {LoadingComponent} from '../../../../shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, LoadingComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

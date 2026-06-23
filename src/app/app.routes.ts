@@ -41,6 +41,15 @@ export const routes: Routes = [
     path: 'success',
     loadComponent: () => import('./iam/presentation/pages/success/success.component')
       .then(m => m.SuccessComponent)
+  },{
+    path: 'home',
+    loadComponent: () => import('./dashboard/presentation/pages/home/home.component')
+      .then(m => m.HomeComponent)
+  },
+  {
+    path: 'loading',
+    loadComponent: () => import('./shared/components/loading/loading.component')
+      .then(m => m.LoadingComponent)
   },
   { path: '**', redirectTo: 'login' }
 ];

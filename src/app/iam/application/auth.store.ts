@@ -30,10 +30,13 @@ export class AuthStore {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', response.token);
           localStorage.setItem('userId', response.userId.toString());
+          localStorage.setItem('userEmail', email);
         }
         this.tokenSignal.set(response.token);
-        this.loadingSignal.set(false);
-        this.router.navigate(['/dashboard']);
+        setTimeout(() => {
+          this.loadingSignal.set(false);
+          this.router.navigate(['/home']);
+        }, 2000);
       },
       error: (err) => {
         this.errorSignal.set('Credenciales incorrectas');
