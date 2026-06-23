@@ -1,0 +1,155 @@
+<div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <p class="sidebar-subtitle">Configuración paso a paso</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Cuenta</span>
+      </div>
+      <div class="nav-item">
+        <span class="material-symbols-outlined">verified_user</span>
+        <span>Verificación</span>
+      </div>
+      <div class="nav-item nav-item--active">
+        <span class="material-symbols-outlined nav-icon-filled">payments</span>
+        <span>Suscripción</span>
+      </div>
+      <div class="nav-item">
+        <span class="material-symbols-outlined">workspaces</span>
+        <span>Workspace</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <p>© 2026 BrandRadar</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="back-btn-wrapper">
+      <button (click)="router.navigate(['/subscription'])" class="back-btn">
+        <span class="material-symbols-outlined">arrow_back</span> VOLVER A PLANES
+      </button>
+    </div>
+
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
+
+    <section class="payment-section">
+      <div class="payment-header">
+        <h1 class="payment-title">Finalizar Suscripción</h1>
+        <p class="payment-subtitle">Seleccione su método de facturación y complete los detalles de pago.</p>
+      </div>
+
+      <div class="payment-grid">
+        <!-- Left: Payment Form -->
+        <div class="glass-card payment-form-card">
+          <div class="billing-header">
+            <h3 class="billing-title">Detalles del Pago</h3>
+            <div class="billing-toggle">
+              <button class="toggle-btn" [class.toggle-btn--active]="billingPeriod === 'mensual'"
+                      (click)="billingPeriod = 'mensual'">MENSUAL</button>
+              <button class="toggle-btn" [class.toggle-btn--active]="billingPeriod === 'anual'"
+                      (click)="billingPeriod = 'anual'">
+                ANUAL <span class="save-badge">-20%</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">NOMBRE EN LA TARJETA</label>
+            <input [(ngModel)]="cardName" name="cardName" type="text"
+                   placeholder="Alexis Durrant" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">NÚMERO DE TARJETA</label>
+            <div class="card-input-wrapper">
+              <input [(ngModel)]="cardNumber" name="cardNumber" type="text"
+                     placeholder="0000 0000 0000 0000" class="form-input" maxlength="19">
+              <div class="card-icons">
+                <span class="material-symbols-outlined card-icon">credit_card</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">EXPIRACIÓN (MM/AA)</label>
+              <input [(ngModel)]="expiry" name="expiry" type="text"
+                     placeholder="04 / 26" class="form-input" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CVC / CVV</label>
+              <input [(ngModel)]="cvc" name="cvc" type="text"
+                     placeholder="•••" class="form-input" maxlength="3">
+            </div>
+          </div>
+
+          <div class="security-notice">
+            <span class="material-symbols-outlined security-icon">security</span>
+            <p class="security-text">Procesamiento seguro certificado PCI-DSS. Tus datos están protegidos mediante cifrado de extremo a extremo.</p>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="order-summary-card">
+          <!-- Top gradient -->
+          <div class="order-top">
+            <p class="order-label">ORDEN DE COMPRA</p>
+            <h2 class="order-title">Resumen Pro</h2>
+          </div>
+
+          <!-- Bottom dark -->
+          <div class="order-bottom">
+            <div class="order-plan">
+              <div>
+                <p class="order-plan-name">Plan Pro</p>
+                <p class="order-billing">FACTURACIÓN MENSUAL</p>
+              </div>
+              <div class="text-right">
+                <p class="order-plan-price">$49.00</p>
+                <p class="order-price-period">/MES</p>
+              </div>
+            </div>
+
+            <div class="order-divider"></div>
+
+            <ul class="order-features">
+              <li><span class="material-symbols-outlined check-icon">check</span> 5 marcas y 30 palabras clave/marca</li>
+              <li><span class="material-symbols-outlined check-icon">check</span> Gestión de incidentes y crisis</li>
+              <li><span class="material-symbols-outlined check-icon">check</span> Reportes semanales automáticos</li>
+              <li><span class="material-symbols-outlined check-icon">check</span> Alertas en tiempo real (Push/Email)</li>
+            </ul>
+
+            <div class="order-totals">
+              <div class="order-row">
+                <span class="order-row-label">Subtotal</span>
+                <span class="order-row-value">$49.00</span>
+              </div>
+              <div class="order-row">
+                <span class="order-row-label">Impuestos (0%)</span>
+                <span class="order-row-value">$0.00</span>
+              </div>
+              <div class="order-row order-row--total">
+                <span>TOTAL</span>
+                <span>$49.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pay-btn-wrapper">
+        <button (click)="pay()" class="btn-pay">
+          PAGAR Y CONTINUAR
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </section>
+  </main>
+</div>

@@ -45,6 +45,9 @@ export class RegisterComponent {
     this.authApi.register(this.email, this.password, this.accountType, this.fullName).subscribe({
       next: (response) => {
         this.loading = false;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('pendingEmail', this.email);
+        }
         this.router.navigate(['/verify-email']);
       },
       error: (err) => {

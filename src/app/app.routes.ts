@@ -22,10 +22,15 @@ export const routes: Routes = [
     loadComponent: () => import('./iam/presentation/pages/verify-email/verify-email.component')
       .then(m => m.VerifyEmailComponent)
   },
-  { path: '**', redirectTo: 'login' },
   {
     path: 'subscription',
     loadComponent: () => import('./iam/presentation/pages/subscription/subscription.component')
       .then(m => m.SubscriptionComponent)
-  }
+  },
+  {
+    path: 'payment',
+    loadComponent: () => import('./iam/presentation/pages/payment/payment.component')
+      .then(m => m.PaymentComponent)
+  },
+  { path: '**', redirectTo: 'login' }
 ];

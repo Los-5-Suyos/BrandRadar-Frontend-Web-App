@@ -1,55 +1,52 @@
 <div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
-  <!-- Sidebar -->
-  <aside class="hidden md:flex flex-col h-screen w-80 sticky left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 py-xl px-gutter gap-base z-50">
-    <div class="mb-lg">
-      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="h-10 object-contain mb-xs">
-      <p class="font-body-md text-body-md text-on-surface-variant opacity-60">Configuración paso a paso</p>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <p class="sidebar-subtitle">Configuración paso a paso</p>
     </div>
-    <nav class="flex flex-col gap-base">
-      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+    <nav class="sidebar-nav">
+      <div class="nav-item">
         <span class="material-symbols-outlined">person_add</span>
-        <span class="font-body-md text-body-md">Cuenta</span>
+        <span>Cuenta</span>
       </div>
-      <div class="flex items-center gap-4 text-primary font-bold bg-primary-container/10 rounded-xl px-4 py-3 border-l-4 border-primary cursor-pointer">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">verified_user</span>
-        <span class="font-body-md text-body-md">Verificación</span>
+      <div class="nav-item nav-item--active">
+        <span class="material-symbols-outlined nav-icon-filled">verified_user</span>
+        <span>Verificación</span>
       </div>
-      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+      <div class="nav-item">
         <span class="material-symbols-outlined">payments</span>
-        <span class="font-body-md text-body-md">Suscripción</span>
+        <span>Suscripción</span>
       </div>
-      <div class="flex items-center gap-4 text-on-surface-variant px-4 py-3 opacity-60 rounded-xl cursor-pointer hover:bg-surface-variant/50 transition-all">
+      <div class="nav-item">
         <span class="material-symbols-outlined">workspaces</span>
-        <span class="font-body-md text-body-md">Workspace</span>
+        <span>Workspace</span>
       </div>
     </nav>
-    <div class="mt-auto pt-lg">
-      <p class="font-label-md text-label-md text-on-surface-variant opacity-40">© 2026 BrandRadar</p>
+    <div class="sidebar-footer">
+      <p>© 2026 BrandRadar</p>
     </div>
   </aside>
 
-  <!-- Main -->
-  <main class="flex-1 flex flex-col min-h-screen relative overflow-hidden bg-background">
-    <div class="absolute top-8 right-8 z-20">
-      <button (click)="router.navigate(['/register'])" class="flex items-center gap-2 text-on-surface-variant hover:text-primary px-4 py-2 rounded-xl transition-all font-label-md">
-        <span class="material-symbols-outlined text-[20px]">arrow_back</span> VOLVER
+  <main class="main-content">
+    <div class="back-btn-wrapper">
+      <button (click)="router.navigate(['/register'])" class="back-btn">
+        <span class="material-symbols-outlined">arrow_back</span> VOLVER
       </button>
     </div>
-    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-tertiary-container/10 blur-[100px] pointer-events-none"></div>
 
-    <section class="flex-1 flex flex-col justify-center items-center px-margin-desktop py-xl z-10">
-      <div class="max-w-xl w-full text-center space-y-lg">
-        <div class="space-y-md">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container/20 border border-primary/30 text-primary mb-md">
-            <span class="material-symbols-outlined text-4xl">security</span>
-          </div>
-          <h2 style="font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 700; color: #e4e1ed; letter-spacing: -0.02em;">Verificar cuenta</h2>
-          <p style="font-family: 'DM Sans', sans-serif; font-size: 18px; color: #c6c5d7; max-width: 28rem; margin: 0 auto;">Hemos enviado un código de seguridad de 6 dígitos a su dirección de correo electrónico registrada.</p>
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
+
+    <section class="verify-section">
+      <div class="verify-container">
+        <div class="icon-wrapper">
+          <span class="material-symbols-outlined verify-icon">security</span>
         </div>
+        <h2 class="verify-title">Verificar cuenta</h2>
+        <p class="verify-subtitle">Hemos enviado un código de seguridad de 6 dígitos a su dirección de correo electrónico registrada.</p>
 
-        <div class="glass-card p-xl rounded-3xl space-y-xl">
-          <div class="flex justify-between gap-2 md:gap-4 max-w-md mx-auto">
+        <div class="glass-card">
+          <div class="otp-wrapper">
             @for (digit of otp; track $index) {
               <input
                 [(ngModel)]="otp[$index]"
@@ -58,18 +55,17 @@
                 (keydown)="onKeydown($event, $index)"
                 maxlength="1"
                 type="text"
-                class="otp-input w-12 h-16 md:w-14 md:h-20 text-center text-headline-md font-bold border border-outline-variant rounded-xl focus:outline-none focus:border-primary transition-all bg-white text-gray-900">
+                class="otp-input">
             }
           </div>
 
-          <div class="space-y-md">
-            <button (click)="verify()"
-                    class="gradient-button w-full h-14 rounded-xl font-label-md text-headline-sm text-white uppercase tracking-wider shadow-lg shadow-primary/20 transition-all active:scale-95">
-              Verificar
+          <div class="verify-actions">
+            <button (click)="verify()" class="btn-verify">
+              VERIFICAR
             </button>
-            <div class="flex items-center justify-center gap-2 font-body-sm text-body-sm">
-              <span class="text-on-surface-variant opacity-60">¿No recibiste el código?</span>
-              <button class="text-primary font-bold hover:underline transition-all">Reenviar código</button>
+            <div class="resend-wrapper">
+              <span class="resend-text">¿No recibiste el código?</span>
+              <button class="btn-resend">Reenviar código</button>
             </div>
           </div>
         </div>

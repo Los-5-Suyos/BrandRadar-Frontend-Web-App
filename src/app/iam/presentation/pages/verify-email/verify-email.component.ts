@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from './../../../../../environments/environment';
 
 @Component({
   selector: 'app-verify-email',
@@ -12,7 +14,10 @@ import { Router } from '@angular/router';
 })
 export class VerifyEmailComponent {
   router = inject(Router);
+  http = inject(HttpClient);
   otp = ['', '', '', '', '', ''];
+  error = '';
+  loading = false;
 
   onInput(event: Event, index: number) {
     const input = event.target as HTMLInputElement;
@@ -30,6 +35,22 @@ export class VerifyEmailComponent {
   }
 
   verify() {
-    this.router.navigate(['/subscription']);
+    const code = this.otp.join('');
+    if (code.length < 6) {
+      this.error = 'Ingresa el código completo';
+      return;
+    }
+    this.loading = true;
+    const email = localStorage.getItem('pendingEmail') || '';
+    this.http.post(`${environment.apiBaseUrl}/auth/verify?email=${email}&code=${code}`, {}).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/subscription']);
+      },
+      error: () => {
+        this.loading = false;
+        this.error = 'Código incorrecto';
+      }
+    });
   }
 }

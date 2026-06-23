@@ -14,6 +14,21 @@ export class SubscriptionComponent {
   selectedPlan = '';
 
   continue() {
-    this.router.navigate(['/dashboard']);
+    if (!this.selectedPlan) {
+      alert('Selecciona un plan para continuar');
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedPlan', this.selectedPlan);
+    }
+    if (this.selectedPlan === 'enterprise') {
+      window.open('https://brandradar-landing-page.netlify.app/pages/contact', '_blank');
+      return;
+    }
+    if (this.selectedPlan === 'basico') {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+    this.router.navigate(['/payment']);
   }
 }
