@@ -51,5 +51,10 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/components/loading/loading.component')
       .then(m => m.LoadingComponent)
   },
+  {
+    path: 'settings',
+    loadComponent: () => import('./dashboard/presentation/pages/settings/settings.component')
+      .then(m => m.SettingsComponent)
+  },
   { path: '**', redirectTo: 'login' }
 ];

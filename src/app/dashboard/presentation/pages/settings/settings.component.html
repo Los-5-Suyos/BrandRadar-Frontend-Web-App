@@ -1,0 +1,212 @@
+<div class="dark flex h-screen bg-[#0A0B0F] text-on-surface overflow-hidden">
+
+  <!-- Sidebar igual al home -->
+  <aside class="sidebar">
+
+    <div class="sidebar-top">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item" (click)="router.navigate(['/home'])">
+        <span class="material-symbols-outlined">home</span>
+        <span>Workspaces</span>
+      </div>
+      <div class="nav-item nav-item--active">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración de Cuenta</span>
+      </div>
+      <div class="nav-item" (click)="router.navigate(['/help'])">
+        <span class="material-symbols-outlined">help</span>
+        <span>Centro de Ayuda</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="btn-upgrade">Actualizar Plan</button>
+      <button (click)="logout()" class="btn-logout">
+        <span class="material-symbols-outlined">logout</span>
+        CERRAR SESIÓN
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="topbar">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="topbar-logo">
+      <div class="topbar-right">
+        <span class="material-symbols-outlined topbar-icon">notifications</span>
+        <span class="material-symbols-outlined topbar-icon">settings</span>
+        <span class="topbar-username">{{ userName }}</span>
+        <div class="topbar-avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+      </div>
+    </header>
+
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
+
+    <section class="settings-section">
+      <div class="settings-header">
+        <h1 class="settings-title">Configuración de Cuenta</h1>
+        <p class="settings-subtitle">Administre sus datos personales, preferencias de seguridad y detalles de suscripción en su centro de mando centralizado.</p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Perfil -->
+        <div class="settings-card profile-card">
+          <div class="profile-avatar-wrapper">
+            <div class="profile-avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+            <button class="avatar-edit-btn">
+              <span class="material-symbols-outlined">edit</span>
+            </button>
+          </div>
+          <h2 class="profile-name">{{ userName }}</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre Completo</label>
+              <input [(ngModel)]="fullName" class="form-input" type="text">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correo Electrónico</label>
+              <input [value]="userEmail" class="form-input" type="email" readonly>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Biografía Profesional (Opcional)</label>
+            <textarea [(ngModel)]="bio" class="form-input form-textarea" rows="4"></textarea>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-primary">
+              <span class="material-symbols-outlined">save</span>
+              Actualizar Perfil
+            </button>
+          </div>
+        </div>
+
+        <!-- Suscripción -->
+        <div class="settings-card subscription-card">
+          <div class="subscription-header">
+            <span class="material-symbols-outlined subscription-icon">verified</span>
+            <div>
+              <p class="subscription-label">Suscripción</p>
+              <p class="subscription-sub">Detalles de su plan actual</p>
+            </div>
+          </div>
+
+          <div class="plan-box">
+            <div class="plan-name-row">
+              <span class="plan-name">Plan Basic</span>
+              <span class="plan-badge">Activo</span>
+            </div>
+            <div class="plan-detail">
+              <span class="plan-detail-label">Marcas monitoreadas:</span>
+              <span class="plan-detail-value">1 / 1</span>
+            </div>
+            <div class="plan-detail">
+              <span class="plan-detail-label">Menciones/mes:</span>
+              <span class="plan-detail-value">500</span>
+            </div>
+            <div class="plan-detail">
+              <span class="plan-detail-label">Canales:</span>
+              <span class="plan-detail-value">Solo YouTube</span>
+            </div>
+            <div class="plan-detail">
+              <span class="plan-detail-label">Costo:</span>
+              <span class="plan-detail-value">Gratuito</span>
+            </div>
+          </div>
+
+          <button class="btn-secondary" (click)="router.navigate(['/subscription'])">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            Actualizar a Pro
+          </button>
+        </div>
+
+        <!-- Seguridad -->
+        <div class="settings-card">
+          <div class="section-title-row">
+            <span class="material-symbols-outlined section-icon">shield</span>
+            <h3 class="section-title">Seguridad</h3>
+          </div>
+          <p class="section-subtitle">Proteja su acceso y datos sensibles</p>
+
+          <div class="security-item">
+            <div class="security-icon-wrapper">
+              <span class="material-symbols-outlined">key</span>
+            </div>
+            <div class="security-info">
+              <p class="security-title">Cambiar Contraseña</p>
+              <p class="security-sub">Última actualización hace 3 meses</p>
+            </div>
+            <span class="material-symbols-outlined chevron">chevron_right</span>
+          </div>
+
+          <div class="security-item">
+            <div class="security-icon-wrapper">
+              <span class="material-symbols-outlined">smartphone</span>
+            </div>
+            <div class="security-info">
+              <p class="security-title">Autenticación de Dos Factores</p>
+              <p class="security-sub">No configurado</p>
+            </div>
+            <span class="material-symbols-outlined chevron">chevron_right</span>
+          </div>
+
+          <div class="security-item">
+            <div class="security-icon-wrapper red">
+              <span class="material-symbols-outlined">devices</span>
+            </div>
+            <div class="security-info">
+              <p class="security-title">Sesiones Activas</p>
+              <p class="security-sub">Sesión actual</p>
+            </div>
+            <span class="material-symbols-outlined chevron">chevron_right</span>
+          </div>
+        </div>
+
+        <!-- Preferencias -->
+        <div class="settings-card">
+          <div class="section-title-row">
+            <span class="material-symbols-outlined section-icon">tune</span>
+            <h3 class="section-title">Preferencias</h3>
+          </div>
+          <p class="section-subtitle">Personalice su experiencia de usuario</p>
+
+          <div class="form-group">
+            <label class="form-label">Idioma del Sistema</label>
+            <select [(ngModel)]="language" class="form-input">
+              <option value="ES">ES (Español)</option>
+              <option value="EN">EN (English)</option>
+              <option value="PT">PT (Português)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Zona Horaria</label>
+            <select [(ngModel)]="timezone" class="form-input">
+              <option value="GMT-5">(GMT-5:00) Bogotá, Quito, Lima</option>
+              <option value="GMT-6">(GMT-6:00) Ciudad de México</option>
+              <option value="GMT-3">(GMT-3:00) Buenos Aires</option>
+            </select>
+          </div>
+
+          <div class="preference-toggle">
+            <div>
+              <p class="security-title">Notificaciones por Email</p>
+              <p class="security-sub">Alertas de incidentes diarios</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="emailNotifications">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

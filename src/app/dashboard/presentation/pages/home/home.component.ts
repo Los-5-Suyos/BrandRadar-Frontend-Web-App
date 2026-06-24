@@ -18,6 +18,13 @@ export class HomeComponent implements OnInit {
 
   workspaces: any[] = [];
   loading = true;
+  showNotifications = false;
+
+  notifications = [
+    { icon: 'warning', color: '#ffb4ab', title: 'Alerta de crisis detectada', desc: 'Netflix - Sentimiento negativo +40%', time: 'Hace 5 min' },
+    { icon: 'trending_down', color: '#c0c1ff', title: 'Reputación bajó 3 puntos', desc: 'Netflix - Score: 78.5 → 75.2', time: 'Hace 1 hora' },
+    { icon: 'mark_chat_unread', color: '#4ade80', title: 'Nueva mención positiva', desc: '127 menciones positivas hoy', time: 'Hace 2 horas' }
+  ];
 
   get userId() {
     return typeof window !== 'undefined' ? localStorage.getItem('userId') || '' : '';
@@ -39,8 +46,6 @@ export class HomeComponent implements OnInit {
     if (typeof window !== 'undefined') {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
-      console.log('userId:', userId);
-      console.log('token:', token);
       if (userId && token) {
         this.loadWorkspaces(userId, token);
       }
@@ -51,11 +56,9 @@ export class HomeComponent implements OnInit {
     this.loading = true;
     const headers = { 'Authorization': `Bearer ${token}` };
     const url = `${environment.apiBaseUrl}/workspaces/user/${userId}`;
-    console.log('Llamando URL:', url);
 
     this.http.get<any[]>(url, { headers }).subscribe({
       next: (data) => {
-        console.log('Workspaces recibidos:', data);
         this.workspaces = [...data];
         this.loading = false;
         this.cdr.detectChanges();

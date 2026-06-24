@@ -348,3 +348,9 @@
   font-size: 14px;
   color: #908fa0;
 }
+
+.nav-item--active {
+  background: rgba(91, 95, 238, 0.1);
+  color: #c0c1ff;
+  font-weight: 700;
+}
