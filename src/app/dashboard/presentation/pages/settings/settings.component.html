@@ -57,10 +57,18 @@
         <!-- Perfil -->
         <div class="settings-card profile-card">
           <div class="profile-avatar-wrapper">
-            <div class="profile-avatar">{{ userName.charAt(0).toUpperCase() }}</div>
-            <button class="avatar-edit-btn">
+            <div class="profile-avatar">
+              @if (selectedAvatar) {
+                <img [src]="selectedAvatar" class="avatar-img">
+              } @else {
+                {{ userName.charAt(0).toUpperCase() }}
+              }
+            </div>
+            <label class="avatar-edit-btn" for="avatarInput">
               <span class="material-symbols-outlined">edit</span>
-            </button>
+            </label>
+            <input type="file" id="avatarInput" accept="image/*"
+                   style="display:none" (change)="onAvatarSelected($event)">
           </div>
           <h2 class="profile-name">{{ userName }}</h2>
 
@@ -206,6 +214,30 @@
             </label>
           </div>
         </div>
+        @if (showCropper) {
+          <div class="cropper-overlay" (click)="cancelCrop()">
+            <div class="cropper-modal" (click)="$event.stopPropagation()">
+              <h3 class="cropper-title">Recortar imagen de perfil</h3>
+              <image-cropper
+                [imageChangedEvent]="imageChangedEvent"
+                [maintainAspectRatio]="true"
+                [aspectRatio]="1"
+                format="png"
+                [roundCropper]="true"
+                backgroundColor="#1f1f27"
+                (imageCropped)="imageCropped($event)">
+              </image-cropper>
+              <div class="cropper-btns">
+                <button class="btn-primary" (click)="applyCrop()">
+                  <span class="material-symbols-outlined">check</span>
+                  Aplicar
+                </button>
+                <button class="btn-secondary-sm" (click)="cancelCrop()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        }
+
       </div>
     </section>
   </main>

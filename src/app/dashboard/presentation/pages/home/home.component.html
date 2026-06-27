@@ -1,11 +1,9 @@
-<div class="dark flex min-h-screen bg-[#0A0B0F] text-on-surface">
-
+<div class="dark flex h-screen bg-[#0A0B0F]" style="overflow:hidden;" (click)="showNotifications = false; closeMenus()">
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-top">
       <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
     </div>
-
     <nav class="sidebar-nav">
       <div class="nav-item nav-item--active">
         <span class="material-symbols-outlined">home</span>
@@ -20,7 +18,6 @@
         <span>Centro de Ayuda</span>
       </div>
     </nav>
-
     <div class="sidebar-bottom">
       <button class="btn-upgrade">Actualizar Plan</button>
       <button (click)="logout()" class="btn-logout">
@@ -31,18 +28,17 @@
   </aside>
 
   <!-- Main -->
-  <main class="main-content">
+  <main class="main-content" (click)="closeMenus()">
     <header class="topbar">
-      <img src="images/light-logo.png" alt="BrandRadar" class="topbar-logo">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="topbar-logo">
       <div class="topbar-right">
-
-        <!-- Notificaciones -->
         <div class="notif-wrapper">
-          <span class="material-symbols-outlined topbar-icon" (click)="showNotifications = !showNotifications">notifications</span>
+  <span class="material-symbols-outlined topbar-icon"
+        (click)="showNotifications = !showNotifications; $event.stopPropagation()">notifications</span>
           <span class="notif-badge">{{ notifications.length }}</span>
 
           @if (showNotifications) {
-            <div class="notif-panel">
+            <div class="notif-panel" (click)="$event.stopPropagation()">
               <div class="notif-header">
                 <p class="notif-title">Notificaciones</p>
                 <button class="notif-clear" (click)="showNotifications = false">Cerrar</button>
@@ -62,8 +58,8 @@
             </div>
           }
         </div>
-
-        <span class="material-symbols-outlined topbar-icon" (click)="router.navigate(['/settings'])">settings</span>
+        <span class="material-symbols-outlined topbar-icon"
+              (click)="router.navigate(['/settings'])">settings</span>
         <span class="topbar-username">{{ userName }}</span>
         <div class="topbar-avatar">{{ userName.charAt(0).toUpperCase() }}</div>
       </div>
@@ -78,35 +74,80 @@
       <p class="greeting-subtitle">Todo listo para monitorear tu marca</p>
 
       @if (loading) {
-        <div class="loading-workspaces">
-          <p>Cargando workspaces...</p>
-        </div>
-      } @else if (workspaces.length === 0) {
-        <div class="no-workspaces">
-          <span class="material-symbols-outlined">inbox</span>
-          <p>No tienes workspaces aún</p>
-        </div>
+        <div class="loading-workspaces"><p>Cargando workspaces...</p></div>
       } @else {
         <div class="workspaces-grid">
+
           @for (ws of workspaces; track ws.id) {
             <div class="workspace-card">
-              <div class="workspace-logo-wrapper">
-                <span class="material-symbols-outlined workspace-logo-icon">business</span>
+
+              @if (showDeleteConfirm === ws.id) {
+                <div class="delete-confirm">
+                  <p class="delete-confirm-text">¿Eliminar "{{ ws.name }}"?</p>
+                  <div class="delete-confirm-btns">
+                    <button class="btn-confirm-yes" (click)="deleteWorkspace(ws.id)">Eliminar</button>
+                    <button class="btn-confirm-no" (click)="showDeleteConfirm = null">Cancelar</button>
+                  </div>
+                </div>
+              }
+
+              <div class="card-header">
+                <div class="ws-logo" [style.background]="ws.color">
+                  @if (getLogoUrl(ws.name)) {
+                    <img [src]="getLogoUrl(ws.name)" [alt]="ws.name" class="ws-logo-img"
+                         (error)="$any($event.target).style.display='none'">
+                  } @else {
+                    <span class="ws-initials">{{ getInitials(ws.name) }}</span>
+                  }
+                </div>
+
+                <div class="ws-title-group">
+                  <h2 class="ws-name">{{ ws.name }}</h2>
+                  <p class="ws-updated">Última actualización: hace 5 minutos</p>
+                </div>
+
+                <div class="ws-menu-wrapper">
+                  <div class="ws-status-badge">
+                    <span class="status-dot"></span> ACTIVO
+                  </div>
+                  <span class="material-symbols-outlined ws-action-icon"
+                        (click)="toggleMenu(ws.id, $event)">more_vert</span>
+                  @if (showMenuId === ws.id) {
+                    <div class="ws-dropdown">
+                      <p class="ws-dropdown-title">Opciones de workspace</p>
+                      <div class="ws-dropdown-item"
+                           (click)="showDeleteConfirm = ws.id; showMenuId = null">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span>Borrar workspace</span>
+                      </div>
+                    </div>
+                  }
+                </div>
               </div>
-              <div class="workspace-info">
-                <h2 class="workspace-name">{{ ws.name }}</h2>
-                <span class="workspace-badge">
-                  <span class="status-dot"></span> ESTADO: ACTIVO
-                </span>
-                <button (click)="goToWorkspace(ws)" class="btn-access">
-                  ACCEDER AL WORKSPACE
-                </button>
-              </div>
+
+              <button (click)="goToWorkspace(ws)" class="btn-access">
+                ACCEDER AL WORKSPACE →
+              </button>
             </div>
           }
+
+          <!-- Card bloqueada / agregar -->
+          <div class="workspace-card workspace-card--locked">
+            <div class="lock-icon-wrapper">
+              <span class="material-symbols-outlined lock-icon">lock</span>
+            </div>
+            <h2 class="lock-title">Crear nuevo workspace</h2>
+            @if (canAddWorkspace) {
+              <p class="lock-desc">Agrega una nueva marca para monitorear su reputación.</p>
+              <button class="btn-add-ws" (click)="addWorkspace()">CREAR WORKSPACE</button>
+            } @else {
+              <p class="lock-desc">Límite del plan <strong>{{ roleLabel }}</strong> alcanzado. Mejora tu plan para añadir más marcas.</p>
+              <button class="btn-plan-limited">PLAN LIMITADO</button>
+            }
+          </div>
+
         </div>
       }
-
       <p class="footer-text">BRANDRADAR 2026</p>
     </section>
   </main>
