@@ -1,0 +1,373 @@
+<div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-logo-row">
+        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
+        <span class="dash-plan-badge">{{ planLabel }}</span>
+      </div>
+    </div>
+    <div class="dash-brand-card" (click)="goHome()">
+      <p class="dash-brand-label">MARCA ACTIVA</p>
+      <div class="dash-brand-row">
+        <span class="dash-brand-name">{{ workspaceName }}</span>
+        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-item" (click)="goToSection('dashboard')">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="dash-nav-item dash-nav-item--active">
+        <span class="material-symbols-outlined">forum</span>
+        <span>Menciones</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('incidentes')">
+        <span class="material-symbols-outlined">warning</span>
+        <span>Incidentes</span>
+        <span class="dash-nav-badge">2</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('reportes')">
+        <span class="material-symbols-outlined">description</span>
+        <span>Reportes</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('configuracion')">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración de Workspace</span>
+      </div>
+    </nav>
+    <div class="dash-sidebar-bottom">
+      <button (click)="goHome()" class="dash-btn-exit">
+        <span class="material-symbols-outlined">logout</span>
+        Salir del Workspace
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="men-main">
+    <header class="men-topbar">
+      <div>
+        <h1 class="men-title">Menciones</h1>
+        <p class="men-subtitle">{{ workspaceName }} · {{ filteredMenciones.length }} menciones · <span style="color:#fface8;">2 filtros activos</span></p>
+      </div>
+      <div class="men-topbar-actions">
+        <button class="btn-export">
+          <span class="material-symbols-outlined">download</span>
+          Exportar CSV
+        </button>
+        <button class="btn-export">
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+          PDF
+        </button>
+      </div>
+    </header>
+    <!-- Metric Cards -->
+    <div class="men-metrics">
+
+      <!-- Total Menciones -->
+      <div class="men-metric-card">
+        <div class="men-metric-header">
+          <p class="men-metric-label">TOTAL MENCIONES</p>
+          <span class="material-symbols-outlined men-metric-icon">forum</span>
+        </div>
+        <p class="men-metric-value">1,247 <span class="men-metric-delta men-metric-delta--down">-2.4%</span></p>
+        <div class="men-metric-bar">
+          <div class="men-metric-bar-fill" style="width:72%; background:#fface8;"></div>
+        </div>
+      </div>
+
+      <!-- Estado Sentimiento -->
+      <div class="men-metric-card">
+        <div class="men-metric-header">
+          <p class="men-metric-label">ESTADO SENTIMIENTO</p>
+          <span class="alerta-badge">ALERTA</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:12px;">
+          <p class="men-metric-value">56%</p>
+          <div>
+            <p class="men-metric-dominante">DOMINANTE:</p>
+            <p class="men-metric-dominante-val">NEGATIVO</p>
+            <p class="men-metric-tendencia">Tendencia al alza (+8%)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fuentes Críticas -->
+      <div class="men-metric-card">
+        <div class="men-metric-header">
+          <p class="men-metric-label">FUENTES CRÍTICAS</p>
+          <span class="material-symbols-outlined men-metric-icon">trending_down</span>
+        </div>
+        <div class="men-fuentes-list">
+          <div class="men-fuente-item">
+            <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" class="men-fuente-icon">
+            <span class="men-fuente-name">Twitter/X</span>
+            <span class="men-fuente-pct">72% neg.</span>
+          </div>
+          <div class="men-fuente-item">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png" class="men-fuente-icon">
+            <span class="men-fuente-name">Google News</span>
+            <span class="men-fuente-pct">64% neg.</span>
+          </div>
+          <div class="men-fuente-item">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" class="men-fuente-icon">
+            <span class="men-fuente-name">Facebook</span>
+            <span class="men-fuente-pct">48% neg.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canal Más Activo -->
+      <div class="men-metric-card">
+        <div class="men-metric-header">
+          <p class="men-metric-label">CANAL MÁS ACTIVO</p>
+        </div>
+        <div class="men-canal-activo">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" class="men-canal-logo">
+          <span class="men-canal-name">Facebook</span>
+        </div>
+        <p class="men-canal-sub">423 menciones (34%)</p>
+      </div>
+
+      <!-- Alerta Reciente -->
+      <div class="men-metric-card men-metric-card--alert">
+        <div class="men-metric-header">
+          <p class="men-metric-label">ALERTA RECIENTE</p>
+        </div>
+        <div class="men-alerta-row">
+          <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" class="men-fuente-icon">
+          <span class="men-alerta-plataforma">Twitter/X</span>
+          <span class="men-alerta-score">0.93 NEG</span>
+        </div>
+        <p class="men-alerta-texto">"Pésimo servicio, 2 horas..."</p>
+        <p class="men-alerta-tiempo">hace 4 min</p>
+      </div>
+    </div>
+
+
+    <section class="men-content">
+      <!-- Filtro de canales -->
+      <div class="men-channels-filter">
+        <button class="men-channel-btn" [class.men-channel-btn--active]="activeChannel === 'todos'"
+                (click)="activeChannel = 'todos'">
+          Todos
+        </button>
+        @for (ch of availableChannels; track ch.name) {
+          <button class="men-channel-btn" [class.men-channel-btn--active]="activeChannel === ch.name"
+                  (click)="activeChannel = ch.name">
+            @if (ch.logo) {
+              <img [src]="ch.logo" [alt]="ch.name" class="men-channel-btn-icon">
+            } @else {
+              <span class="material-symbols-outlined" style="font-size:14px;">article</span>
+            }
+            {{ ch.name }}
+            <span class="men-channel-count">{{ ch.count }}</span>
+          </button>
+        }
+      </div>
+      <!-- Main Tabs -->
+      <div class="men-main-tabs">
+        <button class="men-main-tab" [class.men-main-tab--active]="activeMainTab === 'menciones'"
+                (click)="activeMainTab = 'menciones'">
+          <span class="material-symbols-outlined">forum</span>
+          Menciones Detectadas
+        </button>
+        <button class="men-main-tab" [class.men-main-tab--active]="activeMainTab === 'publicaciones'"
+                (click)="activeMainTab = 'publicaciones'">
+          <span class="material-symbols-outlined">public</span>
+          Publicaciones Relacionadas
+        </button>
+      </div>
+      <!-- TAB: Menciones -->
+      @if (activeMainTab === 'menciones') {
+        <div class="men-filters">
+          <div class="men-tabs">
+            @for (f of filters; track f) {
+              <button class="men-tab" [class.men-tab--active]="activeFilter === f"
+                      (click)="activeFilter = f">
+                {{ f | titlecase }}
+              </button>
+            }
+          </div>
+          <div class="men-search">
+            <span class="material-symbols-outlined men-search-icon">search</span>
+            <input [(ngModel)]="searchQuery" placeholder="Buscar en menciones..."
+                   class="men-search-input">
+          </div>
+        </div>
+
+        <div class="men-list">
+          @if (filteredMenciones.length === 0) {
+            <div class="men-empty">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No hay menciones con este filtro</p>
+            </div>
+          }
+          @for (m of filteredMenciones; track m.id) {
+            <div class="men-card" (click)="openModal(m)">
+              <div class="men-avatar" [style.background]="m.color">{{ m.initials }}</div>
+              <div class="men-card-body">
+                <div class="men-card-header">
+                  <div class="men-user-info">
+                    <span class="men-username">{{ m.usuario }}</span>
+                    <span class="men-handle">{{ m.handle }}</span>
+                    <img [src]="m.plataformaIcon" [alt]="m.plataforma" class="men-platform-icon">
+                    <span class="men-tiempo">· {{ m.tiempo }}</span>
+                  </div>
+                  <div class="men-score" [style.color]="m.sentimientoColor">
+                    {{ m.score.toFixed(2) }} <span class="men-score-label">{{ m.sentimiento }}</span>
+                  </div>
+                </div>
+                <p class="men-texto" [innerHTML]="highlightText(m.texto, m.keywords)"></p>
+                <div class="men-card-footer">
+                  <a [href]="m.url" target="_blank" class="men-link" (click)="$event.stopPropagation()">
+                    <span class="material-symbols-outlined">open_in_new</span>
+                    Ver publicación original
+                  </a>
+                </div>
+              </div>
+            </div>
+          }
+          <div class="men-load-more">Cargando más menciones...</div>
+        </div>
+      }
+
+      <!-- TAB: Publicaciones -->
+      @if (activeMainTab === 'publicaciones') {
+        <div class="pub-section">
+          <div class="pub-keywords">
+            <p class="pub-keywords-label">KEYWORDS MONITOREADAS</p>
+            <div class="pub-keywords-row">
+              @for (kw of workspaceKeywords; track kw) {
+                <span class="pub-keyword-tag">{{ kw }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="men-list">
+            @for (p of publicaciones; track p.id) {
+              <div class="pub-card">
+                <div class="pub-card-header">
+                  <img [src]="p.plataformaIcon" [alt]="p.plataforma" class="pub-platform-icon">
+                  <span class="pub-plataforma">{{ p.plataforma }}</span>
+                  <span class="pub-tiempo">· {{ p.tiempo }}</span>
+                  <div class="pub-keyword-match">
+                    <span class="material-symbols-outlined">tag</span>
+                    {{ p.keyword }}
+                  </div>
+                </div>
+                <p class="pub-usuario">{{ p.usuario }}</p>
+                <p class="pub-texto" [innerHTML]="highlightText(p.texto, [p.keyword])"></p>
+                <div class="pub-card-footer">
+                  <div class="pub-stats">
+                    <span class="pub-stat">
+                      <span class="material-symbols-outlined">thumb_up</span>
+                      {{ p.likes }}
+                    </span>
+                    <span class="pub-stat">
+                      <span class="material-symbols-outlined">chat_bubble</span>
+                      {{ p.comentarios }}
+                    </span>
+                  </div>
+                  <a [href]="p.url" target="_blank" class="men-link">
+                    <span class="material-symbols-outlined">open_in_new</span>
+                    Ver en {{ p.plataforma }}
+                  </a>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </section>
+  </main>
+
+  <!-- Modal detalle -->
+  @if (showModal && selectedMencion) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h3 class="modal-title">Detalle de Mención</h3>
+          <button class="modal-close" (click)="closeModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-user">
+          <div class="men-avatar" [style.background]="selectedMencion.color">{{ selectedMencion.initials }}</div>
+          <div>
+            <p class="modal-username">{{ selectedMencion.usuario }}</p>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <img [src]="selectedMencion.plataformaIcon" [alt]="selectedMencion.plataforma" class="men-platform-icon">
+              <span class="modal-handle">{{ selectedMencion.plataforma }} · {{ selectedMencion.tiempo }}</span>
+            </div>
+          </div>
+          <div class="modal-score" [style.color]="selectedMencion.sentimientoColor">
+            {{ selectedMencion.score.toFixed(2) }}<br>
+            <span style="font-size:9px;">{{ selectedMencion.sentimiento }}</span>
+          </div>
+        </div>
+
+        <div class="modal-texto" [innerHTML]="highlightText(selectedMencion.texto, selectedMencion.keywords)"></div>
+
+        <a [href]="selectedMencion.url" target="_blank" class="modal-link">
+          <span class="material-symbols-outlined">open_in_new</span>
+          Ver publicación original en {{ selectedMencion.plataforma }}
+        </a>
+
+        <div class="modal-ai">
+          <div class="modal-ai-header">
+            <span class="material-symbols-outlined modal-ai-icon">psychology</span>
+            <span class="modal-ai-title">BrandRadar AI</span>
+            <span class="ai-badge" style="font-size:8px; padding:2px 8px;">
+              {{ userRole === 'AGENCIA' ? 'ESTRATEGIA MARKETING' : 'MEJORA OPERACIONAL' }}
+            </span>
+          </div>
+
+          @if (loadingAI) {
+            <div class="modal-ai-loading">
+              <div class="ai-spinner"></div>
+              <p>Analizando mención con IA...</p>
+            </div>
+          } @else if (aiResponse) {
+            <div class="modal-ai-content">
+              <div class="modal-ai-section">
+                <p class="modal-ai-label">ANÁLISIS</p>
+                <p class="modal-ai-text">{{ aiResponse.analisis }}</p>
+              </div>
+              <div class="modal-ai-section">
+                <p class="modal-ai-label">ESTRATEGIA</p>
+                <p class="modal-ai-text">{{ aiResponse.estrategia }}</p>
+              </div>
+              <div class="modal-ai-section">
+                <p class="modal-ai-label">BORRADOR DE RESPUESTA</p>
+                <div class="modal-borrador">
+                  <p class="modal-borrador-text">{{ aiResponse.borrador }}</p>
+                  <button class="btn-copy" (click)="copyText(aiResponse.borrador)">
+                    <span class="material-symbols-outlined">content_copy</span>
+                    Copiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-ignorar" (click)="closeModal()">Ignorar</button>
+          <button class="btn-incidente" (click)="goToSection('incidentes'); closeModal()">
+            <span class="material-symbols-outlined">warning</span>
+            Crear Incidente
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

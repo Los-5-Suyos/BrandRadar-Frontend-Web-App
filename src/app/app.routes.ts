@@ -62,5 +62,10 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/presentation/pages/dashboard/dashboard.component')
       .then(m => m.DashboardComponent)
   },
+  {
+    path: 'mentions',
+    loadComponent: () => import('./dashboard/presentation/pages/mentions/mentions.component')
+      .then(m => m.MentionsComponent)
+  },
   { path: '**', redirectTo: 'login' }
 ];

@@ -34,18 +34,20 @@ export class HomeComponent implements OnInit {
   newExclusionInput = '';
 
   channels = [
-    { name: 'YouTube', logo: 'https://img.logo.dev/youtube.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: true, locked: false },
-    { name: 'Facebook', logo: 'https://img.logo.dev/facebook.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
-    { name: 'Twitter', logo: 'https://img.logo.dev/twitter.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
-    { name: 'TikTok', logo: 'https://img.logo.dev/tiktok.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
-    { name: 'Instagram', logo: 'https://img.logo.dev/instagram.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
-    { name: 'Reddit', logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+    { name: 'YouTube', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg', icon: null, active: true, locked: false },
+    { name: 'Facebook', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg', icon: null, active: false, locked: true },
+    { name: 'Twitter / X', logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true', icon: null, active: false, locked: true },
+    { name: 'TikTok', logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80', icon: null, active: false, locked: true },
+    { name: 'Instagram', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png', icon: null, active: false, locked: true },
+    { name: 'Google News', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png', icon: null, active: false, locked: true },
+    { name: 'Reddit', logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true', icon: null, active: false, locked: true },
+    { name: 'Blogs / Web', logo: null, icon: 'article', active: false, locked: true },
   ];
 
   notifications = [
     { icon: 'warning', color: '#ffb4ab', title: 'Alerta de crisis detectada', desc: 'Sentimiento negativo +40%', time: 'Hace 5 min' },
     { icon: 'trending_down', color: '#c0c1ff', title: 'Reputación bajó 3 puntos', desc: 'Score bajó esta semana', time: 'Hace 1 hora' },
-    { icon: 'mark_chat_unread', color: '#4ade80', title: 'Nueva mención positiva', desc: '127 menciones positivas hoy', time: 'Hace 2 horas' }
+    { icon: 'mark_chat_unread', color: '#4ade80', title: 'Nueva mención positiva', desc: '127 mentions positivas hoy', time: 'Hace 2 horas' }
   ];
 
   readonly wsColors = ['#3b3f8c', '#7c3f1a', '#1a5c3f', '#5c1a3f'];
@@ -94,6 +96,20 @@ export class HomeComponent implements OnInit {
 
   getInitials(name: string): string {
     return name.split(' ').map((w: string) => w[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  get planLabel(): string {
+    const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
+    if (plan === 'PRO') return 'Pro';
+    if (plan === 'ENTERPRISE') return 'Enterprise';
+    return 'Básico';
+  }
+
+  get planChannelsDesc(): string {
+    const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
+    if (plan === 'ENTERPRISE') return 'Todos los canales disponibles';
+    if (plan === 'PRO') return 'YouTube, Facebook, Twitter, TikTok, Instagram, Google News, Reddit y Blogs disponibles';
+    return 'Solo YouTube disponible';
   }
 
   ngOnInit() {

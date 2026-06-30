@@ -218,12 +218,16 @@
 
                 <div class="create-ws-section">
                   <label class="create-ws-label">Canales de Análisis</label>
-                  <p class="create-ws-channels-sub">Plan {{ roleLabel }} — Solo YouTube disponible</p>
+                  <p class="create-ws-channels-sub">Plan {{ planLabel }} — {{ planChannelsDesc }}</p>
                   <div class="channels-grid">
                     @for (ch of channels; track ch.name) {
                       <div class="channel-item" [class.channel-item--active]="ch.active"
                            [class.channel-item--locked]="ch.locked">
-                        <img [src]="ch.logo" [alt]="ch.name" class="channel-logo">
+                        @if (ch.logo) {
+                          <img [src]="ch.logo" [alt]="ch.name" class="channel-logo">
+                        } @else {
+                          <span class="material-symbols-outlined" style="font-size:22px; color:#5B5FEE;">article</span>
+                        }
                         <span class="channel-name">{{ ch.name }}</span>
                         @if (ch.locked) {
                           <span class="material-symbols-outlined channel-lock">lock</span>
