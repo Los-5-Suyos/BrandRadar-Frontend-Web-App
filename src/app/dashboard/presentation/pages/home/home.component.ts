@@ -22,6 +22,25 @@ export class HomeComponent implements OnInit {
   showNotifications = false;
   searchQuery = '';
   showDeleteConfirm: number | null = null;
+  showMenuId: number | null = null;
+
+  // Modal crear workspace
+  showCreateWorkspace = false;
+  newWsName = '';
+  newWsLogoPreview: string | null = null;
+  newWsInclusionTags: string[] = [];
+  newWsExclusionTags: string[] = [];
+  newInclusionInput = '';
+  newExclusionInput = '';
+
+  channels = [
+    { name: 'YouTube', logo: 'https://img.logo.dev/youtube.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: true, locked: false },
+    { name: 'Facebook', logo: 'https://img.logo.dev/facebook.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+    { name: 'Twitter', logo: 'https://img.logo.dev/twitter.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+    { name: 'TikTok', logo: 'https://img.logo.dev/tiktok.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+    { name: 'Instagram', logo: 'https://img.logo.dev/instagram.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+    { name: 'Reddit', logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ', active: false, locked: true },
+  ];
 
   notifications = [
     { icon: 'warning', color: '#ffb4ab', title: 'Alerta de crisis detectada', desc: 'Sentimiento negativo +40%', time: 'Hace 5 min' },
@@ -115,7 +134,7 @@ export class HomeComponent implements OnInit {
   goToWorkspace(workspace: any) {
     localStorage.setItem('currentWorkspaceId', workspace.id);
     localStorage.setItem('currentWorkspaceName', workspace.name);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/loading'], { queryParams: { redirect: 'dashboard' } });
   }
 
   deleteWorkspace(id: number) {
@@ -126,16 +145,72 @@ export class HomeComponent implements OnInit {
 
   addWorkspace() {
     if (this.canAddWorkspace) {
-      this.router.navigate(['/workspace']);
+      this.showCreateWorkspace = true;
     }
+  }
+
+  closeCreateWorkspace() {
+    this.showCreateWorkspace = false;
+    this.newWsName = '';
+    this.newWsLogoPreview = null;
+    this.newWsInclusionTags = [];
+    this.newWsExclusionTags = [];
+    this.newInclusionInput = '';
+    this.newExclusionInput = '';
+  }
+
+  onLogoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => { this.newWsLogoPreview = e.target?.result as string; };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  addInclusionTag() {
+    const val = this.newInclusionInput.trim();
+    if (val && !this.newWsInclusionTags.includes(val)) {
+      this.newWsInclusionTags.push(val);
+    }
+    this.newInclusionInput = '';
+  }
+
+  removeInclusionTag(tag: string) {
+    this.newWsInclusionTags = this.newWsInclusionTags.filter(t => t !== tag);
+  }
+
+  addExclusionTag() {
+    const val = this.newExclusionInput.trim();
+    if (val && !this.newWsExclusionTags.includes(val)) {
+      this.newWsExclusionTags.push(val);
+    }
+    this.newExclusionInput = '';
+  }
+
+  removeExclusionTag(tag: string) {
+    this.newWsExclusionTags = this.newWsExclusionTags.filter(t => t !== tag);
+  }
+
+  createWorkspace() {
+    if (!this.newWsName.trim()) return;
+    const newWs = {
+      id: Date.now(),
+      name: this.newWsName.trim(),
+      score: 65,
+      mentions: 0,
+      incidents: 0,
+      color: this.wsColors[this.workspaces.length % 4]
+    };
+    this.workspaces.push(newWs);
+    this.closeCreateWorkspace();
+    this.cdr.detectChanges();
   }
 
   logout() {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
-
-  showMenuId: number | null = null;
 
   toggleMenu(id: number, event: Event) {
     event.stopPropagation();
@@ -165,5 +240,4 @@ export class HomeComponent implements OnInit {
     }
     return '';
   }
-
 }

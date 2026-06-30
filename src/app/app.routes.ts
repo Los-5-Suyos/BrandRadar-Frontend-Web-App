@@ -41,7 +41,8 @@ export const routes: Routes = [
     path: 'success',
     loadComponent: () => import('./iam/presentation/pages/success/success.component')
       .then(m => m.SuccessComponent)
-  },{
+  },
+  {
     path: 'home',
     loadComponent: () => import('./dashboard/presentation/pages/home/home.component')
       .then(m => m.HomeComponent)
@@ -55,6 +56,11 @@ export const routes: Routes = [
     path: 'settings',
     loadComponent: () => import('./dashboard/presentation/pages/settings/settings.component')
       .then(m => m.SettingsComponent)
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/presentation/pages/dashboard/dashboard.component')
+      .then(m => m.DashboardComponent)
   },
   { path: '**', redirectTo: 'login' }
 ];

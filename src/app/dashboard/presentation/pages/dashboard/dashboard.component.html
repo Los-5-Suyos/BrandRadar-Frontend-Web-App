@@ -1,0 +1,218 @@
+<div class="dark flex h-screen bg-[#0A0B0F] text-on-surface" style="overflow:hidden;" (click)="showNotifications = false">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-logo-row">
+        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
+        <span class="dash-plan-badge">BASIC</span>
+      </div>
+    </div>
+
+    <div class="dash-brand-card" (click)="goHome()">
+      <p class="dash-brand-label">MARCA ACTIVA</p>
+      <div class="dash-brand-row">
+        <span class="dash-brand-name">{{ workspaceName }}</span>
+        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
+      </div>
+    </div>
+
+    <nav class="dash-nav">
+      <div class="dash-nav-item dash-nav-item--active">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('menciones')">
+        <span class="material-symbols-outlined">forum</span>
+        <span>Menciones</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('incidentes')">
+        <span class="material-symbols-outlined">warning</span>
+        <span>Incidentes</span>
+        <span class="dash-nav-badge">2</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('reportes')">
+        <span class="material-symbols-outlined">description</span>
+        <span>Reportes</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('settings')">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración del Workspace</span>
+      </div>
+    </nav>
+
+    <div class="dash-sidebar-bottom">
+      <button (click)="goHome()" class="dash-btn-exit">
+        <span class="material-symbols-outlined">logout</span>
+        Salir del Workspace
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div class="dash-topbar-left">
+        <h1 class="dash-greeting">Buenos días, {{ userName }}</h1>
+        <p class="dash-update">ÚLTIMA ACTUALIZACIÓN: {{ lastUpdate.toUpperCase() }}</p>
+      </div>
+      <div class="dash-topbar-right">
+        <span class="dash-realtime-badge">REAL TIME MONITORING</span>
+
+        <div class="notif-wrapper">
+          <span class="material-symbols-outlined topbar-icon"
+                (click)="showNotifications = !showNotifications; $event.stopPropagation()">notifications</span>
+          <span class="notif-badge">{{ notifications.length }}</span>
+
+          @if (showNotifications) {
+            <div class="notif-panel" (click)="$event.stopPropagation()">
+              <div class="notif-header">
+                <p class="notif-title">Notificaciones</p>
+                <button class="notif-clear" (click)="showNotifications = false">Cerrar</button>
+              </div>
+              @for (n of notifications; track n.title) {
+                <div class="notif-item">
+                  <div class="notif-icon" [style.color]="n.color">
+                    <span class="material-symbols-outlined">{{ n.icon }}</span>
+                  </div>
+                  <div class="notif-info">
+                    <p class="notif-item-title">{{ n.title }}</p>
+                    <p class="notif-item-desc">{{ n.desc }}</p>
+                    <p class="notif-item-time">{{ n.time }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <button class="dash-btn-alerts">
+          <span class="material-symbols-outlined">campaign</span>
+          Alertas
+        </button>
+      </div>
+    </header>
+
+    <section class="dash-content">
+
+      @if (hasActiveIncident) {
+        <div class="incident-banner">
+          <div class="incident-banner-left">
+            <span class="material-symbols-outlined incident-banner-icon">warning</span>
+            <div>
+              <p class="incident-banner-title">Incidente activo detectado</p>
+              <p class="incident-banner-desc">Pico de quejas por demoras en delivery reportado hace 15 minutos.</p>
+            </div>
+          </div>
+          <button class="btn-diagnostico" (click)="goToSection('incidentes')">
+            Ver Diagnóstico IA
+          </button>
+        </div>
+      }
+
+      <div class="metrics-grid">
+
+        <!-- Sentiment Score -->
+        <div class="metric-card">
+          <p class="metric-card-label">SENTIMENT SCORE</p>
+          <div class="metric-card-row">
+            <div class="score-ring-wrapper">
+              <svg viewBox="0 0 36 36" class="score-ring-svg">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+                <circle cx="18" cy="18" r="15.9" fill="none"
+                        [attr.stroke]="sentimentScore >= 70 ? '#4ade80' : sentimentScore >= 50 ? '#f97316' : '#ff4444'"
+                        stroke-width="3"
+                        [attr.stroke-dasharray]="sentimentScore + ', 100'"
+                        stroke-linecap="round"
+                        transform="rotate(-90 18 18)"/>
+              </svg>
+              <div class="score-ring-center">
+                <span class="score-ring-value">{{ sentimentScore }}</span>
+              </div>
+            </div>
+            <p class="score-status">Neutral/Bajo</p>
+          </div>
+          <p class="score-trend score-trend--down">
+            <span class="material-symbols-outlined">trending_down</span>
+            14% vs. ayer
+          </p>
+        </div>
+
+        <!-- Menciones Hoy -->
+        <div class="metric-card">
+          <p class="metric-card-label">MENCIONES HOY</p>
+          <p class="mentions-value">{{ mentionsToday }}<span class="mentions-delta">+12%</span></p>
+          <svg viewBox="0 0 200 50" class="sparkline" preserveAspectRatio="none">
+            <polyline [attr.points]="sparklinePoints" fill="none" stroke="#5B5FEE" stroke-width="2"/>
+          </svg>
+          <div class="mentions-breakdown">
+            <div class="mb-item">
+              <p class="mb-label">NEG</p>
+              <p class="mb-value mb-value--neg">32%</p>
+            </div>
+            <div class="mb-item">
+              <p class="mb-label">NEU</p>
+              <p class="mb-value mb-value--neu">48%</p>
+            </div>
+            <div class="mb-item">
+              <p class="mb-label">POS</p>
+              <p class="mb-value mb-value--pos">20%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incidentes Activos -->
+        <div class="metric-card">
+          <p class="metric-card-label">INCIDENTES ACTIVOS</p>
+          <div class="incidents-header">
+            <span class="incidents-count">{{ activeIncidents.length }}</span>
+            <span class="incidents-sub">Requieren acción inmediata</span>
+          </div>
+          <div class="incidents-list">
+            @for (inc of activeIncidents; track inc.title) {
+              <div class="incident-row" (click)="goToSection('incidentes')">
+                <span class="incident-row-text">{{ inc.title }}</span>
+                <span class="material-symbols-outlined incident-row-arrow">chevron_right</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Fuente Más Activa -->
+        <div class="metric-card metric-card--source">
+          <p class="metric-card-label">FUENTE MÁS ACTIVA</p>
+
+          <div class="source-selector" (click)="toggleSourceDropdown($event)">
+            <div class="source-header">
+              <span class="material-symbols-outlined source-icon">{{ topSource.icon }}</span>
+              <span class="source-name">{{ topSource.name }}</span>
+            </div>
+            <span class="material-symbols-outlined source-chevron">
+      {{ showSourceDropdown ? 'expand_less' : 'expand_more' }}
+    </span>
+          </div>
+
+          @if (showSourceDropdown) {
+            <div class="source-dropdown" (click)="$event.stopPropagation()">
+              @for (s of sources; track s.name; let i = $index) {
+                <div class="source-dropdown-item" [class.source-dropdown-item--active]="i === selectedSourceIndex"
+                     (click)="selectSource(i, $event)">
+                  <span class="material-symbols-outlined">{{ s.icon }}</span>
+                  <span>{{ s.name }}</span>
+                  <span class="source-dropdown-index">{{ s.index }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <p class="source-sub-label">SENTIMENT INDEX</p>
+          <div class="source-bar">
+            <div class="source-bar-fill" [style.width.%]="topSource.index"></div>
+          </div>
+          <p class="source-desc">{{ topSource.desc }}</p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</div>

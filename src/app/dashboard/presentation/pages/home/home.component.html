@@ -134,7 +134,9 @@
           <!-- Card bloqueada / agregar -->
           <div class="workspace-card workspace-card--locked">
             <div class="lock-icon-wrapper">
-              <span class="material-symbols-outlined lock-icon">lock</span>
+              <span class="material-symbols-outlined lock-icon">
+              {{ canAddWorkspace ? 'add' : 'lock' }}
+              </span>
             </div>
             <h2 class="lock-title">Crear nuevo workspace</h2>
             @if (canAddWorkspace) {
@@ -146,6 +148,103 @@
             }
           </div>
 
+          @if (showCreateWorkspace) {
+            <div class="create-ws-overlay" (click)="closeCreateWorkspace()">
+              <div class="create-ws-modal" (click)="$event.stopPropagation()">
+
+                <div class="create-ws-header">
+                  <div>
+                    <h2 class="create-ws-title">Crear Workspace</h2>
+                    <p class="create-ws-sub">Configura tu nueva marca para monitorear</p>
+                  </div>
+                  <button class="create-ws-close" (click)="closeCreateWorkspace()">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <div class="create-ws-section">
+                  <label class="create-ws-label">Nombre del Workspace</label>
+                  <input [(ngModel)]="newWsName" class="create-ws-input"
+                         placeholder="Ej: Netflix, Bembos, Mi Empresa...">
+                </div>
+
+                <div class="create-ws-section">
+                  <label class="create-ws-label">Logo de la Marca (Opcional)</label>
+                  <div class="logo-upload-area" (click)="logoInput.click()">
+                    @if (newWsLogoPreview) {
+                      <img [src]="newWsLogoPreview" class="logo-preview">
+                    } @else {
+                      <span class="material-symbols-outlined logo-upload-icon">add_photo_alternate</span>
+                      <p class="logo-upload-text">Haz clic para subir un logo</p>
+                    }
+                  </div>
+                  <input #logoInput type="file" accept="image/*" style="display:none"
+                         (change)="onLogoSelected($event)">
+                </div>
+
+                <div class="create-ws-section">
+                  <label class="create-ws-label">Keywords de Inclusión</label>
+                  <div class="tags-input-wrapper">
+                    <div class="tags-row">
+                      @for (tag of newWsInclusionTags; track tag) {
+                        <span class="tag tag--include">
+                {{ tag }}
+                          <span class="tag-remove" (click)="removeInclusionTag(tag)">×</span>
+              </span>
+                      }
+                    </div>
+                    <input class="tags-input" [(ngModel)]="newInclusionInput"
+                           placeholder="Escribe y presiona Enter"
+                           (keydown.enter)="addInclusionTag()">
+                  </div>
+                </div>
+
+                <div class="create-ws-section">
+                  <label class="create-ws-label">Keywords de Exclusión</label>
+                  <div class="tags-input-wrapper">
+                    <div class="tags-row">
+                      @for (tag of newWsExclusionTags; track tag) {
+                        <span class="tag tag--exclude">
+                {{ tag }}
+                          <span class="tag-remove" (click)="removeExclusionTag(tag)">×</span>
+              </span>
+                      }
+                    </div>
+                    <input class="tags-input" [(ngModel)]="newExclusionInput"
+                           placeholder="Escribe y presiona Enter"
+                           (keydown.enter)="addExclusionTag()">
+                  </div>
+                </div>
+
+                <div class="create-ws-section">
+                  <label class="create-ws-label">Canales de Análisis</label>
+                  <p class="create-ws-channels-sub">Plan {{ roleLabel }} — Solo YouTube disponible</p>
+                  <div class="channels-grid">
+                    @for (ch of channels; track ch.name) {
+                      <div class="channel-item" [class.channel-item--active]="ch.active"
+                           [class.channel-item--locked]="ch.locked">
+                        <img [src]="ch.logo" [alt]="ch.name" class="channel-logo">
+                        <span class="channel-name">{{ ch.name }}</span>
+                        @if (ch.locked) {
+                          <span class="material-symbols-outlined channel-lock">lock</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <div class="create-ws-footer">
+                  <button class="btn-cancel" (click)="closeCreateWorkspace()">Cancelar</button>
+                  <button class="btn-create" (click)="createWorkspace()"
+                          [disabled]="!newWsName.trim()">
+                    <span class="material-symbols-outlined">add</span>
+                    Crear Workspace
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          }
         </div>
       }
       <p class="footer-text">BRANDRADAR 2026</p>
