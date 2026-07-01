@@ -1,0 +1,36 @@
+<aside class="dash-sidebar">
+  <div class="dash-sidebar-top">
+    <div class="dash-logo-row">
+      <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
+      <span class="dash-plan-badge">{{ planLabel }}</span>
+    </div>
+  </div>
+
+  <div class="dash-brand-card" (click)="goHome()">
+    <p class="dash-brand-label">MARCA ACTIVA</p>
+    <div class="dash-brand-row">
+      <span class="dash-brand-name">{{ workspaceName }}</span>
+      <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
+    </div>
+  </div>
+
+  <nav class="dash-nav">
+    @for (item of navItems; track item.key) {
+      <div class="dash-nav-item" [class.dash-nav-item--active]="activeSection === item.key"
+           (click)="goToSection(item.route)">
+        <span class="material-symbols-outlined">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        @if (item.badge) {
+          <span class="dash-nav-badge">{{ item.badge }}</span>
+        }
+      </div>
+    }
+  </nav>
+
+  <div class="dash-sidebar-bottom">
+    <button (click)="goHome()" class="dash-btn-exit">
+      <span class="material-symbols-outlined">logout</span>
+      Salir del Workspace
+    </button>
+  </div>
+</aside>

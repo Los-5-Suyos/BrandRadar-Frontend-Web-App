@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-incidentes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './incidents.component.html',
   styleUrl: './incidents.component.css'
 })
@@ -171,5 +172,30 @@ export class IncidentsComponent {
 
   goHome() {
     this.router.navigate(['/home']);
+  }
+
+  showHistorialModal = false;
+  showNuevaAlertaModal = false;
+  nuevaAlertaTitulo = '';
+  nuevaAlertaNivel = 'medio';
+  nuevaAlertaDesc = '';
+  nuevaAlertaGuardada = false;
+
+  historialResueltos = [
+    { fecha: '12 Oct 2024', titulo: 'Queja masiva por tiempo de entrega', nivel: 'ALTO', nivelColor: '#ffb4ab', score: '0.87', resolucion: 'Comunicado enviado + refuerzo de delivery en Miraflores', duracion: '3 días' },
+    { fecha: '28 Sep 2024', titulo: 'Comentarios negativos sobre nuevo menú', nivel: 'MEDIO', nivelColor: '#f97316', score: '0.62', resolucion: 'Se respondieron 18 comentarios y se ajustó la descripción del producto', duracion: '1 día' },
+    { fecha: '10 Sep 2024', titulo: 'Pico de menciones negativas en Google Maps', nivel: 'ALTO', nivelColor: '#ffb4ab', score: '0.91', resolucion: 'Gestión interna con local afectado + mejora de rating posterior', duracion: '5 días' },
+  ];
+
+  guardarNuevaAlerta() {
+    if (!this.nuevaAlertaTitulo.trim()) return;
+    this.nuevaAlertaGuardada = true;
+    setTimeout(() => {
+      this.showNuevaAlertaModal = false;
+      this.nuevaAlertaGuardada = false;
+      this.nuevaAlertaTitulo = '';
+      this.nuevaAlertaDesc = '';
+      this.nuevaAlertaNivel = 'medio';
+    }, 1500);
   }
 }

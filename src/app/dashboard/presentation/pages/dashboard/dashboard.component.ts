@@ -2,11 +2,12 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -165,6 +166,15 @@ export class DashboardComponent implements OnInit {
     { word: 'cupones', count: 98, pct: 30 },
   ];
 
+  showAlertsModal = false;
+
+  alertPreferences = [
+    { key: 'sentiment_drop', label: 'Caída de SentimentScore', desc: 'Cuando baje más de 10 puntos en 24h', enabled: true },
+    { key: 'spike_negativo', label: 'Pico de menciones negativas', desc: 'Cuando supere el 50% de negativas', enabled: true },
+    { key: 'keyword_critica', label: 'Keyword crítica detectada', desc: 'Al aparecer palabras de riesgo configuradas', enabled: true },
+    { key: 'incidente_nuevo', label: 'Nuevo incidente detectado', desc: 'Cuando la IA clasifica un patrón como incidente', enabled: false },
+    { key: 'volumen_alto', label: 'Volumen inusual de menciones', desc: 'Cuando se supera el promedio diario en 3x', enabled: false },
+  ];
   goToSection(section: string) {
     const routes: { [key: string]: string } = {
       'menciones': 'mentions',

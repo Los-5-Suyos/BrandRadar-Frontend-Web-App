@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-mentions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './mentions.component.html',
   styleUrl: './mentions.component.css'
 })
@@ -190,7 +191,13 @@ export class MentionsComponent {
     });
     return result;
   }
+  showExportModal = false;
 
+  exportar(formato: string) {
+    // TODO: conectar con backend
+    console.log(`Exportando en formato: ${formato}`);
+    this.showExportModal = false;
+  }
   openModal(m: any) {
     this.selectedMencion = m;
     this.showModal = true;

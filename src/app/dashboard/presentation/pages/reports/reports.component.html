@@ -1,75 +1,36 @@
 <div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
 
-  <!-- Sidebar -->
-  <aside class="dash-sidebar">
-    <div class="dash-sidebar-top">
-      <div class="dash-logo-row">
-        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
-        <span class="dash-plan-badge">{{ planLabel }}</span>
-      </div>
-    </div>
-    <div class="dash-brand-card" (click)="goHome()">
-      <p class="dash-brand-label">MARCA ACTIVA</p>
-      <div class="dash-brand-row">
-        <span class="dash-brand-name">{{ workspaceName }}</span>
-        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
-      </div>
-    </div>
-    <nav class="dash-nav">
-      <div class="dash-nav-item" (click)="goToSection('dashboard')">
-        <span class="material-symbols-outlined">grid_view</span>
-        <span>Dashboard</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('mentions')">
-        <span class="material-symbols-outlined">forum</span>
-        <span>Menciones</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('incidents')">
-        <span class="material-symbols-outlined">warning</span>
-        <span>Incidentes</span>
-      </div>
-      <div class="dash-nav-item dash-nav-item--active">
-        <span class="material-symbols-outlined">description</span>
-        <span>Reportes</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('configuration')">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Configuración de Workspace</span>
-      </div>
-    </nav>
-    <div class="dash-sidebar-bottom">
-      <button (click)="goHome()" class="dash-btn-exit">
-        <span class="material-symbols-outlined">logout</span>
-        Salir del Workspace
-      </button>
-    </div>
-  </aside>
+  <app-sidebar activeSection="reports"></app-sidebar>
 
-  <!-- Main -->
   <main class="rep-main">
     <header class="rep-topbar">
       <div>
         <h1 class="rep-title">Centro de Reportes Analíticos</h1>
         <p class="rep-subtitle">Genera informes estratégicos y exporta datos de sentimiento para {{ workspaceName }}</p>
       </div>
-      <button class="btn-nuevo-reporte" (click)="nuevoReportePersonalizado()">
-        <span class="material-symbols-outlined">add</span>
-        Nuevo Reporte Personalizado
-      </button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-nuevo-reporte">
+          <span class="material-symbols-outlined">share</span>
+          Compartir
+        </button>
+        <button class="btn-nuevo-reporte" (click)="abrirProgramar()">
+          <span class="material-symbols-outlined">schedule</span>
+          Programar Envío
+        </button>
+      </div>
     </header>
 
     <section class="rep-content">
 
       <div class="rep-layout">
 
-        <!-- Columna izquierda: Configuración -->
+        <!-- Configuración -->
         <div class="rep-config-card">
           <div class="rep-config-header">
             <span class="material-symbols-outlined rep-config-icon">tune</span>
             <h3 class="rep-config-title">Configuración</h3>
           </div>
 
-          <!-- Rango de tiempo -->
           <div class="rep-field">
             <p class="rep-field-label">RANGO DE TIEMPO</p>
             <div class="rep-select-wrapper">
@@ -82,7 +43,6 @@
             </div>
           </div>
 
-          <!-- Métricas a incluir -->
           <div class="rep-field">
             <p class="rep-field-label">MÉTRICAS A INCLUIR</p>
             <div class="rep-checkbox-grid">
@@ -100,7 +60,6 @@
             </div>
           </div>
 
-          <!-- Programación de reportes -->
           <div class="rep-field">
             <p class="rep-field-label">PROGRAMACIÓN DE REPORTES</p>
             <div class="rep-toggle-group">
@@ -113,7 +72,6 @@
             </div>
           </div>
 
-          <!-- Formato de exportación -->
           <div class="rep-field">
             <p class="rep-field-label">FORMATO DE EXPORTACIÓN</p>
             <div class="rep-toggle-group">
@@ -135,7 +93,7 @@
           </button>
         </div>
 
-        <!-- Columna derecha: Resumen Ejecutivo -->
+        <!-- Resumen Ejecutivo -->
         <div class="rep-preview-card">
           <div class="rep-preview-header">
             <div>
@@ -148,7 +106,6 @@
             </span>
           </div>
 
-          <!-- Métricas resumen -->
           <div class="rep-metrics-row">
             @for (met of metricasResumen; track met.label) {
               <div class="rep-metric-card">
@@ -164,7 +121,6 @@
             }
           </div>
 
-          <!-- Evolución de sentimiento -->
           <div class="rep-chart-section">
             <div class="rep-chart-header">
               <p class="rep-chart-title">EVOLUCIÓN DE SENTIMIENTO DIARIA</p>
@@ -191,20 +147,26 @@
             </div>
           </div>
 
-          <!-- Top keywords -->
           <div class="rep-keywords-section">
-            <p class="rep-chart-title">TOP KEYWORDS POR SENTIMIENTO</p>
-            <div class="rep-keywords-row">
-              @for (kw of topKeywords; track kw.texto) {
-                <span class="rep-kw-tag" [style.background]="kw.color + '1a'" [style.border-color]="kw.color + '40'" [style.color]="kw.color">
-                  {{ kw.texto }} <strong>{{ kw.valor }}</strong>
-                </span>
+            <p class="rep-chart-title">CUENTAS MÁS CRÍTICAS</p>
+            <div class="rep-cuentas-list">
+              @for (cuenta of cuentasCriticas; track cuenta.handle) {
+                <div class="rep-cuenta-item">
+                  <div class="rep-cuenta-avatar" [style.background]="cuenta.color">{{ cuenta.initials }}</div>
+                  <div class="rep-cuenta-info">
+                    <p class="rep-cuenta-nombre">{{ cuenta.nombre }}</p>
+                    <p class="rep-cuenta-handle">{{ cuenta.handle }} · {{ cuenta.plataforma }}</p>
+                  </div>
+                  <div class="rep-cuenta-stats">
+                    <span class="rep-cuenta-menciones">{{ cuenta.menciones }} menciones</span>
+                    <span class="rep-cuenta-score" [style.color]="cuenta.scoreColor">{{ cuenta.score }} NEG</span>
+                  </div>
+                </div>
               }
             </div>
           </div>
 
         </div>
-
       </div>
 
       <!-- Reportes recientes -->
@@ -226,7 +188,7 @@
             <th>DESTINATARIOS</th>
             <th>TAMAÑO</th>
             <th>ESTADO</th>
-            <th class="rep-th-accion">ACCIÓN</th>
+            <th class="rep-th-accion">ACCIONES</th>
           </tr>
           </thead>
           <tbody>
@@ -249,13 +211,20 @@
                   </span>
                 </td>
                 <td class="rep-th-accion">
-                  <button class="rep-btn-descargar" (click)="descargarReporte(r)">
-                    <span class="material-symbols-outlined">download</span>
-                  </button>
+                  <div style="display:flex; gap:6px; justify-content:flex-end;">
+                    <button class="rep-btn-accion rep-btn-accion--ver" (click)="verReporte(r)">
+                      <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                    <button class="rep-btn-accion rep-btn-accion--download" (click)="descargarReporte(r)">
+                      <span class="material-symbols-outlined">download</span>
+                    </button>
+                    <button class="rep-btn-accion rep-btn-accion--delete" (click)="eliminarReporte(r)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             }
-
             @if (reportesRecientes.length === 0) {
               <tr>
                 <td colspan="7" class="rep-tabla-vacia">Aún no has generado ningún reporte.</td>
@@ -267,4 +236,114 @@
 
     </section>
   </main>
+
+  <!-- Modal fuera del main -->
+  @if (showProgramarEnvio) {
+    <div class="modal-overlay" (click)="cerrarProgramar()">
+      <div class="rep-modal" (click)="$event.stopPropagation()">
+
+        <div class="rep-modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="color:#a78bfa; font-size:22px;">schedule_send</span>
+            <h3 class="rep-modal-title">Programar Envío Automático</h3>
+          </div>
+          <button class="rep-modal-close" (click)="cerrarProgramar()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="rep-modal-body">
+
+          <div class="rep-field">
+            <p class="rep-field-label">DESTINATARIO(S)</p>
+            <input [(ngModel)]="programarEmail" class="rep-modal-input"
+                   placeholder="correo@empresa.com, otro@empresa.com">
+            <p style="font-family:'DM Sans',sans-serif; font-size:10px; color:#47464b; margin-top:4px;">
+              Separa múltiples correos con coma
+            </p>
+          </div>
+
+          <div class="rep-field">
+            <p class="rep-field-label">FRECUENCIA</p>
+            <div class="rep-toggle-group">
+              @for (f of frecuenciasEnvio; track f.key) {
+                <button class="rep-toggle-btn" [class.rep-toggle-btn--active]="programarFrecuencia === f.key"
+                        (click)="programarFrecuencia = f.key">
+                  {{ f.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (programarFrecuencia === 'semanal') {
+            <div class="rep-field">
+              <p class="rep-field-label">DÍA DE ENVÍO</p>
+              <div class="rep-select-wrapper">
+                <select class="rep-select" [(ngModel)]="programarDia">
+                  @for (d of diasSemana; track d.key) {
+                    <option [value]="d.key">{{ d.label }}</option>
+                  }
+                </select>
+                <span class="material-symbols-outlined rep-select-chevron">expand_more</span>
+              </div>
+            </div>
+          }
+
+          @if (programarFrecuencia === 'mensual') {
+            <div class="rep-field">
+              <p class="rep-field-label">DÍA DEL MES</p>
+              <div class="rep-select-wrapper">
+                <select class="rep-select" [(ngModel)]="programarDia">
+                  <option value="1">Día 1</option>
+                  <option value="15">Día 15</option>
+                  <option value="ultimo">Último día</option>
+                </select>
+                <span class="material-symbols-outlined rep-select-chevron">expand_more</span>
+              </div>
+            </div>
+          }
+
+          <div class="rep-field">
+            <p class="rep-field-label">FORMATO</p>
+            <div class="rep-toggle-group">
+              @for (fmt of formatos; track fmt.key) {
+                <button class="rep-toggle-btn" [class.rep-toggle-btn--active]="programarFormato === fmt.key"
+                        (click)="programarFormato = fmt.key">
+                  {{ fmt.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="rep-programar-preview">
+            <span class="material-symbols-outlined" style="font-size:16px; color:#63f7ff;">info</span>
+            <p>
+              Se enviará un reporte en
+              <strong style="color:#d4e4fa;">{{ programarFormato.toUpperCase() }}</strong>
+              @if (programarFrecuencia === 'diario') { <span>cada día</span> }
+              @if (programarFrecuencia === 'semanal') { <span>cada <strong style="color:#d4e4fa;">{{ programarDia }}</strong></span> }
+              @if (programarFrecuencia === 'mensual') { <span>el <strong style="color:#d4e4fa;">día {{ programarDia }}</strong> de cada mes</span> }
+              a <strong style="color:#d4e4fa;">{{ programarEmail || '...' }}</strong>
+            </p>
+          </div>
+
+        </div>
+
+        <div class="rep-modal-footer">
+          <button class="rep-btn-cancelar" (click)="cerrarProgramar()">Cancelar</button>
+          <button class="btn-generar-reporte" style="margin-top:0; flex:1;"
+                  [disabled]="!programarEmail.trim() || programacionGuardada"
+                  (click)="guardarProgramacion()">
+            @if (programacionGuardada) {
+              <span>✓ PROGRAMADO</span>
+            } @else {
+              <span>GUARDAR PROGRAMACIÓN</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>

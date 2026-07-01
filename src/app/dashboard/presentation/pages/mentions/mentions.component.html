@@ -1,52 +1,7 @@
 <div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
 
-  <!-- Sidebar -->
-  <aside class="dash-sidebar">
-    <div class="dash-sidebar-top">
-      <div class="dash-logo-row">
-        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
-        <span class="dash-plan-badge">{{ planLabel }}</span>
-      </div>
-    </div>
-    <div class="dash-brand-card" (click)="goHome()">
-      <p class="dash-brand-label">MARCA ACTIVA</p>
-      <div class="dash-brand-row">
-        <span class="dash-brand-name">{{ workspaceName }}</span>
-        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
-      </div>
-    </div>
-    <nav class="dash-nav">
-      <div class="dash-nav-item" (click)="goToSection('dashboard')">
-        <span class="material-symbols-outlined">grid_view</span>
-        <span>Dashboard</span>
-      </div>
-      <div class="dash-nav-item dash-nav-item--active">
-        <span class="material-symbols-outlined">forum</span>
-        <span>Menciones</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('incidents')">
-        <span class="material-symbols-outlined">warning</span>
-        <span>Incidentes</span>
-        <span class="dash-nav-badge">2</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('reports')">
-        <span class="material-symbols-outlined">description</span>
-        <span>Reportes</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('configuration')">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Configuración de Workspace</span>
-      </div>
-    </nav>
-    <div class="dash-sidebar-bottom">
-      <button (click)="goHome()" class="dash-btn-exit">
-        <span class="material-symbols-outlined">logout</span>
-        Salir del Workspace
-      </button>
-    </div>
-  </aside>
+  <app-sidebar activeSection="mentions"></app-sidebar>
 
-  <!-- Main -->
   <main class="men-main">
     <header class="men-topbar">
       <div>
@@ -54,20 +9,15 @@
         <p class="men-subtitle">{{ workspaceName }} · {{ filteredMenciones.length }} menciones · <span style="color:#fface8;">2 filtros activos</span></p>
       </div>
       <div class="men-topbar-actions">
-        <button class="btn-export">
+        <button class="btn-export" (click)="showExportModal = true">
           <span class="material-symbols-outlined">download</span>
-          Exportar CSV
-        </button>
-        <button class="btn-export">
-          <span class="material-symbols-outlined">picture_as_pdf</span>
-          PDF
+          Exportar
         </button>
       </div>
     </header>
+
     <!-- Metric Cards -->
     <div class="men-metrics">
-
-      <!-- Total Menciones -->
       <div class="men-metric-card">
         <div class="men-metric-header">
           <p class="men-metric-label">TOTAL MENCIONES</p>
@@ -79,7 +29,6 @@
         </div>
       </div>
 
-      <!-- Estado Sentimiento -->
       <div class="men-metric-card">
         <div class="men-metric-header">
           <p class="men-metric-label">ESTADO SENTIMIENTO</p>
@@ -95,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Fuentes Críticas -->
       <div class="men-metric-card">
         <div class="men-metric-header">
           <p class="men-metric-label">FUENTES CRÍTICAS</p>
@@ -120,7 +68,6 @@
         </div>
       </div>
 
-      <!-- Canal Más Activo -->
       <div class="men-metric-card">
         <div class="men-metric-header">
           <p class="men-metric-label">CANAL MÁS ACTIVO</p>
@@ -132,7 +79,6 @@
         <p class="men-canal-sub">423 menciones (34%)</p>
       </div>
 
-      <!-- Alerta Reciente -->
       <div class="men-metric-card men-metric-card--alert">
         <div class="men-metric-header">
           <p class="men-metric-label">ALERTA RECIENTE</p>
@@ -147,8 +93,8 @@
       </div>
     </div>
 
-
     <section class="men-content">
+
       <!-- Filtro de canales -->
       <div class="men-channels-filter">
         <button class="men-channel-btn" [class.men-channel-btn--active]="activeChannel === 'todos'"
@@ -168,6 +114,7 @@
           </button>
         }
       </div>
+
       <!-- Main Tabs -->
       <div class="men-main-tabs">
         <button class="men-main-tab" [class.men-main-tab--active]="activeMainTab === 'menciones'"
@@ -181,6 +128,7 @@
           Publicaciones Relacionadas
         </button>
       </div>
+
       <!-- TAB: Menciones -->
       @if (activeMainTab === 'menciones') {
         <div class="men-filters">
@@ -246,7 +194,6 @@
               }
             </div>
           </div>
-
           <div class="men-list">
             @for (p of publicaciones; track p.id) {
               <div class="pub-card">
@@ -286,7 +233,7 @@
     </section>
   </main>
 
-  <!-- Modal detalle -->
+  <!-- Modal detalle mención -->
   @if (showModal && selectedMencion) {
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-panel" (click)="$event.stopPropagation()">
@@ -363,6 +310,56 @@
           <button class="btn-incidente" (click)="goToSection('incidents'); closeModal()">
             <span class="material-symbols-outlined">warning</span>
             Crear Incidente
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Modal exportar -->
+  @if (showExportModal) {
+    <div class="export-overlay" (click)="showExportModal = false">
+      <div class="export-modal" (click)="$event.stopPropagation()">
+
+        <div class="export-modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="color:#63f7ff; font-size:20px;">download</span>
+            <h3 class="export-modal-title">Exportar Menciones</h3>
+          </div>
+          <button class="modal-close" (click)="showExportModal = false">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <p class="export-modal-sub">Selecciona el formato para exportar
+          <strong style="color:#d4e4fa;">{{ filteredMenciones.length }} menciones</strong>
+        </p>
+
+        <div class="export-options">
+          <button class="export-option" (click)="exportar('csv')">
+            <span class="material-symbols-outlined export-option-icon">table_chart</span>
+            <div>
+              <p class="export-option-title">CSV</p>
+              <p class="export-option-desc">Compatible con Excel y Google Sheets</p>
+            </div>
+            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
+          </button>
+          <button class="export-option" (click)="exportar('pdf')">
+            <span class="material-symbols-outlined export-option-icon" style="color:#ffb4ab;">picture_as_pdf</span>
+            <div>
+              <p class="export-option-title">PDF</p>
+              <p class="export-option-desc">Reporte visual con formato</p>
+            </div>
+            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
+          </button>
+          <button class="export-option" (click)="exportar('excel')">
+            <span class="material-symbols-outlined export-option-icon" style="color:#4ade80;">grid_on</span>
+            <div>
+              <p class="export-option-title">Excel</p>
+              <p class="export-option-desc">Archivo .xlsx con datos completos</p>
+            </div>
+            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
           </button>
         </div>
 

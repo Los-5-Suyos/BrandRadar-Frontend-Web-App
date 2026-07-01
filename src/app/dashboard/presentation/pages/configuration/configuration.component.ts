@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 
 interface OpcionIndustria {
   value: string;
@@ -19,7 +20,7 @@ interface CanalAnalisis {
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.css'
 })

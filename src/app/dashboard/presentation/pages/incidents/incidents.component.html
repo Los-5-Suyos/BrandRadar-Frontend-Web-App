@@ -1,52 +1,7 @@
 <div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
 
-  <!-- Sidebar -->
-  <aside class="dash-sidebar">
-    <div class="dash-sidebar-top">
-      <div class="dash-logo-row">
-        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
-        <span class="dash-plan-badge">{{ planLabel }}</span>
-      </div>
-    </div>
-    <div class="dash-brand-card" (click)="goHome()">
-      <p class="dash-brand-label">MARCA ACTIVA</p>
-      <div class="dash-brand-row">
-        <span class="dash-brand-name">{{ workspaceName }}</span>
-        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
-      </div>
-    </div>
-    <nav class="dash-nav">
-      <div class="dash-nav-item" (click)="goToSection('dashboard')">
-        <span class="material-symbols-outlined">grid_view</span>
-        <span>Dashboard</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('mentions')">
-        <span class="material-symbols-outlined">forum</span>
-        <span>Menciones</span>
-      </div>
-      <div class="dash-nav-item dash-nav-item--active">
-        <span class="material-symbols-outlined">warning</span>
-        <span>Incidentes</span>
-        <span class="dash-nav-badge">2</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('reports')">
-        <span class="material-symbols-outlined">description</span>
-        <span>Reportes</span>
-      </div>
-      <div class="dash-nav-item" (click)="goToSection('configuration')">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Configuración de Workspace</span>
-      </div>
-    </nav>
-    <div class="dash-sidebar-bottom">
-      <button (click)="goHome()" class="dash-btn-exit">
-        <span class="material-symbols-outlined">logout</span>
-        Salir del Workspace
-      </button>
-    </div>
-  </aside>
+  <app-sidebar activeSection="incidentes"></app-sidebar>
 
-  <!-- Main -->
   <main class="inc-main">
     <header class="inc-topbar">
       <div>
@@ -54,11 +9,11 @@
         <p class="inc-subtitle">{{ workspaceName }} | CENTRO DE CONTROL</p>
       </div>
       <div class="inc-topbar-actions">
-        <button class="btn-historial">
+        <button class="btn-historial" (click)="showHistorialModal = true">
           <span class="material-symbols-outlined">history</span>
           Historial
         </button>
-        <button class="btn-nueva-alerta">
+        <button class="btn-nueva-alerta" (click)="showNuevaAlertaModal = true">
           <span class="material-symbols-outlined">add_alert</span>
           Nueva Alerta
         </button>
@@ -68,10 +23,8 @@
     <section class="inc-content">
       <div class="inc-layout">
 
-        <!-- Columna izquierda: lista de incidentes -->
+        <!-- Columna izquierda -->
         <div class="inc-left">
-
-          <!-- Tabs de nivel -->
           <div class="inc-tabs">
             @for (tab of tabs; track tab.key) {
               <button class="inc-tab" [class.inc-tab--active]="activeTab === tab.key"
@@ -84,7 +37,6 @@
             }
           </div>
 
-          <!-- Lista -->
           <div class="inc-list">
             @for (inc of filteredIncidentes; track inc.id) {
               <div class="inc-card" [class.inc-card--selected]="selectedIncidente?.id === inc.id"
@@ -117,15 +69,12 @@
                   </span>
                 </div>
 
-                <!-- Canales afectados -->
                 <div class="inc-canales">
                   @for (canal of inc.canales; track canal.nombre) {
-                    <img [src]="canal.logo" [alt]="canal.nombre" class="inc-canal-icon"
-                         [title]="canal.nombre">
+                    <img [src]="canal.logo" [alt]="canal.nombre" class="inc-canal-icon" [title]="canal.nombre">
                   }
                 </div>
 
-                <!-- Keywords -->
                 <div class="inc-keywords">
                   @for (kw of inc.keywords; track kw) {
                     <span class="inc-kw-tag">{{ kw }}</span>
@@ -143,7 +92,6 @@
                     <span class="inc-progress-pct">{{ inc.progreso }}%</span>
                   </div>
                 }
-
               </div>
             }
 
@@ -156,7 +104,7 @@
           </div>
         </div>
 
-        <!-- Columna derecha: Crisis Response Engine -->
+        <!-- Columna derecha: Crisis Panel -->
         <div class="inc-right">
           <div class="crisis-panel">
 
@@ -170,7 +118,6 @@
               </div>
             </div>
 
-            <!-- Tabs IA -->
             <div class="crisis-tabs">
               <button class="crisis-tab" [class.crisis-tab--active]="activeCrisisTab === 'diagnostico'"
                       (click)="activeCrisisTab = 'diagnostico'">
@@ -191,7 +138,6 @@
 
             <div class="crisis-panel-body">
 
-              <!-- Tab: Diagnóstico -->
               @if (activeCrisisTab === 'diagnostico') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
@@ -209,7 +155,7 @@
                       <p class="crisis-metric-label">
                         SCORE PROMEDIO
                         <span class="crisis-metric-info material-symbols-outlined"
-                              title="Nivel promedio de negatividad de las menciones analizadas en este diagnóstico. Escala 0.00–1.00: 0.00 = neutral/positivo, 1.00 = totalmente negativo.">
+                              title="Nivel promedio de negatividad. Escala 0.00–1.00: 0.00 = neutral/positivo, 1.00 = totalmente negativo.">
                           info
                         </span>
                       </p>
@@ -244,7 +190,6 @@
                 </div>
               }
 
-              <!-- Tab: Acciones -->
               @if (activeCrisisTab === 'acciones') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
@@ -258,7 +203,6 @@
                       <h4 class="crisis-accion-titulo">{{ s.titulo }}</h4>
                       <p class="crisis-accion-desc">{{ s.desc }}</p>
 
-                      <!-- Card tipo: mensaje/borrador para copiar -->
                       @if (s.tipo === 'mensaje') {
                         <div class="crisis-borrador">
                           <p class="crisis-borrador-text">{{ s.borrador }}</p>
@@ -274,15 +218,9 @@
                           </a>
                         </div>
                       }
-
-                      <!-- Card tipo: acción simple, sin mensaje ni comentarios -->
-                      @if (s.tipo === 'accion') {
-                        <!-- solo descripción, sin acciones adicionales -->
-                      }
                     </div>
                   }
 
-                  <!-- Evitar durante esta crisis -->
                   @if (accionesEvitar.length > 0) {
                     <div class="crisis-evitar-box">
                       <p class="crisis-evitar-title">
@@ -299,7 +237,6 @@
                 </div>
               }
 
-              <!-- Tab: Historial IA -->
               @if (activeCrisisTab === 'historial') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
@@ -333,4 +270,117 @@
       </div>
     </section>
   </main>
+
+  <!-- Modal Historial — fuera del main -->
+  @if (showHistorialModal) {
+    <div class="inc-modal-overlay" (click)="showHistorialModal = false">
+      <div class="inc-modal" (click)="$event.stopPropagation()">
+
+        <div class="inc-modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="color:#63f7ff; font-size:20px;">history</span>
+            <h3 class="inc-modal-title">Historial de Incidentes</h3>
+          </div>
+          <button class="inc-modal-close" (click)="showHistorialModal = false">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <p class="inc-modal-sub">Incidentes resueltos y cerrados de tu workspace</p>
+
+        <div class="inc-historial-list">
+          @for (h of historialResueltos; track h.fecha) {
+            <div class="inc-historial-card">
+              <div class="inc-historial-top">
+                <span class="inc-badge" [style.color]="h.nivelColor"
+                      [style.background]="h.nivelColor + '1a'">{{ h.nivel }}</span>
+                <span class="inc-historial-fecha">{{ h.fecha }}</span>
+                <span class="inc-historial-duracion">{{ h.duracion }}</span>
+              </div>
+              <p class="inc-historial-titulo">{{ h.titulo }}</p>
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+                <span style="font-family:'DM Sans',sans-serif; font-size:9px; font-weight:800; color:#929096; letter-spacing:0.08em;">SCORE FINAL:</span>
+                <span style="font-family:'DM Sans',sans-serif; font-size:11px; font-weight:800;" [style.color]="h.nivelColor">{{ h.score }}</span>
+              </div>
+              <div class="inc-historial-resolucion">
+                <span class="material-symbols-outlined" style="font-size:14px; color:#4ade80;">check_circle</span>
+                <p>{{ h.resolucion }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Modal Nueva Alerta — fuera del main -->
+  @if (showNuevaAlertaModal) {
+    <div class="inc-modal-overlay" (click)="showNuevaAlertaModal = false">
+      <div class="inc-modal" (click)="$event.stopPropagation()">
+
+        <div class="inc-modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="color:#ffb4ab; font-size:20px;">add_alert</span>
+            <h3 class="inc-modal-title">Registrar Nueva Alerta</h3>
+          </div>
+          <button class="inc-modal-close" (click)="showNuevaAlertaModal = false">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <p class="inc-modal-sub">Registra manualmente un incidente que detectaste fuera del sistema</p>
+
+        <div class="inc-modal-body">
+
+          <div class="inc-modal-field">
+            <p class="inc-modal-label">TÍTULO DEL INCIDENTE</p>
+            <input [(ngModel)]="nuevaAlertaTitulo" class="inc-modal-input"
+                   placeholder="Ej: Quejas sobre tiempo de entrega en San Isidro...">
+          </div>
+
+          <div class="inc-modal-field">
+            <p class="inc-modal-label">NIVEL DE URGENCIA</p>
+            <div class="inc-nivel-group">
+              <button class="inc-nivel-btn" [class.inc-nivel-btn--alto]="nuevaAlertaNivel === 'alto'"
+                      (click)="nuevaAlertaNivel = 'alto'">
+                <span style="color:#ffb4ab;">●</span> Alto
+              </button>
+              <button class="inc-nivel-btn" [class.inc-nivel-btn--medio]="nuevaAlertaNivel === 'medio'"
+                      (click)="nuevaAlertaNivel = 'medio'">
+                <span style="color:#f97316;">●</span> Medio
+              </button>
+              <button class="inc-nivel-btn" [class.inc-nivel-btn--bajo]="nuevaAlertaNivel === 'bajo'"
+                      (click)="nuevaAlertaNivel = 'bajo'">
+                <span style="color:#63f7ff;">●</span> Bajo
+              </button>
+            </div>
+          </div>
+
+          <div class="inc-modal-field">
+            <p class="inc-modal-label">DESCRIPCIÓN</p>
+            <textarea [(ngModel)]="nuevaAlertaDesc" class="inc-modal-input inc-modal-textarea"
+                      placeholder="Describe brevemente qué está pasando, dónde lo detectaste y qué canales están afectados...">
+            </textarea>
+          </div>
+
+        </div>
+
+        <div class="inc-modal-footer">
+          <button class="inc-btn-cancelar" (click)="showNuevaAlertaModal = false">Cancelar</button>
+          <button class="inc-btn-crear"
+                  [disabled]="!nuevaAlertaTitulo.trim() || nuevaAlertaGuardada"
+                  (click)="guardarNuevaAlerta()">
+            @if (nuevaAlertaGuardada) {
+              <span>✓ REGISTRADO</span>
+            } @else {
+              <span>REGISTRAR ALERTA</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>
