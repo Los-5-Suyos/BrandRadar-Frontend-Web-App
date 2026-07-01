@@ -24,16 +24,16 @@
         <span class="material-symbols-outlined">forum</span>
         <span>Menciones</span>
       </div>
-      <div class="dash-nav-item" (click)="goToSection('incidentes')">
+      <div class="dash-nav-item" (click)="goToSection('incidents')">
         <span class="material-symbols-outlined">warning</span>
         <span>Incidentes</span>
         <span class="dash-nav-badge">2</span>
       </div>
-      <div class="dash-nav-item" (click)="goToSection('reportes')">
+      <div class="dash-nav-item" (click)="goToSection('reports')">
         <span class="material-symbols-outlined">description</span>
         <span>Reportes</span>
       </div>
-      <div class="dash-nav-item" (click)="goToSection('configuracion')">
+      <div class="dash-nav-item" (click)="goToSection('configuration')">
         <span class="material-symbols-outlined">settings</span>
         <span>Configuración de Workspace</span>
       </div>
@@ -360,7 +360,7 @@
 
         <div class="modal-actions">
           <button class="btn-ignorar" (click)="closeModal()">Ignorar</button>
-          <button class="btn-incidente" (click)="goToSection('incidentes'); closeModal()">
+          <button class="btn-incidente" (click)="goToSection('incidents'); closeModal()">
             <span class="material-symbols-outlined">warning</span>
             Crear Incidente
           </button>

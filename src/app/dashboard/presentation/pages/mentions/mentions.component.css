@@ -13,8 +13,9 @@
   padding: 20px 16px;
   z-index: 50;
 }
-@media (min-width: 768px) { .dash-sidebar { display: flex; } }
 
+@media (min-width: 768px) { .dash-sidebar { display: flex; } }
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .dash-sidebar-top { margin-bottom: 16px; padding: 4px 8px; }
 .dash-logo-row { display: flex; align-items: center; justify-content: space-between; }
 .dash-logo { height: 40px; object-fit: contain; filter: brightness(1.1); }

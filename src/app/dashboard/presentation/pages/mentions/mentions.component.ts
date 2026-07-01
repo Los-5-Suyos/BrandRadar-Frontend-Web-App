@@ -24,9 +24,9 @@ export class MentionsComponent {
 
   get planLabel(): string {
     const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
-    if (plan === 'PRO') return 'PRO';
-    if (plan === 'ENTERPRISE') return 'ENTERPRISE';
-    return 'BÁSICO';
+    if (plan === 'PRO') return 'Pro';
+    if (plan === 'ENTERPRISE') return 'Enterprises';
+    return 'Basic';
   }
 
   get userRole(): string {

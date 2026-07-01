@@ -15,7 +15,7 @@
 }
 
 @media (min-width: 768px) { .dash-sidebar { display: flex; } }
-
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .dash-sidebar-top { margin-bottom: 16px; padding: 4px 8px; }
 
 .dash-logo-row { display: flex; align-items: center; justify-content: space-between; }

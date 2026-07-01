@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
     const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
     if (plan === 'PRO') return 'Pro';
     if (plan === 'ENTERPRISE') return 'Enterprise';
-    return 'Básico';
+    return 'Basic';
   }
 
   get planChannelsDesc(): string {

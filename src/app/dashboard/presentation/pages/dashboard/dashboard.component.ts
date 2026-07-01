@@ -178,9 +178,9 @@ export class DashboardComponent implements OnInit {
 
   get planLabel(): string {
     const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
-    if (plan === 'PRO') return 'PRO';
-    if (plan === 'ENTERPRISE') return 'ENTERPRISE';
-    return 'BÁSICO';
+    if (plan === 'PRO') return 'Pro';
+    if (plan === 'ENTERPRISE') return 'Enterprise';
+    return 'Basic';
   }
 
   logout() {

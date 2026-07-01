@@ -1,0 +1,336 @@
+<div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-logo-row">
+        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
+        <span class="dash-plan-badge">{{ planLabel }}</span>
+      </div>
+    </div>
+    <div class="dash-brand-card" (click)="goHome()">
+      <p class="dash-brand-label">MARCA ACTIVA</p>
+      <div class="dash-brand-row">
+        <span class="dash-brand-name">{{ workspaceName }}</span>
+        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-item" (click)="goToSection('dashboard')">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('mentions')">
+        <span class="material-symbols-outlined">forum</span>
+        <span>Menciones</span>
+      </div>
+      <div class="dash-nav-item dash-nav-item--active">
+        <span class="material-symbols-outlined">warning</span>
+        <span>Incidentes</span>
+        <span class="dash-nav-badge">2</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('reports')">
+        <span class="material-symbols-outlined">description</span>
+        <span>Reportes</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('configuration')">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración de Workspace</span>
+      </div>
+    </nav>
+    <div class="dash-sidebar-bottom">
+      <button (click)="goHome()" class="dash-btn-exit">
+        <span class="material-symbols-outlined">logout</span>
+        Salir del Workspace
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="inc-main">
+    <header class="inc-topbar">
+      <div>
+        <h1 class="inc-title">Gestión de Incidentes</h1>
+        <p class="inc-subtitle">{{ workspaceName }} | CENTRO DE CONTROL</p>
+      </div>
+      <div class="inc-topbar-actions">
+        <button class="btn-historial">
+          <span class="material-symbols-outlined">history</span>
+          Historial
+        </button>
+        <button class="btn-nueva-alerta">
+          <span class="material-symbols-outlined">add_alert</span>
+          Nueva Alerta
+        </button>
+      </div>
+    </header>
+
+    <section class="inc-content">
+      <div class="inc-layout">
+
+        <!-- Columna izquierda: lista de incidentes -->
+        <div class="inc-left">
+
+          <!-- Tabs de nivel -->
+          <div class="inc-tabs">
+            @for (tab of tabs; track tab.key) {
+              <button class="inc-tab" [class.inc-tab--active]="activeTab === tab.key"
+                      (click)="activeTab = tab.key">
+                {{ tab.label }}
+                @if (tab.count > 0) {
+                  <span class="inc-tab-count" [style.background]="tab.color">{{ tab.count }}</span>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Lista -->
+          <div class="inc-list">
+            @for (inc of filteredIncidentes; track inc.id) {
+              <div class="inc-card" [class.inc-card--selected]="selectedIncidente?.id === inc.id"
+                   [style.border-left-color]="inc.nivelColor"
+                   (click)="selectIncidente(inc)">
+
+                <div class="inc-card-top">
+                  <div class="inc-badges">
+                    <span class="inc-badge" [style.background]="inc.nivelBg" [style.color]="inc.nivelColor">
+                      {{ inc.nivel }}
+                    </span>
+                    <span class="inc-badge" [style.background]="inc.estadoBg" [style.color]="inc.estadoColor">
+                      {{ inc.estado }}
+                    </span>
+                  </div>
+                  <span class="inc-tiempo">{{ inc.tiempo }}</span>
+                </div>
+
+                <h3 class="inc-card-title">{{ inc.titulo }}</h3>
+                <p class="inc-card-desc">{{ inc.descripcion }}</p>
+
+                <div class="inc-card-stats">
+                  <span class="inc-stat">
+                    <span class="material-symbols-outlined">forum</span>
+                    {{ inc.menciones }} menciones
+                  </span>
+                  <span class="inc-stat">
+                    <span class="material-symbols-outlined">trending_down</span>
+                    Score: {{ inc.score }}
+                  </span>
+                </div>
+
+                <!-- Canales afectados -->
+                <div class="inc-canales">
+                  @for (canal of inc.canales; track canal.nombre) {
+                    <img [src]="canal.logo" [alt]="canal.nombre" class="inc-canal-icon"
+                         [title]="canal.nombre">
+                  }
+                </div>
+
+                <!-- Keywords -->
+                <div class="inc-keywords">
+                  @for (kw of inc.keywords; track kw) {
+                    <span class="inc-kw-tag">{{ kw }}</span>
+                  }
+                </div>
+
+                @if (inc.progreso > 0) {
+                  <div class="inc-progress-row">
+                    <div class="inc-progress-bar">
+                      <div class="inc-progress-fill"
+                           [style.width.%]="inc.progreso"
+                           [style.background]="inc.nivelColor">
+                      </div>
+                    </div>
+                    <span class="inc-progress-pct">{{ inc.progreso }}%</span>
+                  </div>
+                }
+
+              </div>
+            }
+
+            @if (filteredIncidentes.length === 0) {
+              <div class="inc-empty">
+                <span class="material-symbols-outlined">check_circle</span>
+                <p>No hay incidentes en esta categoría</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Columna derecha: Crisis Response Engine -->
+        <div class="inc-right">
+          <div class="crisis-panel">
+
+            <div class="crisis-panel-header">
+              <div class="crisis-panel-title-row">
+                <span class="material-symbols-outlined crisis-icon">psychology</span>
+                <div>
+                  <h3 class="crisis-panel-title">Crisis Response Engine</h3>
+                  <span class="ai-badge">POWERED BY AI</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabs IA -->
+            <div class="crisis-tabs">
+              <button class="crisis-tab" [class.crisis-tab--active]="activeCrisisTab === 'diagnostico'"
+                      (click)="activeCrisisTab = 'diagnostico'">
+                <span class="material-symbols-outlined">analytics</span>
+                Diagnóstico
+              </button>
+              <button class="crisis-tab" [class.crisis-tab--active]="activeCrisisTab === 'acciones'"
+                      (click)="activeCrisisTab = 'acciones'">
+                <span class="material-symbols-outlined">bolt</span>
+                Acciones
+              </button>
+              <button class="crisis-tab" [class.crisis-tab--active]="activeCrisisTab === 'historial'"
+                      (click)="activeCrisisTab = 'historial'">
+                <span class="material-symbols-outlined">history</span>
+                Historial IA
+              </button>
+            </div>
+
+            <div class="crisis-panel-body">
+
+              <!-- Tab: Diagnóstico -->
+              @if (activeCrisisTab === 'diagnostico') {
+                <div class="crisis-section">
+                  <p class="crisis-section-label">
+                    <span class="material-symbols-outlined">radar</span>
+                    DIAGNÓSTICO AUTOMÁTICO
+                  </p>
+                  <p class="crisis-text">{{ aiDiagnostico.texto }}</p>
+
+                  <div class="crisis-metrics">
+                    <div class="crisis-metric">
+                      <p class="crisis-metric-label">MENCIONES ANALIZADAS</p>
+                      <p class="crisis-metric-value">{{ aiDiagnostico.mencionesAnalizadas }}</p>
+                    </div>
+                    <div class="crisis-metric">
+                      <p class="crisis-metric-label">
+                        SCORE PROMEDIO
+                        <span class="crisis-metric-info material-symbols-outlined"
+                              title="Nivel promedio de negatividad de las menciones analizadas en este diagnóstico. Escala 0.00–1.00: 0.00 = neutral/positivo, 1.00 = totalmente negativo.">
+                          info
+                        </span>
+                      </p>
+                      <p class="crisis-metric-value" style="color:#ffb4ab;">{{ aiDiagnostico.scorePromedio }}</p>
+                    </div>
+                    <div class="crisis-metric">
+                      <p class="crisis-metric-label">TENDENCIA</p>
+                      <p class="crisis-metric-value" style="color:#f97316;">{{ aiDiagnostico.tendencia }}</p>
+                    </div>
+                  </div>
+
+                  <p class="crisis-metrics-hint">
+                    <span class="material-symbols-outlined">help</span>
+                    El score promedio va de 0.00 (neutral/positivo) a 1.00 (totalmente negativo). Se calcula sobre las menciones NEG analizadas en las últimas 24h.
+                  </p>
+
+                  <p class="crisis-section-label" style="margin-top:16px;">
+                    <span class="material-symbols-outlined">tag</span>
+                    KEYWORDS CRÍTICAS
+                  </p>
+                  <div class="crisis-keywords">
+                    @for (kw of keywords; track kw.word) {
+                      <div class="crisis-kw-item">
+                        <span class="crisis-kw-word">{{ kw.word }}</span>
+                        <div class="crisis-kw-bar-wrapper">
+                          <div class="crisis-kw-bar" [style.width.%]="kw.pct" [style.background]="kw.color"></div>
+                        </div>
+                        <span class="crisis-kw-count">{{ kw.count }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Tab: Acciones -->
+              @if (activeCrisisTab === 'acciones') {
+                <div class="crisis-section">
+                  <p class="crisis-section-label">
+                    <span class="material-symbols-outlined">bolt</span>
+                    SUGERENCIAS DE ACCIÓN
+                  </p>
+
+                  @for (s of aiDiagnostico.sugerencias; track s.titulo; let i = $index) {
+                    <div class="crisis-accion-card">
+                      <span class="crisis-accion-urgencia" [style.color]="s.urgenciaColor">{{ s.urgencia }}</span>
+                      <h4 class="crisis-accion-titulo">{{ s.titulo }}</h4>
+                      <p class="crisis-accion-desc">{{ s.desc }}</p>
+
+                      <!-- Card tipo: mensaje/borrador para copiar -->
+                      @if (s.tipo === 'mensaje') {
+                        <div class="crisis-borrador">
+                          <p class="crisis-borrador-text">{{ s.borrador }}</p>
+                        </div>
+                        <div class="crisis-accion-btns">
+                          <button class="btn-copiar" (click)="copyText(s.borrador || '', i)">
+                            <span class="material-symbols-outlined">{{ copiedIndex === i ? 'check' : 'content_copy' }}</span>
+                            {{ copiedIndex === i ? '¡Copiado!' : 'Copiar mensaje' }}
+                          </button>
+                          <a [href]="s.plataformaUrl" target="_blank" class="btn-abrir-red">
+                            <span class="material-symbols-outlined">open_in_new</span>
+                            Abrir {{ s.plataforma }}
+                          </a>
+                        </div>
+                      }
+
+                      <!-- Card tipo: acción simple, sin mensaje ni comentarios -->
+                      @if (s.tipo === 'accion') {
+                        <!-- solo descripción, sin acciones adicionales -->
+                      }
+                    </div>
+                  }
+
+                  <!-- Evitar durante esta crisis -->
+                  @if (accionesEvitar.length > 0) {
+                    <div class="crisis-evitar-box">
+                      <p class="crisis-evitar-title">
+                        <span class="material-symbols-outlined">block</span>
+                        EVITAR DURANTE ESTA CRISIS
+                      </p>
+                      <div class="crisis-evitar-list">
+                        @for (item of accionesEvitar; track item) {
+                          <span class="crisis-evitar-item">• {{ item }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Tab: Historial IA -->
+              @if (activeCrisisTab === 'historial') {
+                <div class="crisis-section">
+                  <p class="crisis-section-label">
+                    <span class="material-symbols-outlined">history</span>
+                    ANÁLISIS ANTERIORES
+                  </p>
+                  @for (h of historialIA; track h.fecha) {
+                    <div class="historial-item">
+                      <div class="historial-item-header">
+                        <span class="historial-fecha">{{ h.fecha }}</span>
+                        <span class="historial-score" [style.color]="h.color">{{ h.score }}</span>
+                      </div>
+                      <p class="historial-texto">{{ h.resumen }}</p>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+
+            <div class="crisis-panel-footer">
+              <button class="btn-actualizar" (click)="actualizarIA()">
+                <span class="material-symbols-outlined">refresh</span>
+                ACTUALIZAR ANÁLISIS
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</div>

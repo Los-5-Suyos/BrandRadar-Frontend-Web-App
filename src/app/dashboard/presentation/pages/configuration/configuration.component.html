@@ -1,0 +1,223 @@
+<div class="dark flex h-screen text-on-surface" style="overflow:hidden; background:#051424;">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-logo-row">
+        <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
+        <span class="dash-plan-badge">{{ planLabel }}</span>
+      </div>
+    </div>
+    <div class="dash-brand-card" (click)="goHome()">
+      <p class="dash-brand-label">MARCA ACTIVA</p>
+      <div class="dash-brand-row">
+        <span class="dash-brand-name">{{ workspaceName }}</span>
+        <span class="material-symbols-outlined dash-brand-chevron">unfold_more</span>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-item" (click)="goToSection('dashboard')">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('mentions')">
+        <span class="material-symbols-outlined">forum</span>
+        <span>Menciones</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('incidents')">
+        <span class="material-symbols-outlined">warning</span>
+        <span>Incidentes</span>
+      </div>
+      <div class="dash-nav-item" (click)="goToSection('reports')">
+        <span class="material-symbols-outlined">description</span>
+        <span>Reportes</span>
+      </div>
+      <div class="dash-nav-item dash-nav-item--active">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración de Workspace</span>
+      </div>
+    </nav>
+    <div class="dash-sidebar-bottom">
+      <button (click)="goHome()" class="dash-btn-exit">
+        <span class="material-symbols-outlined">logout</span>
+        Salir del Workspace
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="set-main">
+    <header class="set-topbar">
+      <div>
+        <h1 class="set-title">Configuración de Workspace</h1>
+        <p class="set-subtitle">{{ workspaceName }} | AJUSTES Y PREFERENCIAS</p>
+      </div>
+      <button class="btn-guardar" [disabled]="guardando" (click)="guardarCambios()">
+        <span class="material-symbols-outlined">{{ guardando ? 'hourglass_empty' : 'save' }}</span>
+        {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </header>
+
+    <section class="set-content">
+
+      <!-- Logo de la marca -->
+      <div class="set-card">
+        <div class="set-card-header">
+          <span class="material-symbols-outlined set-card-icon">image</span>
+          <h3 class="set-card-title">Cambiar Logo de la Marca</h3>
+        </div>
+
+        <div class="set-logo-row">
+          <div class="set-logo-preview">
+            @if (logoUrl) {
+              <img [src]="logoUrl" alt="Logo de la marca">
+            } @else {
+              <span class="material-symbols-outlined">storefront</span>
+            }
+          </div>
+          <div class="set-logo-actions">
+            <label class="btn-subir-logo">
+              <span class="material-symbols-outlined">upload</span>
+              Subir nuevo logo
+              <input type="file" accept="image/*" hidden (change)="onLogoSeleccionado($event)">
+            </label>
+            @if (logoUrl) {
+              <button class="btn-quitar-logo" (click)="quitarLogo()">Quitar logo</button>
+            }
+            <p class="set-logo-hint">PNG o JPG, fondo transparente recomendado. Máx. 2MB.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información general -->
+      <div class="set-card">
+        <div class="set-card-header">
+          <span class="material-symbols-outlined set-card-icon">info</span>
+          <h3 class="set-card-title">Información General</h3>
+        </div>
+
+        <div class="set-fields-grid">
+          <div class="set-field">
+            <p class="set-field-label">NOMBRE DE LA EMPRESA</p>
+            <input class="set-input" type="text" [(ngModel)]="nombreEmpresa" placeholder="Ej. Bembos S.A.C.">
+          </div>
+          <div class="set-field">
+            <p class="set-field-label">NOMBRE DEL WORKSPACE</p>
+            <input class="set-input" type="text" [(ngModel)]="nombreWorkspace" placeholder="Ej. Bembos Express">
+          </div>
+          <div class="set-field set-field--full">
+            <p class="set-field-label">INDUSTRIA / SECTOR</p>
+            <div class="set-select-wrapper">
+              <select class="set-select" [(ngModel)]="industriaSeleccionada">
+                @for (op of industrias; track op.value) {
+                  <option [value]="op.value">{{ op.label }}</option>
+                }
+              </select>
+              <span class="material-symbols-outlined set-select-chevron">expand_more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reglas de monitoreo -->
+      <div class="set-card">
+        <div class="set-card-header">
+          <span class="material-symbols-outlined set-card-icon">tune</span>
+          <h3 class="set-card-title">Reglas de Monitoreo</h3>
+        </div>
+
+        <div class="set-fields-grid">
+          <div class="set-field set-field--full">
+            <p class="set-field-label">PALABRAS CLAVE DE INCLUSIÓN</p>
+            <div class="set-tags-box">
+              @for (kw of keywordsInclusion; track kw; let i = $index) {
+                <span class="set-tag set-tag--inclusion">
+                  {{ kw }}
+                  <span class="material-symbols-outlined" (click)="quitarKeyword('inclusion', i)">close</span>
+                </span>
+              }
+              <input class="set-tag-input" type="text" placeholder="Agregar palabra clave..."
+                     [(ngModel)]="nuevaKeywordInclusion"
+                     (keydown.enter)="agregarKeyword('inclusion')">
+            </div>
+            <p class="set-field-hint">Términos que deben aparecer en las menciones para ser capturadas.</p>
+          </div>
+
+          <div class="set-field set-field--full">
+            <p class="set-field-label">PALABRAS CLAVE DE EXCLUSIÓN</p>
+            <div class="set-tags-box">
+              @for (kw of keywordsExclusion; track kw; let i = $index) {
+                <span class="set-tag set-tag--exclusion">
+                  {{ kw }}
+                  <span class="material-symbols-outlined" (click)="quitarKeyword('exclusion', i)">close</span>
+                </span>
+              }
+              <input class="set-tag-input" type="text" placeholder="Agregar palabra clave..."
+                     [(ngModel)]="nuevaKeywordExclusion"
+                     (keydown.enter)="agregarKeyword('exclusion')">
+            </div>
+            <p class="set-field-hint">Filtra para ignorar menciones sobre ofertas laborales o temas irrelevantes.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canales digitales -->
+      <div class="set-card">
+        <div class="set-card-header">
+          <span class="material-symbols-outlined set-card-icon">wifi</span>
+          <h3 class="set-card-title">Canales Digitales</h3>
+        </div>
+
+        <div class="set-fields-grid">
+          <div class="set-field">
+            <p class="set-field-label">PÁGINA WEB DE LA EMPRESA</p>
+            <input class="set-input" type="url" [(ngModel)]="paginaWeb" placeholder="https://tuempresa.com">
+          </div>
+          <div class="set-field">
+            <p class="set-field-label">YOUTUBE</p>
+            <input class="set-input" type="url" [(ngModel)]="canalYoutube" placeholder="https://youtube.com/@tuempresa">
+          </div>
+        </div>
+      </div>
+
+      <!-- Canales de análisis -->
+      <div class="set-card">
+        <div class="set-card-header">
+          <span class="material-symbols-outlined set-card-icon">analytics</span>
+          <h3 class="set-card-title">Canales de Análisis</h3>
+          <span class="set-pro-badge">PRO</span>
+        </div>
+
+        <div class="set-canales-list">
+          @for (canal of canalesAnalisis; track canal.key) {
+            <div class="set-canal-row" [class.set-canal-row--bloqueado]="canal.estado === 'bloqueado'">
+              <div class="set-canal-info">
+                <div class="set-canal-icon-wrapper">
+                  @if (canal.logo) {
+                    <img [src]="canal.logo" [alt]="canal.nombre">
+                  } @else {
+                    <span class="material-symbols-outlined">{{ canal.icono }}</span>
+                  }
+                </div>
+                <span class="set-canal-nombre">{{ canal.nombre }}</span>
+              </div>
+
+              @if (canal.estado === 'activo') {
+                <span class="set-canal-estado set-canal-estado--activo">
+                  <span class="set-canal-dot"></span>
+                  Activo
+                </span>
+              } @else {
+                <button class="set-canal-estado set-canal-estado--bloqueado" (click)="solicitarUpgrade(canal)">
+                  <span class="material-symbols-outlined">lock</span>
+                  Requiere PRO
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
