@@ -53,6 +53,11 @@ export const routes: Routes = [
       .then(m => m.LoadingComponent)
   },
   {
+    path: 'settings',
+    loadComponent: () => import('./dashboard/presentation/pages/settings/settings.component')
+      .then(m => m.SettingsComponent)
+  },
+  {
     path: 'configuration',
     loadComponent: () => import('./dashboard/presentation/pages/configuration/configuration.component')
       .then(m => m.ConfigurationComponent)
