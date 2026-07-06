@@ -21,6 +21,7 @@ export class VerifyEmailComponent {
   loading = false;
 
   onInput(event: Event, index: number) {
+    this.error = '';
     const input = event.target as HTMLInputElement;
     if (input.value && index < 5) {
       const next = document.querySelectorAll('.otp-input')[index + 1] as HTMLInputElement;
@@ -36,6 +37,7 @@ export class VerifyEmailComponent {
   }
 
   verify() {
+    this.error = '';
     const code = this.otp.join('');
     if (code.length < 6) {
       this.error = 'Ingresa el código completo';
@@ -74,9 +76,9 @@ export class VerifyEmailComponent {
               },
             });
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.error = 'Código incorrecto';
+          alert('Código incorrecto. Verifica los 6 dígitos e intenta de nuevo.');
         },
       });
   }

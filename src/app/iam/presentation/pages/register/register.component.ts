@@ -32,6 +32,16 @@ export class RegisterComponent {
   }
 
   onSubmit() {
+    this.error = '';
+
+    if (!this.email.trim()) {
+      this.error = 'Ingresa tu correo electrónico';
+      return;
+    }
+    if (!this.password) {
+      this.error = 'Ingresa una contraseña';
+      return;
+    }
     if (this.password !== this.confirmPassword) {
       this.error = 'Las contraseñas no coinciden';
       return;
@@ -40,22 +50,27 @@ export class RegisterComponent {
       this.error = 'Selecciona un tipo de cuenta';
       return;
     }
+
     this.loading = true;
-    this.error = '';
     this.authApi.register(this.email, this.password, this.accountType, this.fullName).subscribe({
       next: (response) => {
         this.loading = false;
         if (typeof window !== 'undefined') {
           localStorage.setItem('pendingEmail', this.email);
-          // Guardado solo temporalmente para poder iniciar sesión automáticamente
-          // apenas se verifique el correo. Se borra inmediatamente después de usarse.
           sessionStorage.setItem('pendingPassword', this.password);
         }
         this.router.navigate(['/verify-email']);
       },
       error: (err) => {
         this.loading = false;
-        this.error = 'Error al registrar usuario';
+        if (err.status === 409) {
+          this.error = 'Este correo ya está registrado. ¿Ya tienes cuenta? Inicia sesión.';
+        } else if (err.status === 400) {
+          this.error =
+            'Revisa los datos ingresados: el correo debe ser válido y la contraseña cumplir los requisitos mínimos.';
+        } else {
+          this.error = 'No se pudo completar el registro. Intenta nuevamente.';
+        }
       },
     });
   }

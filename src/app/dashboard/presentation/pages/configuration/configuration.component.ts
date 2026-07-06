@@ -169,30 +169,10 @@ export class ConfigurationComponent implements OnInit {
   canalYoutube = '';
 
   // ===== Canales de análisis =====
-  private readonly channelsByPlan: Record<string, string[]> = {
-    FREE: ['YOUTUBE', 'TWITTER', 'REDDIT', 'TIKTOK'],
-    PRO: [
-      'YOUTUBE',
-      'FACEBOOK',
-      'TWITTER',
-      'TIKTOK',
-      'INSTAGRAM',
-      'GOOGLE_NEWS',
-      'REDDIT',
-      'BLOGS',
-    ],
-    ENTERPRISE: [
-      'YOUTUBE',
-      'FACEBOOK',
-      'TWITTER',
-      'TIKTOK',
-      'INSTAGRAM',
-      'GOOGLE_NEWS',
-      'REDDIT',
-      'BLOGS',
-    ],
-  };
-
+  // Ya NO hay una matriz de planes copiada a mano aquí — se consulta directo al backend
+  // vía GET /workspaces/{id}/channels/available, que es la única fuente de verdad
+  // (ChannelPlanPolicy.java). Así, si el backend cambia qué incluye cada plan, este
+  // componente lo refleja automáticamente sin que nadie tenga que acordarse de actualizarlo.
   private readonly channelTemplates: {
     channelType: string;
     nombre: string;
@@ -240,21 +220,28 @@ export class ConfigurationComponent implements OnInit {
   canalesAnalisis: CanalAnalisis[] = [];
 
   private buildCanalesAnalisis(activos: string[]) {
-    const permitidos = this.channelsByPlan[this.plan] || this.channelsByPlan['FREE'];
-    this.canalesAnalisis = this.channelTemplates.map((tpl) => {
-      let estado: 'activo' | 'disponible' | 'bloqueado' = 'bloqueado';
-      if (permitidos.includes(tpl.channelType)) {
-        estado = activos.includes(tpl.channelType) ? 'activo' : 'disponible';
-      }
-      return {
-        key: tpl.channelType.toLowerCase(),
-        channelType: tpl.channelType,
-        nombre: tpl.nombre,
-        logo: tpl.logo,
-        icono: tpl.icono,
-        estado,
-      };
-    });
+    if (!this.workspaceId) return;
+    this.http
+      .get<any[]>(`${this.baseUrl}/workspaces/${this.workspaceId}/channels/available`)
+      .subscribe({
+        next: (disponibilidad) => {
+          this.canalesAnalisis = this.channelTemplates.map((tpl) => {
+            const info = disponibilidad.find((d) => d.channelType === tpl.channelType);
+            let estado: 'activo' | 'disponible' | 'bloqueado' = 'bloqueado';
+            if (info?.allowed) {
+              estado = activos.includes(tpl.channelType) ? 'activo' : 'disponible';
+            }
+            return {
+              key: tpl.channelType.toLowerCase(),
+              channelType: tpl.channelType,
+              nombre: tpl.nombre,
+              logo: tpl.logo,
+              icono: tpl.icono,
+              estado,
+            };
+          });
+        },
+      });
   }
 
   toggleCanal(canal: CanalAnalisis) {

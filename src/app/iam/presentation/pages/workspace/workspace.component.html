@@ -47,27 +47,40 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">NOMBRE DE LA EMPRESA</label>
-          <input [(ngModel)]="companyName" name="companyName" type="text"
+          <label class="form-label">NOMBRE DE LA EMPRESA *</label>
+          <input [(ngModel)]="companyName" name="companyName" type="text" required
+                 [style.border-color]="errors.companyName ? '#ffb4ab' : null"
                  placeholder="Ej. BrandRadar Corp" class="form-input">
+          @if (errors.companyName) {
+            <p style="color:#ffb4ab; font-size:11px; margin-top:4px;">{{ errors.companyName }}</p>
+          }
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">NOMBRE DEL WORKSPACE</label>
-            <input [(ngModel)]="workspaceName" name="workspaceName" type="text"
+            <label class="form-label">NOMBRE DEL WORKSPACE *</label>
+            <input [(ngModel)]="workspaceName" name="workspaceName" type="text" required
+                   [style.border-color]="errors.workspaceName ? '#ffb4ab' : null"
                    placeholder="Bembos Express" class="form-input">
+            @if (errors.workspaceName) {
+              <p style="color:#ffb4ab; font-size:11px; margin-top:4px;">{{ errors.workspaceName }}</p>
+            }
           </div>
           <div class="form-group">
-            <label class="form-label">INDUSTRIA / SECTOR</label>
-            <select [(ngModel)]="industry" name="industry" class="form-input">
-              <option value="">Gastronomía / F&B</option>
-              <option value="tecnologia">Tecnología</option>
-              <option value="retail">Retail</option>
-              <option value="servicios">Servicios</option>
-              <option value="educacion">Educación</option>
-              <option value="salud">Salud</option>
+            <label class="form-label">INDUSTRIA / SECTOR *</label>
+            <select [(ngModel)]="industry" name="industry" class="form-input" required
+                    [style.border-color]="errors.industry ? '#ffb4ab' : null">
+              <option value="" disabled selected>Selecciona una industria</option>
+              <option value="Gastronomía / F&B">Gastronomía / F&B</option>
+              <option value="Tecnología">Tecnología</option>
+              <option value="Retail">Retail</option>
+              <option value="Servicios">Servicios</option>
+              <option value="Educación">Educación</option>
+              <option value="Salud">Salud</option>
             </select>
+            @if (errors.industry) {
+              <p style="color:#ffb4ab; font-size:11px; margin-top:4px;">{{ errors.industry }}</p>
+            }
           </div>
         </div>
       </div>
@@ -132,111 +145,67 @@
         </div>
       </div>
 
-    <!-- Canales de Análisis -->
-    <div class="section-card">
-      <div class="section-title-row">
-        <span class="material-symbols-outlined section-icon">analytics</span>
-        <h2 class="section-title">Canales de Análisis</h2>
+      <!-- Canales de Análisis -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="material-symbols-outlined section-icon">analytics</span>
+          <h2 class="section-title">Canales de Análisis</h2>
+        </div>
+        <p class="form-hint" style="margin-bottom:8px;">Selecciona qué canales quieres monitorear para esta marca. Si no eliges un canal, no aparecerá en tu análisis.</p>
+        @if (errors.canales) {
+          <p style="color:#ffb4ab; font-size:12px; margin-bottom:12px; display:flex; align-items:center; gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:16px;">error</span>
+            {{ errors.canales }}
+          </p>
+        }
+
+        <div class="channels-grid" [style.outline]="errors.canales ? '1px solid #ffb4ab' : 'none'" [style.border-radius.px]="errors.canales ? 8 : 0" [style.padding.px]="errors.canales ? 8 : 0">
+          @for (canal of canales; track canal.channelType) {
+            <div class="channel-item"
+                 [class.channel-locked]="canal.requierePro && !isPro"
+                 [class.channel-item--selected]="canal.seleccionado"
+                 style="cursor:pointer;"
+                 (click)="toggleCanal(canal)">
+              <div class="channel-icon">
+                @if (logoDe(canal.channelType)) {
+                  <img [src]="logoDe(canal.channelType)" [alt]="canal.nombre">
+                } @else {
+                  <span class="material-symbols-outlined" style="font-size:24px; color:#5b5fee;">article</span>
+                }
+              </div>
+              <span class="channel-name">{{ canal.nombre }}</span>
+              @if (canal.requierePro && !isPro) {
+                <span class="material-symbols-outlined lock-icon">lock</span>
+              } @else if (canal.seleccionado) {
+                <span class="channel-status channel-status--active">
+                  <span class="material-symbols-outlined" style="font-size:14px;">check</span>
+                  Elegido
+                </span>
+              } @else {
+                <span class="channel-status" style="opacity:0.5;">Sin elegir</span>
+              }
+            </div>
+          }
+        </div>
+
         @if (!isPro) {
-          <span class="pro-badge">PRO</span>
+          <div class="upgrade-banner">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            <p>Actualiza a <strong>Pro</strong> para monitorear Facebook, Instagram, Google News y Blogs.</p>
+            <button (click)="router.navigate(['/subscription'])" class="btn-upgrade">Actualizar Plan</button>
+          </div>
         }
       </div>
 
-      <div class="channels-grid">
-        <!-- YouTube -->
-        <div class="channel-item">
-          <div class="channel-icon youtube">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube">
-          </div>
-          <span class="channel-name">YouTube</span>
-          <span class="channel-status channel-status--active">Activo</span>
-        </div>
-
-        <!-- Facebook -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon facebook">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-          </div>
-          <span class="channel-name">Facebook</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- Twitter/X -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon twitter">
-            <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" alt="X">
-          </div>
-          <span class="channel-name">Twitter / X</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- TikTok -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon tiktok">
-            <img src="https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80" alt="TikTok">
-          </div>
-          <span class="channel-name">TikTok</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- Instagram -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon instagram">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
-          </div>
-          <span class="channel-name">Instagram</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- Noticias -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon noticias">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png" alt="Google News">
-          </div>
-          <span class="channel-name">Google News</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- Reddit -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon reddit">
-            <img src="https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" alt="Reddit">
-          </div>
-          <span class="channel-name">Reddit</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-
-        <!-- Blogs -->
-        <div class="channel-item" [class.channel-locked]="!isPro">
-          <div class="channel-icon blogs">
-            <span class="material-symbols-outlined" style="font-size: 28px; color: #5b5fee;">article</span>
-          </div>
-          <span class="channel-name">Blogs / Web</span>
-          @if (isPro) { <span class="channel-status channel-status--active">Activo</span> }
-          @else { <span class="material-symbols-outlined lock-icon">lock</span> }
-        </div>
-      </div>
-
-      @if (!isPro) {
-        <div class="upgrade-banner">
+      <div class="finish-btn-wrapper">
+        <button (click)="finish()" class="btn-finish" [disabled]="creatingWorkspace">
+          {{ creatingWorkspace ? 'CREANDO...' : 'FINALIZAR CONFIGURACIÓN' }}
           <span class="material-symbols-outlined">rocket_launch</span>
-          <p>Actualiza a <strong>Pro</strong> para monitorear Facebook, Twitter, TikTok, Instagram, Noticias y más.</p>
-          <button (click)="router.navigate(['/subscription'])" class="btn-upgrade">Actualizar Plan</button>
-        </div>
-      }
-    </div>
-    <div class="finish-btn-wrapper">
-      <button (click)="finish()" class="btn-finish">
-        FINALIZAR CONFIGURACIÓN
-        <span class="material-symbols-outlined">rocket_launch</span>
-      </button>
-    </div>
+        </button>
+        @if (workspaceError) {
+          <p style="color:#ffb4ab; font-size:12px; margin-top:8px; text-align:center;">{{ workspaceError }}</p>
+        }
+      </div>
 
     </section>
   </main>

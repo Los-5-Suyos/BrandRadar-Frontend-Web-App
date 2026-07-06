@@ -6,6 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { OnboardingSidebarComponent } from './../../../../shared/components/onboarding-sidebar/onboarding-sidebar.component';
 import { environment } from '../../../../../environments/environment';
 
+interface CanalOnboarding {
+  channelType: string;
+  nombre: string;
+  requierePro: boolean;
+  seleccionado: boolean;
+}
+
 @Component({
   selector: 'app-workspace',
   standalone: true,
@@ -23,8 +30,6 @@ export class WorkspaceComponent {
   industry = '';
   websiteUrl = '';
   youtubeUrl = '';
-  reddit = '';
-  googleNews = '';
 
   inclusionKeywords: string[] = [];
   exclusionKeywords: string[] = [];
@@ -33,6 +38,18 @@ export class WorkspaceComponent {
 
   creatingWorkspace = false;
   workspaceError = '';
+
+  errors: {
+    companyName?: string;
+    workspaceName?: string;
+    industry?: string;
+    canales?: string;
+  } = {};
+
+  private limpiarErrores() {
+    this.errors = {};
+    this.workspaceError = '';
+  }
 
   addInclusion() {
     if (this.newInclusion.trim()) {
@@ -66,6 +83,48 @@ export class WorkspaceComponent {
     return this.selectedPlan === 'pro' || this.selectedPlan === 'enterprise';
   }
 
+  // NOTA: esto no consulta el endpoint /channels/available del backend porque en este
+  // punto el workspace todavía NO existe (se crea recién al final, en finish()). No es
+  // una duplicación riesgosa de la matriz de planes: todo workspace nuevo SIEMPRE nace
+  // en plan FREE (ver finish(), plan: 'FREE' fijo) — el upgrade real solo ocurre después
+  // del pago, en otra pantalla. Configuration.component.ts, en cambio, sí consulta el
+  // endpoint real, porque ahí el plan puede ser cualquiera según lo que se haya pagado.
+  canales: CanalOnboarding[] = [
+    { channelType: 'YOUTUBE', nombre: 'YouTube', requierePro: false, seleccionado: false },
+    { channelType: 'TWITTER', nombre: 'Twitter / X', requierePro: false, seleccionado: false },
+    { channelType: 'REDDIT', nombre: 'Reddit', requierePro: false, seleccionado: false },
+    { channelType: 'TIKTOK', nombre: 'TikTok', requierePro: false, seleccionado: false },
+    { channelType: 'FACEBOOK', nombre: 'Facebook', requierePro: true, seleccionado: false },
+    { channelType: 'INSTAGRAM', nombre: 'Instagram', requierePro: true, seleccionado: false },
+    { channelType: 'GOOGLE_NEWS', nombre: 'Google News', requierePro: true, seleccionado: false },
+    { channelType: 'BLOGS', nombre: 'Blogs / Web', requierePro: true, seleccionado: false },
+  ];
+
+  private readonly logosPorCanal: Record<string, string> = {
+    YOUTUBE:
+      'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg',
+    FACEBOOK: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg',
+    TWITTER: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
+    TIKTOK:
+      'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80',
+    INSTAGRAM: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
+    GOOGLE_NEWS:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png',
+    REDDIT: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
+  };
+
+  logoDe(channelType: string): string | null {
+    return this.logosPorCanal[channelType] || null;
+  }
+
+  toggleCanal(canal: CanalOnboarding) {
+    if (canal.requierePro && !this.isPro) {
+      this.router.navigate(['/subscription']);
+      return;
+    }
+    canal.seleccionado = !canal.seleccionado;
+  }
+
   finish() {
     const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
     if (!userId) {
@@ -73,16 +132,29 @@ export class WorkspaceComponent {
       this.router.navigate(['/login']);
       return;
     }
+
+    this.limpiarErrores();
+
+    if (!this.companyName.trim()) {
+      this.errors.companyName = 'Ingresa el nombre de la empresa';
+    }
     if (!this.workspaceName.trim()) {
-      this.workspaceError = 'Ingresa un nombre para el workspace.';
+      this.errors.workspaceName = 'Ingresa un nombre para el workspace';
+    }
+    if (!this.industry) {
+      this.errors.industry = 'Selecciona una industria';
+    }
+    const canalesSeleccionados = this.canales.filter((c) => c.seleccionado);
+    if (canalesSeleccionados.length === 0) {
+      this.errors.canales = 'Selecciona al menos un canal de análisis';
+    }
+
+    if (Object.keys(this.errors).length > 0) {
       return;
     }
 
     this.creatingWorkspace = true;
-    this.workspaceError = '';
 
-    // El workspace siempre se crea en FREE: si el usuario eligió Pro, el upgrade
-    // real ocurre recién cuando el pago se confirma en la siguiente pantalla.
     this.http
       .post<any>(`${this.baseUrl}/workspaces`, {
         userId: Number(userId),
@@ -119,10 +191,18 @@ export class WorkspaceComponent {
               error: () => {},
             });
 
+          canalesSeleccionados.forEach((canal) => {
+            this.http
+              .post(`${this.baseUrl}/workspaces/${ws.id}/channels`, {
+                channelType: canal.channelType,
+              })
+              .subscribe({ error: () => {} });
+          });
+
           this.http
             .patch(`${this.baseUrl}/workspaces/${ws.id}/config`, {
               companyName: this.companyName,
-              industry: this.industry || 'Gastronomía / F&B',
+              industry: this.industry,
               websiteUrl: this.websiteUrl,
               youtubeUrl: this.youtubeUrl,
             })
