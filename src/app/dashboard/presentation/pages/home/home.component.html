@@ -35,7 +35,9 @@
         <div class="notif-wrapper">
   <span class="material-symbols-outlined topbar-icon"
         (click)="showNotifications = !showNotifications; $event.stopPropagation()">notifications</span>
-          <span class="notif-badge">{{ notifications.length }}</span>
+          @if (notifications.length > 0) {
+            <span class="notif-badge">{{ notifications.length }}</span>
+          }
 
           @if (showNotifications) {
             <div class="notif-panel" (click)="$event.stopPropagation()">
@@ -84,9 +86,14 @@
               @if (showDeleteConfirm === ws.id) {
                 <div class="delete-confirm">
                   <p class="delete-confirm-text">¿Eliminar "{{ ws.name }}"?</p>
+                  @if (deleteError && deleteErrorId === ws.id) {
+                    <p style="color:#ffb4ab; font-size:12px; margin: 4px 0;">{{ deleteError }}</p>
+                  }
                   <div class="delete-confirm-btns">
-                    <button class="btn-confirm-yes" (click)="deleteWorkspace(ws.id)">Eliminar</button>
-                    <button class="btn-confirm-no" (click)="showDeleteConfirm = null">Cancelar</button>
+                    <button class="btn-confirm-yes" [disabled]="deletingId === ws.id" (click)="deleteWorkspace(ws.id)">
+                      {{ deletingId === ws.id ? 'Eliminando...' : 'Eliminar' }}
+                    </button>
+                    <button class="btn-confirm-no" (click)="showDeleteConfirm = null; deleteError = null">Cancelar</button>
                   </div>
                 </div>
               }
@@ -116,7 +123,7 @@
                     <div class="ws-dropdown">
                       <p class="ws-dropdown-title">Opciones de workspace</p>
                       <div class="ws-dropdown-item"
-                           (click)="showDeleteConfirm = ws.id; showMenuId = null">
+                           (click)="showDeleteConfirm = ws.id; showMenuId = null; $event.stopPropagation()">
                         <span class="material-symbols-outlined">delete</span>
                         <span>Borrar workspace</span>
                       </div>

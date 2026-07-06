@@ -22,7 +22,7 @@ export class SettingsComponent implements OnInit {
   userId: string | null = null;
 
   fullName = '';
-  bio = '';
+  username = '';
   language = 'ES';
   timezone = 'GMT-5';
   emailNotifications = true;
@@ -31,6 +31,8 @@ export class SettingsComponent implements OnInit {
   imageChangedEvent: Event | null = null;
   croppedImage: string | null = null;
   guardandoPerfil = false;
+  perfilGuardadoOk = false;
+  perfilError = '';
 
   showPasswordModal = false;
   currentPassword = '';
@@ -40,9 +42,15 @@ export class SettingsComponent implements OnInit {
   passwordError = '';
   passwordSuccess = false;
 
+  showUsernameModal = false;
+  newUsername = '';
+  cambiandoUsername = false;
+  usernameError = '';
+  usernameSuccess = false;
+
   get userName() {
     const email = typeof window !== 'undefined' ? localStorage.getItem('userEmail') || '' : '';
-    return this.fullName || email.split('@')[0] || 'Usuario';
+    return this.fullName || this.username || email.split('@')[0] || 'Usuario';
   }
 
   get userEmail() {
@@ -72,12 +80,24 @@ export class SettingsComponent implements OnInit {
         },
         error: () => {},
       });
+    } else {
+      // Si el usuario no está dentro de un workspace (p.ej. entró directo a
+      // Configuración de Cuenta desde el sidebar de Home), mostramos el nombre
+      // de su primer workspace en lugar del texto genérico "Workspace".
+      this.http.get<any[]>(`${this.baseUrl}/workspaces/user/${this.userId}`).subscribe({
+        next: (list) => {
+          if (list && list.length > 0) {
+            this.workspaceName = list[0].name;
+          }
+        },
+        error: () => {},
+      });
     }
 
     this.http.get<any>(`${this.baseUrl}/user-accounts/${this.userId}`).subscribe({
       next: (data) => {
         this.fullName = data.fullName || '';
-        this.bio = data.bio || '';
+        this.username = data.username || '';
         this.language = data.language || 'ES';
         this.timezone = data.timezone || 'GMT-5';
         this.emailNotifications = data.emailNotifications ?? true;
@@ -89,10 +109,11 @@ export class SettingsComponent implements OnInit {
   actualizarPerfil() {
     if (!this.userId) return;
     this.guardandoPerfil = true;
+    this.perfilError = '';
+    this.perfilGuardadoOk = false;
     this.http
       .patch(`${this.baseUrl}/user-accounts/${this.userId}`, {
         fullName: this.fullName,
-        bio: this.bio,
         language: this.language,
         timezone: this.timezone,
         emailNotifications: this.emailNotifications,
@@ -100,11 +121,54 @@ export class SettingsComponent implements OnInit {
       .subscribe({
         next: () => {
           this.guardandoPerfil = false;
+          this.perfilGuardadoOk = true;
+          setTimeout(() => (this.perfilGuardadoOk = false), 2500);
         },
         error: () => {
           this.guardandoPerfil = false;
+          this.perfilError = 'No se pudo guardar el perfil. Intenta nuevamente.';
         },
       });
+  }
+
+  abrirModalUsername() {
+    this.showUsernameModal = true;
+    this.newUsername = this.username;
+    this.usernameError = '';
+    this.usernameSuccess = false;
+  }
+
+  cerrarModalUsername() {
+    this.showUsernameModal = false;
+  }
+
+  cambiarUsername() {
+    if (!this.userId) return;
+    const valor = this.newUsername.trim();
+    if (!/^[a-zA-Z0-9._-]{3,}$/.test(valor)) {
+      this.usernameError = 'Debe tener al menos 3 caracteres (letras, números, puntos, guiones)';
+      return;
+    }
+    this.usernameError = '';
+    this.cambiandoUsername = true;
+    this.http.patch(`${this.baseUrl}/user-accounts/${this.userId}`, { username: valor }).subscribe({
+      next: () => {
+        this.username = valor;
+        this.cambiandoUsername = false;
+        this.usernameSuccess = true;
+        setTimeout(() => {
+          this.showUsernameModal = false;
+          this.usernameSuccess = false;
+        }, 1200);
+      },
+      error: (err) => {
+        this.cambiandoUsername = false;
+        this.usernameError =
+          err.status === 409
+            ? 'Ese nombre de usuario ya está en uso.'
+            : 'No se pudo actualizar el nombre de usuario.';
+      },
+    });
   }
 
   onAvatarSelected(event: Event) {

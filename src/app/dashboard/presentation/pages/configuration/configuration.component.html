@@ -10,10 +10,18 @@
         <h1 class="set-title">Configuración de Workspace</h1>
         <p class="set-subtitle">{{ workspaceName }} | AJUSTES Y PREFERENCIAS</p>
       </div>
-      <button class="btn-guardar" [disabled]="guardando" (click)="guardarCambios()">
-        <span class="material-symbols-outlined">{{ guardando ? 'hourglass_empty' : 'save' }}</span>
-        {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
-      </button>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <button class="btn-guardar" [disabled]="guardando" (click)="guardarCambios()">
+          <span class="material-symbols-outlined">{{ guardando ? 'hourglass_empty' : 'save' }}</span>
+          {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+        @if (guardadoOk) {
+          <span style="color:#4ade80; font-size:12px;">¡Cambios guardados!</span>
+        }
+        @if (guardadoError) {
+          <span style="color:#ffb4ab; font-size:12px;">{{ guardadoError }}</span>
+        }
+      </div>
     </header>
 
     <section class="set-content">
@@ -27,20 +35,25 @@
 
         <div class="set-logo-row">
           <div class="set-logo-preview">
-            @if (logoUrl) {
+            @if (subiendoLogo) {
+              <span class="material-symbols-outlined" style="animation:spin 1s linear infinite;">progress_activity</span>
+            } @else if (logoUrl) {
               <img [src]="logoUrl" alt="Logo de la marca">
             } @else {
               <span class="material-symbols-outlined">storefront</span>
             }
           </div>
           <div class="set-logo-actions">
-            <label class="btn-subir-logo">
+            <label class="btn-subir-logo" [class.disabled]="subiendoLogo">
               <span class="material-symbols-outlined">upload</span>
-              Subir nuevo logo
-              <input type="file" accept="image/*" hidden (change)="onLogoSeleccionado($event)">
+              {{ subiendoLogo ? 'Subiendo...' : 'Subir nuevo logo' }}
+              <input type="file" accept="image/*" hidden [disabled]="subiendoLogo" (change)="onLogoSeleccionado($event)">
             </label>
-            @if (logoUrl) {
+            @if (logoUrl && !subiendoLogo) {
               <button class="btn-quitar-logo" (click)="quitarLogo()">Quitar logo</button>
+            }
+            @if (logoError) {
+              <p style="color:#ffb4ab; font-size:12px; margin:4px 0 0;">{{ logoError }}</p>
             }
             <p class="set-logo-hint">PNG, JPG, WEBP o SVG. Máx. 5MB.</p>
           </div>
@@ -147,8 +160,11 @@
         </div>
 
         <div class="set-canales-list">
+          @if (canalesError) {
+            <p style="color:#ffb4ab; font-size:12px; margin:0 0 8px;">{{ canalesError }}</p>
+          }
           @for (canal of canalesAnalisis; track canal.key) {
-            <div class="set-canal-row" [class.set-canal-row--bloqueado]="canal.estado === 'bloqueado'">
+            <div class="set-canal-row" [class.set-canal-row--bloqueado]="canal.estado === 'bloqueado' || canal.estado === 'proximamente'">
               <div class="set-canal-info">
                 <div class="set-canal-icon-wrapper">
                   @if (canal.logo) {
@@ -160,7 +176,12 @@
                 <span class="set-canal-nombre">{{ canal.nombre }}</span>
               </div>
 
-              @if (canal.estado === 'activo') {
+              @if (canalPendiente === canal.channelType) {
+                <button class="set-canal-estado" disabled style="opacity:0.6;">
+                  <span class="material-symbols-outlined">hourglass_empty</span>
+                  Guardando...
+                </button>
+              } @else if (canal.estado === 'activo') {
                 <button class="set-canal-estado set-canal-estado--activo" (click)="toggleCanal(canal)">
                   <span class="set-canal-dot"></span>
                   Activo
@@ -169,6 +190,11 @@
                 <button class="set-canal-estado" style="background:rgba(99,247,255,0.1); color:#63f7ff;" (click)="toggleCanal(canal)">
                   <span class="material-symbols-outlined">add_circle</span>
                   Activar
+                </button>
+              } @else if (canal.estado === 'proximamente') {
+                <button class="set-canal-estado set-canal-estado--bloqueado" disabled style="cursor:default;">
+                  <span class="material-symbols-outlined">schedule</span>
+                  Próximamente
                 </button>
               } @else {
                 <button class="set-canal-estado set-canal-estado--bloqueado" (click)="toggleCanal(canal)">

@@ -56,6 +56,24 @@ export class DashboardComponent implements OnInit {
   }
 
   notifications: { icon: string; color: string; title: string; desc: string; time: string }[] = [];
+  // Notificaciones que trae el backend tal cual, y notificaciones "derivadas" que
+  // generamos en el cliente (incidente activo, nuevas menciones al refrescar) para
+  // que la campanita tenga utilidad real aunque el backend aún no las registre.
+  private backendNotifications: {
+    icon: string;
+    color: string;
+    title: string;
+    desc: string;
+    time: string;
+  }[] = [];
+  private syntheticNotifications: {
+    icon: string;
+    color: string;
+    title: string;
+    desc: string;
+    time: string;
+  }[] = [];
+  private previousMentionsToday: number | null = null;
 
   hasActiveIncident = false;
   sentimentScore = 50;
@@ -65,7 +83,17 @@ export class DashboardComponent implements OnInit {
   positivePercent = 0;
   neutralPercent = 0;
   negativePercent = 0;
+  // El backend guarda el diagnóstico de IA como un string JSON:
+  // { "pattern": "...", "keywords": [...], "geofocus": "...", "diagnostico": "...", "accion": "..." }
+  // Antes se mostraba tal cual con {{ crisisAnalysis }}, así que en pantalla salía
+  // el JSON crudo en vez de un texto legible. Ahora lo parseamos y separamos en
+  // campos concretos para pintarlos bien en la UI.
   crisisAnalysis: string | null = null;
+  crisisDiagnostico: string | null = null;
+  crisisAccion: string | null = null;
+  crisisPattern: string | null = null;
+  crisisGeofocus: string | null = null;
+  crisisKeywords: string[] = [];
 
   sparklinePoints = '';
   trendPolylinePoints = '';
@@ -115,6 +143,11 @@ export class DashboardComponent implements OnInit {
     },
     BLOGS: { name: 'Blogs / Web', logo: null, icon: 'article' },
   };
+
+  // Canales realmente implementados en el backend hoy. Aunque el endpoint de
+  // canales devuelva datos de un canal no soportado (p.ej. Instagram), no lo
+  // mostramos como activo hasta que el backend lo tenga implementado de verdad.
+  private readonly IMPLEMENTED_CHANNELS = ['YOUTUBE', 'TWITTER', 'REDDIT', 'TIKTOK'];
 
   allChannels: ChannelConfig[] = [];
 
@@ -211,11 +244,20 @@ export class DashboardComponent implements OnInit {
   }
 
   goToSection(section: string) {
+    // Las rutas reales (ver app.routes.ts) están en inglés: 'incidents', 'reports',
+    // 'configuration'. Antes este mapa las dejaba en español ('incidentes',
+    // 'reportes', 'configuracion'), rutas que no existen, así que el usuario
+    // terminaba redirigido a /login (por el wildcard '**') al hacer click en
+    // "Ver diagnóstico IA" o en cualquier incidente/keyword del dashboard.
     const routes: { [key: string]: string } = {
       menciones: 'mentions',
-      incidentes: 'incidentes',
-      reportes: 'reportes',
-      configuracion: 'configuracion',
+      mentions: 'mentions',
+      incidentes: 'incidents',
+      incidents: 'incidents',
+      reportes: 'reports',
+      reports: 'reports',
+      configuracion: 'configuration',
+      configuration: 'configuration',
       dashboard: 'dashboard',
     };
     this.router.navigate([`/${routes[section] || section}`]);
@@ -245,6 +287,29 @@ export class DashboardComponent implements OnInit {
     this.loadNotifications();
   }
 
+  private parseCrisisAnalysis(raw: string | null | undefined) {
+    this.crisisDiagnostico = null;
+    this.crisisAccion = null;
+    this.crisisPattern = null;
+    this.crisisGeofocus = null;
+    this.crisisKeywords = [];
+
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw);
+      this.crisisDiagnostico = parsed.diagnostico ?? raw;
+      this.crisisAccion = parsed.accion ?? null;
+      this.crisisPattern = parsed.pattern ?? null;
+      this.crisisGeofocus = parsed.geofocus ?? null;
+      this.crisisKeywords = Array.isArray(parsed.keywords) ? parsed.keywords : [];
+    } catch {
+      // Si el backend en algún momento manda texto plano en vez de JSON,
+      // lo mostramos tal cual en vez de romper la vista.
+      this.crisisDiagnostico = raw;
+    }
+  }
+
   loadDashboard(workspaceId: string) {
     this.loading = true;
     this.http.get<any>(`${this.baseUrl}/workspaces/${workspaceId}/dashboard`).subscribe({
@@ -258,6 +323,7 @@ export class DashboardComponent implements OnInit {
         this.neutralPercent = data.neutralPercent ?? 0;
         this.negativePercent = data.negativePercent ?? 0;
         this.crisisAnalysis = data.crisisAnalysis;
+        this.parseCrisisAnalysis(data.crisisAnalysis);
         this.hasActiveIncident = !!data.crisisAnalysis;
         this.lastUpdatedAt = data.lastUpdatedAt;
 
@@ -266,6 +332,10 @@ export class DashboardComponent implements OnInit {
           id: i.id,
           title: i.title,
         }));
+
+        this.syncMentionsNotification(this.mentionsToday);
+        this.syncIncidentNotifications();
+        this.rebuildNotifications();
 
         this.loading = false;
 
@@ -328,7 +398,9 @@ export class DashboardComponent implements OnInit {
   loadChannels(workspaceId: string) {
     this.http.get<any>(`${this.baseUrl}/workspaces/${workspaceId}/dashboard/channels`).subscribe({
       next: (data) => {
-        const channels = data.channels ?? [];
+        const channels = (data.channels ?? []).filter((c: any) =>
+          this.IMPLEMENTED_CHANNELS.includes(c.channelType),
+        );
         const seen = new Set(channels.map((c: any) => c.channelType));
 
         const real: ChannelConfig[] = channels.map((c: any) => {
@@ -411,7 +483,7 @@ export class DashboardComponent implements OnInit {
     if (!userId) return;
     this.http.get<any[]>(`${this.baseUrl}/user-accounts/${userId}/notifications`).subscribe({
       next: (data) => {
-        this.notifications = data.slice(0, 10).map((n: any) => ({
+        this.backendNotifications = data.slice(0, 10).map((n: any) => ({
           icon:
             n.type === 'CRISIS_ALERT'
               ? 'warning'
@@ -423,9 +495,60 @@ export class DashboardComponent implements OnInit {
           desc: n.message,
           time: this.relativeTime(n.createdAt),
         }));
+        this.rebuildNotifications();
       },
       error: () => {},
     });
+  }
+
+  private rebuildNotifications() {
+    this.notifications = [...this.syntheticNotifications, ...this.backendNotifications].slice(
+      0,
+      10,
+    );
+  }
+
+  // Genera, en el cliente, una notificación por cada incidente activo (medio o
+  // alto/crítico) para que la campanita sea útil incluso si el backend todavía
+  // no registró una notificación persistida para ese incidente.
+  private syncIncidentNotifications() {
+    const existingTitles = new Set(this.backendNotifications.map((n) => n.title));
+    this.syntheticNotifications = this.syntheticNotifications.filter((n) =>
+      n.title.startsWith('Nuevas menciones'),
+    );
+
+    if (this.activeIncidentsCount > 0) {
+      this.activeIncidents.forEach((inc) => {
+        const title = `Incidente activo: ${inc.title}`;
+        if (existingTitles.has(title)) return;
+        this.syntheticNotifications.unshift({
+          icon: 'warning',
+          color: '#ffb4ab',
+          title,
+          desc: 'Este incidente sigue activo y requiere atención.',
+          time: 'Ahora',
+        });
+      });
+    }
+  }
+
+  // Notifica cuando, tras un refresh, aparecen menciones nuevas respecto a la
+  // última carga (no se dispara en la carga inicial de la página).
+  private syncMentionsNotification(newTotal: number) {
+    if (this.previousMentionsToday !== null && newTotal > this.previousMentionsToday) {
+      const diff = newTotal - this.previousMentionsToday;
+      this.syntheticNotifications = this.syntheticNotifications.filter(
+        (n) => !n.title.startsWith('Nuevas menciones'),
+      );
+      this.syntheticNotifications.unshift({
+        icon: 'forum',
+        color: '#4ade80',
+        title: `Nuevas menciones (+${diff})`,
+        desc: `Se detectaron ${diff} mención${diff === 1 ? '' : 'es'} nueva${diff === 1 ? '' : 's'} desde la última actualización.`,
+        time: 'Ahora',
+      });
+    }
+    this.previousMentionsToday = newTotal;
   }
 
   private relativeTime(isoDate: string): string {

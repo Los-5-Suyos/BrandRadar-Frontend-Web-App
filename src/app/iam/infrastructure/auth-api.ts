@@ -10,9 +10,9 @@ export class AuthApi {
   private baseUrl = environment.apiBaseUrl;
   private http = inject(HttpClient);
 
-  register(email: string, password: string, role: string, description: string): Observable<UserAccount> {
+  register(email: string, password: string, role: string, fullName: string, username: string): Observable<UserAccount> {
     return this.http.post<UserAccount>(`${this.baseUrl}/auth/register`, {
-      email, password, role, description
+      email, password, role, fullName, username
     });
   }
 

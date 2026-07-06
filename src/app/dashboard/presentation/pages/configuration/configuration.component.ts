@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin, timeout, catchError, of } from 'rxjs';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { environment } from '../../../../../environments/environment';
 
@@ -17,7 +18,7 @@ interface CanalAnalisis {
   nombre: string;
   logo?: string;
   icono?: string;
-  estado: 'activo' | 'disponible' | 'bloqueado';
+  estado: 'activo' | 'disponible' | 'bloqueado' | 'proximamente';
 }
 
 interface KeywordItem {
@@ -58,6 +59,8 @@ export class ConfigurationComponent implements OnInit {
   // ===== Logo de la marca =====
   logoUrl: string | null = null;
   private logoFile: File | null = null;
+  subiendoLogo = false;
+  logoError: string | null = null;
 
   onLogoSeleccionado(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -74,13 +77,21 @@ export class ConfigurationComponent implements OnInit {
 
   subirLogo(file: File) {
     if (!this.workspaceId) return;
+    this.subiendoLogo = true;
+    this.logoError = null;
     const formData = new FormData();
     formData.append('file', file);
     this.http
       .post<any>(`${this.baseUrl}/workspaces/${this.workspaceId}/config/logo`, formData)
+      .pipe(timeout(20000))
       .subscribe({
         next: (data) => {
           this.logoUrl = data.logoUrl ? `${this.serverBaseUrl}${data.logoUrl}` : this.logoUrl;
+          this.subiendoLogo = false;
+        },
+        error: () => {
+          this.subiendoLogo = false;
+          this.logoError = 'No se pudo subir el logo. Intenta con una imagen más liviana o vuelve a intentar.';
         },
       });
   }
@@ -219,6 +230,11 @@ export class ConfigurationComponent implements OnInit {
 
   canalesAnalisis: CanalAnalisis[] = [];
 
+  // Canales realmente implementados en el backend hoy. Aunque el plan lo permita
+  // o el backend marque un canal como "allowed", no dejamos activarlo hasta que
+  // esté implementado de verdad (evita, p.ej., que Instagram aparezca operativo).
+  private readonly IMPLEMENTED_CHANNELS = ['YOUTUBE', 'TWITTER', 'REDDIT', 'TIKTOK'];
+
   private buildCanalesAnalisis(activos: string[]) {
     if (!this.workspaceId) return;
     this.http
@@ -227,8 +243,10 @@ export class ConfigurationComponent implements OnInit {
         next: (disponibilidad) => {
           this.canalesAnalisis = this.channelTemplates.map((tpl) => {
             const info = disponibilidad.find((d) => d.channelType === tpl.channelType);
-            let estado: 'activo' | 'disponible' | 'bloqueado' = 'bloqueado';
-            if (info?.allowed) {
+            let estado: 'activo' | 'disponible' | 'bloqueado' | 'proximamente' = 'bloqueado';
+            if (!this.IMPLEMENTED_CHANNELS.includes(tpl.channelType)) {
+              estado = 'proximamente';
+            } else if (info?.allowed) {
               estado = activos.includes(tpl.channelType) ? 'activo' : 'disponible';
             }
             return {
@@ -244,23 +262,58 @@ export class ConfigurationComponent implements OnInit {
       });
   }
 
+  canalesError: string | null = null;
+  canalPendiente: string | null = null;
+
   toggleCanal(canal: CanalAnalisis) {
+    if (canal.estado === 'proximamente') return;
     if (canal.estado === 'bloqueado') {
       this.router.navigate(['/subscription']);
       return;
     }
     if (!this.workspaceId) return;
 
+    // No permitir desactivar el último canal activo: el workspace necesita al
+    // menos 1 canal para poder analizar/extraer menciones e incidentes.
+    if (canal.estado === 'activo') {
+      const activosCount = this.canalesAnalisis.filter((c) => c.estado === 'activo').length;
+      if (activosCount <= 1) {
+        this.canalesError = `Debes mantener al menos un canal activo. Activa otro canal antes de desactivar ${canal.nombre}.`;
+        return;
+      }
+    }
+
+    this.canalesError = null;
+    this.canalPendiente = canal.channelType;
+
     if (canal.estado === 'disponible') {
       this.http
         .post(`${this.baseUrl}/workspaces/${this.workspaceId}/channels`, {
           channelType: canal.channelType,
         })
-        .subscribe({ next: () => this.loadChannels() });
+        .subscribe({
+          next: () => {
+            this.canalPendiente = null;
+            this.loadChannels();
+          },
+          error: () => {
+            this.canalPendiente = null;
+            this.canalesError = `No se pudo activar ${canal.nombre}. Intenta nuevamente.`;
+          },
+        });
     } else {
       this.http
         .delete(`${this.baseUrl}/workspaces/${this.workspaceId}/channels/${canal.channelType}`)
-        .subscribe({ next: () => this.loadChannels() });
+        .subscribe({
+          next: () => {
+            this.canalPendiente = null;
+            this.loadChannels();
+          },
+          error: () => {
+            this.canalPendiente = null;
+            this.canalesError = `No se pudo desactivar ${canal.nombre}. Intenta nuevamente.`;
+          },
+        });
     }
   }
 
@@ -275,6 +328,52 @@ export class ConfigurationComponent implements OnInit {
   }
 
   guardando = false;
+  guardadoOk = false;
+  guardadoError: string | null = null;
+
+  guardarCambios() {
+    if (!this.workspaceId) return;
+
+    if (!this.nombreWorkspace.trim()) {
+      this.guardadoError = 'El nombre del workspace es obligatorio.';
+      this.guardadoOk = false;
+      return;
+    }
+
+    this.guardando = true;
+    this.guardadoOk = false;
+    this.guardadoError = null;
+
+    const nombrePatch = this.http
+      .patch(`${this.baseUrl}/workspaces/${this.workspaceId}`, { name: this.nombreWorkspace })
+      .pipe(
+        timeout(15000),
+        catchError(() => of(null)),
+      );
+
+    const configPatch = this.http
+      .patch(`${this.baseUrl}/workspaces/${this.workspaceId}/config`, {
+        companyName: this.nombreEmpresa,
+        industry: this.industriaSeleccionada,
+        websiteUrl: this.paginaWeb,
+        youtubeUrl: this.canalYoutube,
+      })
+      .pipe(
+        timeout(15000),
+        catchError(() => of(null)),
+      );
+
+    forkJoin([nombrePatch, configPatch]).subscribe(([nombreRes, configRes]) => {
+      this.guardando = false;
+      if (nombreRes === null || configRes === null) {
+        this.guardadoError = 'No se pudieron guardar todos los cambios. Intenta nuevamente.';
+        return;
+      }
+      localStorage.setItem('currentWorkspaceName', this.nombreWorkspace);
+      this.guardadoOk = true;
+      setTimeout(() => (this.guardadoOk = false), 2500);
+    });
+  }
 
   ngOnInit() {
     if (typeof window === 'undefined') return;
@@ -335,32 +434,6 @@ export class ConfigurationComponent implements OnInit {
           },
         });
     }
-  }
-
-  guardarCambios() {
-    if (!this.workspaceId) return;
-    this.guardando = true;
-
-    this.http
-      .patch(`${this.baseUrl}/workspaces/${this.workspaceId}`, { name: this.nombreWorkspace })
-      .subscribe();
-
-    this.http
-      .patch(`${this.baseUrl}/workspaces/${this.workspaceId}/config`, {
-        companyName: this.nombreEmpresa,
-        industry: this.industriaSeleccionada,
-        websiteUrl: this.paginaWeb,
-        youtubeUrl: this.canalYoutube,
-      })
-      .subscribe({
-        next: () => {
-          localStorage.setItem('currentWorkspaceName', this.nombreWorkspace);
-          this.guardando = false;
-        },
-        error: () => {
-          this.guardando = false;
-        },
-      });
   }
 
   goToSection(section: string) {

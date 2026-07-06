@@ -84,9 +84,19 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Biografía Profesional (Opcional)</label>
-            <textarea [(ngModel)]="bio" class="form-input form-textarea" rows="4"></textarea>
+            <label class="form-label">Nombre de Usuario</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input [value]="username || 'Sin definir'" class="form-input" type="text" readonly style="flex:1;">
+              <button class="btn-secondary-sm" type="button" (click)="abrirModalUsername()">Cambiar</button>
+            </div>
           </div>
+
+          @if (perfilError) {
+            <p style="color:#ffb4ab; font-size:12px;">{{ perfilError }}</p>
+          }
+          @if (perfilGuardadoOk) {
+            <p style="color:#4ade80; font-size:12px;">¡Perfil actualizado!</p>
+          }
 
           <div class="card-footer">
             <button class="btn-primary" [disabled]="guardandoPerfil" (click)="actualizarPerfil()">
@@ -200,6 +210,34 @@
                   Aplicar
                 </button>
                 <button class="btn-secondary-sm" (click)="cancelCrop()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (showUsernameModal) {
+          <div class="cropper-overlay" (click)="cerrarModalUsername()">
+            <div class="cropper-modal" (click)="$event.stopPropagation()" style="max-width:400px;">
+              <h3 class="cropper-title">Cambiar nombre de usuario</h3>
+
+              <div class="form-group">
+                <label class="form-label">Nuevo nombre de usuario</label>
+                <input [(ngModel)]="newUsername" type="text" class="form-input">
+              </div>
+
+              @if (usernameError) {
+                <p style="color:#ffb4ab; font-size:12px;">{{ usernameError }}</p>
+              }
+              @if (usernameSuccess) {
+                <p style="color:#4ade80; font-size:12px;">¡Nombre de usuario actualizado!</p>
+              }
+
+              <div class="cropper-btns">
+                <button class="btn-primary" [disabled]="cambiandoUsername" (click)="cambiarUsername()">
+                  <span class="material-symbols-outlined">check</span>
+                  {{ cambiandoUsername ? 'Guardando...' : 'Guardar' }}
+                </button>
+                <button class="btn-secondary-sm" (click)="cerrarModalUsername()">Cancelar</button>
               </div>
             </div>
           </div>

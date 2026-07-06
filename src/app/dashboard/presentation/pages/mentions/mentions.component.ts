@@ -84,6 +84,10 @@ export class MentionsComponent implements OnInit {
   availableChannels: { name: string; logo: string | null; count: number; channelType: string }[] =
     [];
 
+  // Mismo criterio que dashboard/configuración: solo mostramos como canal real
+  // uno que el backend tenga implementado de verdad.
+  private readonly IMPLEMENTED_CHANNELS = ['YOUTUBE', 'TWITTER', 'REDDIT', 'TIKTOK'];
+
   private readonly platformDisplay: Record<string, { label: string; icon: string | null }> = {
     YOUTUBE: {
       label: 'YouTube',
@@ -202,10 +206,12 @@ export class MentionsComponent implements OnInit {
       .get<any[]>(`${this.baseUrl}/mentions/brand/${this.brandId}/channel-counts`)
       .subscribe({
         next: (data) => {
-          this.availableChannels = data.map((c) => {
-            const tpl = this.platformDisplay[c.platform] || { label: c.platform, icon: null };
-            return { name: tpl.label, logo: tpl.icon, count: c.count, channelType: c.platform };
-          });
+          this.availableChannels = data
+            .filter((c) => this.IMPLEMENTED_CHANNELS.includes(c.platform))
+            .map((c) => {
+              const tpl = this.platformDisplay[c.platform] || { label: c.platform, icon: null };
+              return { name: tpl.label, logo: tpl.icon, count: c.count, channelType: c.platform };
+            });
         },
         error: () => {},
       });
@@ -381,7 +387,7 @@ export class MentionsComponent implements OnInit {
       next: () => {
         m.status = 'ATENDIDA';
         this.closeModal();
-        this.router.navigate(['/incidentes']);
+        this.router.navigate(['/incidents']);
       },
     });
   }

@@ -401,7 +401,7 @@
 .incident-row:hover .incident-row-arrow { transform: translateX(3px); }
 
 /* ===== SOURCE CARD ===== */
-.metric-card--source { position: relative; overflow: visible; }
+.metric-card--source { position: relative; overflow: visible; z-index: 10; }
 
 .source-selector {
   display: flex;

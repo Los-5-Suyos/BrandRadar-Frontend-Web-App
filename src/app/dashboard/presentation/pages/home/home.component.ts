@@ -23,6 +23,12 @@ export class HomeComponent implements OnInit {
   searchQuery = '';
   showDeleteConfirm: number | null = null;
   showMenuId: number | null = null;
+  deletingId: number | null = null;
+  deleteError: string | null = null;
+  // Guarda el id del workspace del último error de borrado. deletingId vuelve a
+  // null apenas responde el error (para reactivar el botón), así que no sirve
+  // para decidir a qué card mostrarle el mensaje de error.
+  deleteErrorId: number | null = null;
 
   // Modal crear workspace
   showCreateWorkspace = false;
@@ -36,6 +42,8 @@ export class HomeComponent implements OnInit {
   creatingWorkspace = false;
   createWorkspaceError: string | null = null;
 
+  // Canales del plan Basic (los realmente implementados en backend hoy):
+  // YouTube, Twitter/X, Reddit y TikTok. El resto queda bloqueado hasta Pro/Enterprise.
   channels = [
     {
       name: 'YouTube',
@@ -45,22 +53,29 @@ export class HomeComponent implements OnInit {
       locked: false,
     },
     {
-      name: 'Facebook',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg',
-      icon: null,
-      active: false,
-      locked: true,
-    },
-    {
       name: 'Twitter / X',
       logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
       icon: null,
-      active: false,
-      locked: true,
+      active: true,
+      locked: false,
+    },
+    {
+      name: 'Reddit',
+      logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
+      icon: null,
+      active: true,
+      locked: false,
     },
     {
       name: 'TikTok',
       logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80',
+      icon: null,
+      active: true,
+      locked: false,
+    },
+    {
+      name: 'Facebook',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg',
       icon: null,
       active: false,
       locked: true,
@@ -75,13 +90,6 @@ export class HomeComponent implements OnInit {
     {
       name: 'Google News',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png',
-      icon: null,
-      active: false,
-      locked: true,
-    },
-    {
-      name: 'Reddit',
-      logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
       icon: null,
       active: false,
       locked: true,
@@ -158,7 +166,7 @@ export class HomeComponent implements OnInit {
     if (plan === 'ENTERPRISE') return 'Todos los canales disponibles';
     if (plan === 'PRO')
       return 'YouTube, Facebook, Twitter, TikTok, Instagram, Google News, Reddit y Blogs disponibles';
-    return 'Solo YouTube disponible';
+    return 'YouTube, Twitter/X, Reddit y TikTok disponibles';
   }
 
   ngOnInit() {
@@ -254,15 +262,24 @@ export class HomeComponent implements OnInit {
   }
 
   deleteWorkspace(id: number) {
+    this.deletingId = id;
+    this.deleteError = null;
+    this.deleteErrorId = null;
     this.http.delete(`${environment.apiBaseUrl}/workspaces/${id}`).subscribe({
       next: () => {
         this.workspaces = this.workspaces.filter((ws) => ws.id !== id);
         this.showDeleteConfirm = null;
+        this.deletingId = null;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al eliminar workspace:', err);
-        this.showDeleteConfirm = null;
+        this.deletingId = null;
+        this.deleteErrorId = id;
+        this.deleteError =
+          err.status === 409 || err.status === 400
+            ? 'No se pudo eliminar: el workspace tiene datos asociados (menciones, incidentes, etc.).'
+            : 'No se pudo eliminar el workspace. Intenta nuevamente.';
         this.cdr.detectChanges();
       },
     });

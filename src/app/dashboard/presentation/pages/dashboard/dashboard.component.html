@@ -19,7 +19,9 @@
         <div class="notif-wrapper">
           <span class="material-symbols-outlined topbar-icon"
                 (click)="showNotifications = !showNotifications; $event.stopPropagation()">notifications</span>
-          <span class="notif-badge">{{ notifications.length }}</span>
+          @if (notifications.length > 0) {
+            <span class="notif-badge">{{ notifications.length }}</span>
+          }
 
           @if (showNotifications) {
             <div class="notif-panel" (click)="$event.stopPropagation()">
@@ -36,6 +38,12 @@
                     <p class="notif-item-title">{{ n.title }}</p>
                     <p class="notif-item-desc">{{ n.desc }}</p>
                     <p class="notif-item-time">{{ n.time }}</p>
+                  </div>
+                </div>
+              } @empty {
+                <div class="notif-item">
+                  <div class="notif-info">
+                    <p class="notif-item-desc">No tienes notificaciones por ahora.</p>
                   </div>
                 </div>
               }
@@ -61,7 +69,7 @@
             </div>
             <div>
               <p class="incident-banner-title">Incidente activo detectado</p>
-              <p class="incident-banner-desc">{{ crisisAnalysis }}</p>
+              <p class="incident-banner-desc">{{ crisisDiagnostico }}</p>
             </div>
           </div>
           <button class="btn-diagnostico" (click)="goToSection('incidentes')">
@@ -282,7 +290,21 @@
                 <span class="ai-badge">AI INSIGHTS</span>
               </div>
             </div>
-            <p class="crisis-desc">{{ crisisAnalysis }}</p>
+            @if (crisisPattern || crisisGeofocus) {
+              <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:10px;">
+                @if (crisisPattern) {
+                  <span style="font-size:12px; color:#c7c5d0;">
+                    <strong style="color:#fface8;">Patrón:</strong> {{ crisisPattern }}
+                  </span>
+                }
+                @if (crisisGeofocus) {
+                  <span style="font-size:12px; color:#c7c5d0;">
+                    <strong style="color:#fface8;">Alcance:</strong> {{ crisisGeofocus }}
+                  </span>
+                }
+              </div>
+            }
+            <p class="crisis-desc">{{ crisisDiagnostico }}</p>
             <div class="crisis-actions">
               <div class="btn-crisis-action">
                 <div class="crisis-action-num crisis-action-num--error">1</div>

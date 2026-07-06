@@ -46,10 +46,10 @@ export class AuthStore {
     });
   }
 
-  register(email: string, password: string, role: string, description: string) {
+  register(email: string, password: string, role: string, fullName: string, username: string) {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-    this.authApi.register(email, password, role, description).subscribe({
+    this.authApi.register(email, password, role, fullName, username).subscribe({
       next: () => {
         this.loadingSignal.set(false);
       },

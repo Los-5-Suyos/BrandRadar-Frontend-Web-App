@@ -34,6 +34,18 @@ export class RegisterComponent {
   onSubmit() {
     this.error = '';
 
+    if (!this.fullName.trim()) {
+      this.error = 'Ingresa tu nombre completo';
+      return;
+    }
+    if (!this.username.trim()) {
+      this.error = 'Ingresa un nombre de usuario';
+      return;
+    }
+    if (!/^[a-zA-Z0-9._-]{3,}$/.test(this.username.trim())) {
+      this.error = 'El nombre de usuario debe tener al menos 3 caracteres (letras, números, puntos, guiones)';
+      return;
+    }
     if (!this.email.trim()) {
       this.error = 'Ingresa tu correo electrónico';
       return;
@@ -52,7 +64,9 @@ export class RegisterComponent {
     }
 
     this.loading = true;
-    this.authApi.register(this.email, this.password, this.accountType, this.fullName).subscribe({
+    this.authApi
+      .register(this.email, this.password, this.accountType, this.fullName.trim(), this.username.trim())
+      .subscribe({
       next: (response) => {
         this.loading = false;
         if (typeof window !== 'undefined') {
