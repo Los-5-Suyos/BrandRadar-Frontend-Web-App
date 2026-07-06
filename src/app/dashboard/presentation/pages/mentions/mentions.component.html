@@ -6,7 +6,7 @@
     <header class="men-topbar">
       <div>
         <h1 class="men-title">Menciones</h1>
-        <p class="men-subtitle">{{ workspaceName }} · {{ filteredMenciones.length }} menciones · <span style="color:#fface8;">2 filtros activos</span></p>
+        <p class="men-subtitle">{{ workspaceName }} · {{ filteredMenciones.length }} menciones</p>
       </div>
       <div class="men-topbar-actions">
         <button class="btn-export" (click)="showExportModal = true">
@@ -23,23 +23,21 @@
           <p class="men-metric-label">TOTAL MENCIONES</p>
           <span class="material-symbols-outlined men-metric-icon">forum</span>
         </div>
-        <p class="men-metric-value">1,247 <span class="men-metric-delta men-metric-delta--down">-2.4%</span></p>
-        <div class="men-metric-bar">
-          <div class="men-metric-bar-fill" style="width:72%; background:#fface8;"></div>
-        </div>
+        <p class="men-metric-value">{{ totalMenciones }}</p>
       </div>
 
       <div class="men-metric-card">
         <div class="men-metric-header">
           <p class="men-metric-label">ESTADO SENTIMIENTO</p>
-          <span class="alerta-badge">ALERTA</span>
+          @if (sentimientoDominante === 'NEGATIVO') {
+            <span class="alerta-badge">ALERTA</span>
+          }
         </div>
         <div style="display:flex; align-items:baseline; gap:12px;">
-          <p class="men-metric-value">56%</p>
+          <p class="men-metric-value">{{ sentimientoDominantePct }}%</p>
           <div>
             <p class="men-metric-dominante">DOMINANTE:</p>
-            <p class="men-metric-dominante-val">NEGATIVO</p>
-            <p class="men-metric-tendencia">Tendencia al alza (+8%)</p>
+            <p class="men-metric-dominante-val">{{ sentimientoDominante }}</p>
           </div>
         </div>
       </div>
@@ -50,21 +48,18 @@
           <span class="material-symbols-outlined men-metric-icon">trending_down</span>
         </div>
         <div class="men-fuentes-list">
-          <div class="men-fuente-item">
-            <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" class="men-fuente-icon">
-            <span class="men-fuente-name">Twitter/X</span>
-            <span class="men-fuente-pct">72% neg.</span>
-          </div>
-          <div class="men-fuente-item">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png" class="men-fuente-icon">
-            <span class="men-fuente-name">Google News</span>
-            <span class="men-fuente-pct">64% neg.</span>
-          </div>
-          <div class="men-fuente-item">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" class="men-fuente-icon">
-            <span class="men-fuente-name">Facebook</span>
-            <span class="men-fuente-pct">48% neg.</span>
-          </div>
+          @if (fuentesCriticas.length === 0) {
+            <p style="font-size:12px; color:#697586;">Sin fuentes críticas por ahora</p>
+          }
+          @for (f of fuentesCriticas; track f.platform) {
+            <div class="men-fuente-item">
+              @if (f.icon) {
+                <img [src]="f.icon" class="men-fuente-icon">
+              }
+              <span class="men-fuente-name">{{ f.platform }}</span>
+              <span class="men-fuente-pct">{{ f.pct }}% neg.</span>
+            </div>
+          }
         </div>
       </div>
 
@@ -72,24 +67,36 @@
         <div class="men-metric-header">
           <p class="men-metric-label">CANAL MÁS ACTIVO</p>
         </div>
-        <div class="men-canal-activo">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" class="men-canal-logo">
-          <span class="men-canal-name">Facebook</span>
-        </div>
-        <p class="men-canal-sub">423 menciones (34%)</p>
+        @if (canalMasActivo) {
+          <div class="men-canal-activo">
+            @if (canalMasActivo.logo) {
+              <img [src]="canalMasActivo.logo" class="men-canal-logo">
+            }
+            <span class="men-canal-name">{{ canalMasActivo.name }}</span>
+          </div>
+          <p class="men-canal-sub">{{ canalMasActivo.count }} menciones</p>
+        } @else {
+          <p style="font-size:12px; color:#697586;">Sin datos aún</p>
+        }
       </div>
 
       <div class="men-metric-card men-metric-card--alert">
         <div class="men-metric-header">
           <p class="men-metric-label">ALERTA RECIENTE</p>
         </div>
-        <div class="men-alerta-row">
-          <img src="https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true" class="men-fuente-icon">
-          <span class="men-alerta-plataforma">Twitter/X</span>
-          <span class="men-alerta-score">0.93 NEG</span>
-        </div>
-        <p class="men-alerta-texto">"Pésimo servicio, 2 horas..."</p>
-        <p class="men-alerta-tiempo">hace 4 min</p>
+        @if (alertaReciente) {
+          <div class="men-alerta-row">
+            @if (alertaReciente.plataformaIcon) {
+              <img [src]="alertaReciente.plataformaIcon" class="men-fuente-icon">
+            }
+            <span class="men-alerta-plataforma">{{ alertaReciente.plataforma }}</span>
+            <span class="men-alerta-score">{{ alertaReciente.score.toFixed(2) }} NEG</span>
+          </div>
+          <p class="men-alerta-texto">"{{ alertaReciente.texto.substring(0, 40) }}..."</p>
+          <p class="men-alerta-tiempo">{{ alertaReciente.tiempo }}</p>
+        } @else {
+          <p style="font-size:12px; color:#697586;">Sin alertas recientes</p>
+        }
       </div>
     </div>
 
@@ -102,8 +109,8 @@
           Todos
         </button>
         @for (ch of availableChannels; track ch.name) {
-          <button class="men-channel-btn" [class.men-channel-btn--active]="activeChannel === ch.name"
-                  (click)="activeChannel = ch.name">
+          <button class="men-channel-btn" [class.men-channel-btn--active]="activeChannel === ch.channelType"
+                  (click)="activeChannel = ch.channelType">
             @if (ch.logo) {
               <img [src]="ch.logo" [alt]="ch.name" class="men-channel-btn-icon">
             } @else {
@@ -148,7 +155,11 @@
         </div>
 
         <div class="men-list">
-          @if (filteredMenciones.length === 0) {
+          @if (loading) {
+            <div class="men-empty">
+              <p>Cargando menciones...</p>
+            </div>
+          } @else if (filteredMenciones.length === 0) {
             <div class="men-empty">
               <span class="material-symbols-outlined">search_off</span>
               <p>No hay menciones con este filtro</p>
@@ -162,8 +173,13 @@
                   <div class="men-user-info">
                     <span class="men-username">{{ m.usuario }}</span>
                     <span class="men-handle">{{ m.handle }}</span>
-                    <img [src]="m.plataformaIcon" [alt]="m.plataforma" class="men-platform-icon">
+                    @if (m.plataformaIcon) {
+                      <img [src]="m.plataformaIcon" [alt]="m.plataforma" class="men-platform-icon">
+                    }
                     <span class="men-tiempo">· {{ m.tiempo }}</span>
+                    @if (m.status === 'ATENDIDA') {
+                      <span class="men-tiempo" style="color:#4ade80;">· Atendida</span>
+                    }
                   </div>
                   <div class="men-score" [style.color]="m.sentimientoColor">
                     {{ m.score.toFixed(2) }} <span class="men-score-label">{{ m.sentimiento }}</span>
@@ -175,54 +191,74 @@
                     <span class="material-symbols-outlined">open_in_new</span>
                     Ver publicación original
                   </a>
+                  <button class="men-link" style="border:none; background:none; cursor:pointer;"
+                          (click)="$event.stopPropagation(); marcarAtendida(m)">
+                    <span class="material-symbols-outlined">{{ m.status === 'ATENDIDA' ? 'undo' : 'check_circle' }}</span>
+                    {{ m.status === 'ATENDIDA' ? 'Marcar pendiente' : 'Marcar atendida' }}
+                  </button>
                 </div>
               </div>
             </div>
           }
-          <div class="men-load-more">Cargando más menciones...</div>
         </div>
       }
 
       <!-- TAB: Publicaciones -->
       @if (activeMainTab === 'publicaciones') {
-        <div class="pub-section">
-          <div class="pub-keywords">
-            <p class="pub-keywords-label">KEYWORDS MONITOREADAS</p>
-            <div class="pub-keywords-row">
-              @for (kw of workspaceKeywords; track kw) {
-                <span class="pub-keyword-tag">{{ kw }}</span>
-              }
-            </div>
+        <div>
+          <div class="pub-keywords-row">
+            @for (kw of workspaceKeywords; track kw) {
+              <span class="pub-keyword-tag">{{ kw }}</span>
+            }
           </div>
           <div class="men-list">
+            @if (publicaciones.length === 0) {
+              <div class="men-empty">
+                <span class="material-symbols-outlined">search_off</span>
+                <p>Aún no hay publicaciones con engagement registrado</p>
+              </div>
+            }
             @for (p of publicaciones; track p.id) {
               <div class="pub-card">
                 <div class="pub-card-header">
-                  <img [src]="p.plataformaIcon" [alt]="p.plataforma" class="pub-platform-icon">
+                  @if (p.plataformaIcon) {
+                    <img [src]="p.plataformaIcon" [alt]="p.plataforma" class="pub-platform-icon">
+                  }
                   <span class="pub-plataforma">{{ p.plataforma }}</span>
                   <span class="pub-tiempo">· {{ p.tiempo }}</span>
-                  <div class="pub-keyword-match">
-                    <span class="material-symbols-outlined">tag</span>
-                    {{ p.keyword }}
-                  </div>
                 </div>
                 <p class="pub-usuario">{{ p.usuario }}</p>
-                <p class="pub-texto" [innerHTML]="highlightText(p.texto, [p.keyword])"></p>
+                <p class="pub-texto" [innerHTML]="highlightText(p.texto, p.keywords)"></p>
                 <div class="pub-card-footer">
                   <div class="pub-stats">
                     <span class="pub-stat">
                       <span class="material-symbols-outlined">thumb_up</span>
-                      {{ p.likes }}
+                      {{ p.engagementLikes }}
                     </span>
                     <span class="pub-stat">
                       <span class="material-symbols-outlined">chat_bubble</span>
-                      {{ p.comentarios }}
+                      {{ p.engagementComments }}
                     </span>
+                    @if (p.engagementViews > 0) {
+                      <span class="pub-stat">
+                        <span class="material-symbols-outlined">visibility</span>
+                        {{ p.engagementViews }}
+                      </span>
+                    }
                   </div>
-                  <a [href]="p.url" target="_blank" class="men-link">
-                    <span class="material-symbols-outlined">open_in_new</span>
-                    Ver en {{ p.plataforma }}
-                  </a>
+                  <div style="display:flex; gap:12px; align-items:center;">
+                    @if (p.plataforma === 'TIKTOK') {
+                      <button class="men-link" style="border:none; background:none; cursor:pointer;"
+                              (click)="verComentariosTikTok(p); openModal(p)">
+                        <span class="material-symbols-outlined">comment</span>
+                        Ver comentarios reales
+                      </button>
+                    }
+                    <a [href]="p.url" target="_blank" class="men-link">
+                      <span class="material-symbols-outlined">open_in_new</span>
+                      Ver en {{ p.plataforma }}
+                    </a>
+                  </div>
                 </div>
               </div>
             }
@@ -250,7 +286,9 @@
           <div>
             <p class="modal-username">{{ selectedMencion.usuario }}</p>
             <div style="display:flex; align-items:center; gap:6px;">
-              <img [src]="selectedMencion.plataformaIcon" [alt]="selectedMencion.plataforma" class="men-platform-icon">
+              @if (selectedMencion.plataformaIcon) {
+                <img [src]="selectedMencion.plataformaIcon" [alt]="selectedMencion.plataforma" class="men-platform-icon">
+              }
               <span class="modal-handle">{{ selectedMencion.plataforma }} · {{ selectedMencion.tiempo }}</span>
             </div>
           </div>
@@ -266,6 +304,30 @@
           <span class="material-symbols-outlined">open_in_new</span>
           Ver publicación original en {{ selectedMencion.plataforma }}
         </a>
+
+        @if (selectedMencion.plataforma === 'TIKTOK') {
+          <div class="modal-ai" style="margin-top:12px;">
+            <div class="modal-ai-header">
+              <span class="material-symbols-outlined modal-ai-icon">comment</span>
+              <span class="modal-ai-title">Comentarios reales de TikTok</span>
+            </div>
+            @if (loadingTiktokComments) {
+              <p style="font-size:12px; color:#697586;">Cargando comentarios...</p>
+            } @else if (tiktokComments.length > 0) {
+              @for (c of tiktokComments; track c.text) {
+                <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <p style="font-size:12px; color:#d4e4fa;">{{ c.authorName }} <span style="color:#697586;">{{ c.authorHandle }}</span></p>
+                  <p style="font-size:13px;">{{ c.text }}</p>
+                  <p style="font-size:11px; color:#697586;">👍 {{ c.likes }}</p>
+                </div>
+              }
+            } @else {
+              <button class="men-link" style="border:none; background:none; cursor:pointer;" (click)="verComentariosTikTok(selectedMencion)">
+                Cargar comentarios reales
+              </button>
+            }
+          </div>
+        }
 
         <div class="modal-ai">
           <div class="modal-ai-header">
@@ -306,8 +368,10 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn-ignorar" (click)="closeModal()">Ignorar</button>
-          <button class="btn-incidente" (click)="goToSection('incidents'); closeModal()">
+          <button class="btn-ignorar" (click)="marcarAtendida(selectedMencion); closeModal()">
+            {{ selectedMencion.status === 'ATENDIDA' ? 'Marcar pendiente' : 'Marcar como atendida' }}
+          </button>
+          <button class="btn-incidente" (click)="crearIncidente(selectedMencion)">
             <span class="material-symbols-outlined">warning</span>
             Crear Incidente
           </button>

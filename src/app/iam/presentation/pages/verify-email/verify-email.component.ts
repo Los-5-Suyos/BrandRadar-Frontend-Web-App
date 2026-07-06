@@ -11,7 +11,7 @@ import { OnboardingSidebarComponent } from './../../../../shared/components/onbo
   standalone: true,
   imports: [CommonModule, FormsModule, OnboardingSidebarComponent],
   templateUrl: './verify-email.component.html',
-  styleUrl: './verify-email.component.css'
+  styleUrl: './verify-email.component.css',
 })
 export class VerifyEmailComponent {
   router = inject(Router);
@@ -43,15 +43,41 @@ export class VerifyEmailComponent {
     }
     this.loading = true;
     const email = localStorage.getItem('pendingEmail') || '';
-    this.http.post(`${environment.apiBaseUrl}/auth/verify?email=${email}&code=${code}`, {}).subscribe({
-      next: () => {
-        this.loading = false;
-        this.router.navigate(['/subscription']);
-      },
-      error: () => {
-        this.loading = false;
-        this.error = 'Código incorrecto';
-      }
-    });
+    this.http
+      .post(`${environment.apiBaseUrl}/auth/verify?email=${email}&code=${code}`, {})
+      .subscribe({
+        next: () => {
+          const password = sessionStorage.getItem('pendingPassword');
+          if (!password) {
+            // No tenemos la contraseña en memoria (p. ej. se recargó la página):
+            // pedimos que inicie sesión manualmente.
+            this.loading = false;
+            this.router.navigate(['/login']);
+            return;
+          }
+          this.http
+            .post<any>(`${environment.apiBaseUrl}/auth/login`, { email, password })
+            .subscribe({
+              next: (response) => {
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('refreshToken', response.refreshToken);
+                localStorage.setItem('userId', response.userId.toString());
+                localStorage.setItem('userEmail', email);
+                sessionStorage.removeItem('pendingPassword');
+                this.loading = false;
+                this.router.navigate(['/subscription']);
+              },
+              error: () => {
+                this.loading = false;
+                sessionStorage.removeItem('pendingPassword');
+                this.router.navigate(['/login']);
+              },
+            });
+        },
+        error: () => {
+          this.loading = false;
+          this.error = 'Código incorrecto';
+        },
+      });
   }
 }

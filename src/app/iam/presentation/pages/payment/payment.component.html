@@ -145,8 +145,11 @@
       </div>
 
       <div class="pay-btn-wrapper">
-        <button (click)="pay()" class="btn-pay">
-          PAGAR Y CONTINUAR
+        @if (paymentError) {
+          <p style="color:#ffb4ab; font-size:13px; text-align:center; margin-bottom: 8px;">{{ paymentError }}</p>
+        }
+        <button (click)="pay()" class="btn-pay" [disabled]="paying">
+          {{ paying ? 'PROCESANDO...' : 'PAGAR Y CONTINUAR' }}
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>

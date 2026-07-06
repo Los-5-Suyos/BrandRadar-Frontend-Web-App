@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
   router = inject(Router);
@@ -28,27 +28,68 @@ export class HomeComponent implements OnInit {
   showCreateWorkspace = false;
   newWsName = '';
   newWsLogoPreview: string | null = null;
+  newWsLogoFile: File | null = null;
   newWsInclusionTags: string[] = [];
   newWsExclusionTags: string[] = [];
   newInclusionInput = '';
   newExclusionInput = '';
+  creatingWorkspace = false;
+  createWorkspaceError: string | null = null;
 
   channels = [
-    { name: 'YouTube', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg', icon: null, active: true, locked: false },
-    { name: 'Facebook', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg', icon: null, active: false, locked: true },
-    { name: 'Twitter / X', logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true', icon: null, active: false, locked: true },
-    { name: 'TikTok', logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80', icon: null, active: false, locked: true },
-    { name: 'Instagram', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png', icon: null, active: false, locked: true },
-    { name: 'Google News', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png', icon: null, active: false, locked: true },
-    { name: 'Reddit', logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true', icon: null, active: false, locked: true },
+    {
+      name: 'YouTube',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg',
+      icon: null,
+      active: true,
+      locked: false,
+    },
+    {
+      name: 'Facebook',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg',
+      icon: null,
+      active: false,
+      locked: true,
+    },
+    {
+      name: 'Twitter / X',
+      logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
+      icon: null,
+      active: false,
+      locked: true,
+    },
+    {
+      name: 'TikTok',
+      logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80',
+      icon: null,
+      active: false,
+      locked: true,
+    },
+    {
+      name: 'Instagram',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
+      icon: null,
+      active: false,
+      locked: true,
+    },
+    {
+      name: 'Google News',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png',
+      icon: null,
+      active: false,
+      locked: true,
+    },
+    {
+      name: 'Reddit',
+      logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
+      icon: null,
+      active: false,
+      locked: true,
+    },
     { name: 'Blogs / Web', logo: null, icon: 'article', active: false, locked: true },
   ];
 
-  notifications = [
-    { icon: 'warning', color: '#ffb4ab', title: 'Alerta de crisis detectada', desc: 'Sentimiento negativo +40%', time: 'Hace 5 min' },
-    { icon: 'trending_down', color: '#c0c1ff', title: 'Reputación bajó 3 puntos', desc: 'Score bajó esta semana', time: 'Hace 1 hora' },
-    { icon: 'mark_chat_unread', color: '#4ade80', title: 'Nueva mención positiva', desc: '127 mentions positivas hoy', time: 'Hace 2 horas' }
-  ];
+  notifications: { icon: string; color: string; title: string; desc: string; time: string }[] = [];
 
   readonly wsColors = ['#3b3f8c', '#7c3f1a', '#1a5c3f', '#5c1a3f'];
   readonly wsScores = [78, 58, 65, 71];
@@ -89,26 +130,34 @@ export class HomeComponent implements OnInit {
 
   get filteredWorkspaces() {
     if (!this.searchQuery) return this.workspaces;
-    return this.workspaces.filter(ws =>
-      ws.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    return this.workspaces.filter((ws) =>
+      ws.name.toLowerCase().includes(this.searchQuery.toLowerCase()),
     );
   }
 
   getInitials(name: string): string {
-    return name.split(' ').map((w: string) => w[0]).join('').substring(0, 2).toUpperCase();
+    return name
+      .split(' ')
+      .map((w: string) => w[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
   }
 
   get planLabel(): string {
-    const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
+    const plan =
+      typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
     if (plan === 'PRO') return 'Pro';
     if (plan === 'ENTERPRISE') return 'Enterprise';
     return 'Basic';
   }
 
   get planChannelsDesc(): string {
-    const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
+    const plan =
+      typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
     if (plan === 'ENTERPRISE') return 'Todos los canales disponibles';
-    if (plan === 'PRO') return 'YouTube, Facebook, Twitter, TikTok, Instagram, Google News, Reddit y Blogs disponibles';
+    if (plan === 'PRO')
+      return 'YouTube, Facebook, Twitter, TikTok, Instagram, Google News, Reddit y Blogs disponibles';
     return 'Solo YouTube disponible';
   }
 
@@ -118,32 +167,83 @@ export class HomeComponent implements OnInit {
       const token = localStorage.getItem('token');
       if (userId && token) {
         this.loadWorkspaces(userId, token);
+        this.loadNotifications(userId);
       }
     }
   }
 
+  loadNotifications(userId: string) {
+    this.http
+      .get<any[]>(`${environment.apiBaseUrl}/user-accounts/${userId}/notifications`)
+      .subscribe({
+        next: (data) => {
+          this.notifications = data.slice(0, 10).map((n: any) => ({
+            icon:
+              n.type === 'CRISIS_ALERT'
+                ? 'warning'
+                : n.type === 'SCORE_DROP'
+                  ? 'trending_down'
+                  : 'mark_chat_unread',
+            color:
+              n.type === 'CRISIS_ALERT'
+                ? '#ffb4ab'
+                : n.type === 'SCORE_DROP'
+                  ? '#c0c1ff'
+                  : '#4ade80',
+            title: n.title,
+            desc: n.message,
+            time: this.relativeTime(n.createdAt),
+          }));
+        },
+        error: () => {},
+      });
+  }
+
+  private relativeTime(isoDate: string): string {
+    const diffMs = Date.now() - new Date(isoDate).getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Hace instantes';
+    if (mins < 60) return `Hace ${mins} minuto${mins === 1 ? '' : 's'}`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `Hace ${hours} hora${hours === 1 ? '' : 's'}`;
+    const days = Math.floor(hours / 24);
+    return `Hace ${days} día${days === 1 ? '' : 's'}`;
+  }
+
   loadWorkspaces(userId: string, token: string) {
     this.loading = true;
-    const headers = { 'Authorization': `Bearer ${token}` };
     const url = `${environment.apiBaseUrl}/workspaces/user/${userId}`;
 
-    this.http.get<any[]>(url, { headers }).subscribe({
+    this.http.get<any[]>(url).subscribe({
       next: (data) => {
         this.workspaces = data.map((ws: any, i: number) => ({
           ...ws,
-          score: this.wsScores[i % 4],
-          mentions: this.wsMentions[i % 4],
-          incidents: this.wsIncidents[i % 4],
-          color: this.wsColors[i % 4]
+          score: 0,
+          mentions: 0,
+          incidents: 0,
+          color: this.wsColors[i % 4],
         }));
         this.loading = false;
         this.cdr.detectChanges();
+        this.workspaces.forEach((ws) => this.loadWorkspaceStats(ws));
       },
       error: (err) => {
         console.error('Error:', err);
         this.loading = false;
         this.cdr.detectChanges();
-      }
+      },
+    });
+  }
+
+  private loadWorkspaceStats(ws: any) {
+    this.http.get<any>(`${environment.apiBaseUrl}/workspaces/${ws.id}/dashboard`).subscribe({
+      next: (data) => {
+        ws.score = Math.round(data.sentimentScore ?? 0);
+        ws.mentions = data.totalMentions ?? 0;
+        ws.incidents = data.activeIncidents?.count ?? 0;
+        this.cdr.detectChanges();
+      },
+      error: () => {}, // workspace sin marca/datos todavía: se queda en 0, no es un error real
     });
   }
 
@@ -154,9 +254,18 @@ export class HomeComponent implements OnInit {
   }
 
   deleteWorkspace(id: number) {
-    this.workspaces = this.workspaces.filter(ws => ws.id !== id);
-    this.showDeleteConfirm = null;
-    this.cdr.detectChanges();
+    this.http.delete(`${environment.apiBaseUrl}/workspaces/${id}`).subscribe({
+      next: () => {
+        this.workspaces = this.workspaces.filter((ws) => ws.id !== id);
+        this.showDeleteConfirm = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al eliminar workspace:', err);
+        this.showDeleteConfirm = null;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   addWorkspace() {
@@ -169,17 +278,23 @@ export class HomeComponent implements OnInit {
     this.showCreateWorkspace = false;
     this.newWsName = '';
     this.newWsLogoPreview = null;
+    this.newWsLogoFile = null;
     this.newWsInclusionTags = [];
     this.newWsExclusionTags = [];
     this.newInclusionInput = '';
     this.newExclusionInput = '';
+    this.creatingWorkspace = false;
+    this.createWorkspaceError = null;
   }
 
   onLogoSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
+      this.newWsLogoFile = input.files[0];
       const reader = new FileReader();
-      reader.onload = (e) => { this.newWsLogoPreview = e.target?.result as string; };
+      reader.onload = (e) => {
+        this.newWsLogoPreview = e.target?.result as string;
+      };
       reader.readAsDataURL(input.files[0]);
     }
   }
@@ -193,7 +308,7 @@ export class HomeComponent implements OnInit {
   }
 
   removeInclusionTag(tag: string) {
-    this.newWsInclusionTags = this.newWsInclusionTags.filter(t => t !== tag);
+    this.newWsInclusionTags = this.newWsInclusionTags.filter((t) => t !== tag);
   }
 
   addExclusionTag() {
@@ -205,22 +320,75 @@ export class HomeComponent implements OnInit {
   }
 
   removeExclusionTag(tag: string) {
-    this.newWsExclusionTags = this.newWsExclusionTags.filter(t => t !== tag);
+    this.newWsExclusionTags = this.newWsExclusionTags.filter((t) => t !== tag);
   }
 
   createWorkspace() {
-    if (!this.newWsName.trim()) return;
-    const newWs = {
-      id: Date.now(),
-      name: this.newWsName.trim(),
-      score: 65,
-      mentions: 0,
-      incidents: 0,
-      color: this.wsColors[this.workspaces.length % 4]
-    };
-    this.workspaces.push(newWs);
-    this.closeCreateWorkspace();
-    this.cdr.detectChanges();
+    const name = this.newWsName.trim();
+    if (!name || !this.userId) return;
+
+    this.creatingWorkspace = true;
+    this.createWorkspaceError = null;
+
+    this.http
+      .post<any>(`${environment.apiBaseUrl}/workspaces`, {
+        userId: Number(this.userId),
+        name,
+        plan: 'FREE',
+      })
+      .subscribe({
+        next: (ws) => {
+          // Crea la marca asociada al workspace (mentions/incidentes/config la requieren)
+          this.http
+            .post<any>(`${environment.apiBaseUrl}/brands`, { workspaceId: ws.id, name })
+            .subscribe({
+              next: (brand) => {
+                this.newWsInclusionTags.forEach((kw) => {
+                  this.http
+                    .post(`${environment.apiBaseUrl}/brands/${brand.id}/keywords`, {
+                      keyword: kw,
+                      matchType: 'PARTIAL',
+                    })
+                    .subscribe({ error: () => {} });
+                });
+                this.newWsExclusionTags.forEach((kw) => {
+                  this.http
+                    .post(`${environment.apiBaseUrl}/workspaces/${ws.id}/exclusion-keywords`, {
+                      keyword: kw,
+                    })
+                    .subscribe({ error: () => {} });
+                });
+              },
+              error: () => {},
+            });
+
+          if (this.newWsLogoFile) {
+            const formData = new FormData();
+            formData.append('file', this.newWsLogoFile);
+            this.http
+              .post(`${environment.apiBaseUrl}/workspaces/${ws.id}/config/logo`, formData)
+              .subscribe({ error: () => {} });
+          }
+
+          this.workspaces.push({
+            ...ws,
+            score: 0,
+            mentions: 0,
+            incidents: 0,
+            color: this.wsColors[this.workspaces.length % 4],
+          });
+          this.closeCreateWorkspace();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.creatingWorkspace = false;
+          this.createWorkspaceError =
+            err.status === 403
+              ? 'Alcanzaste el límite de workspaces de tu plan.'
+              : 'No se pudo crear el workspace. Intenta nuevamente.';
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   logout() {
@@ -239,14 +407,14 @@ export class HomeComponent implements OnInit {
 
   getLogoUrl(name: string): string {
     const domains: { [key: string]: string } = {
-      'netflix': 'netflix.com',
-      'uber': 'uber.com',
-      'bembos': 'bembos.com.pe',
-      'rimac': 'rimac.com.pe',
-      'bbva': 'bbva.com',
-      'bcp': 'viabcp.com',
+      netflix: 'netflix.com',
+      uber: 'uber.com',
+      bembos: 'bembos.com.pe',
+      rimac: 'rimac.com.pe',
+      bbva: 'bbva.com',
+      bcp: 'viabcp.com',
       'coca cola': 'coca-cola.com',
-      'samsung': 'samsung.com',
+      samsung: 'samsung.com',
     };
     const key = name.toLowerCase();
     for (const brand in domains) {

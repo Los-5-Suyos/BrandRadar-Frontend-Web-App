@@ -9,10 +9,6 @@
         <p class="rep-subtitle">Genera informes estratégicos y exporta datos de sentimiento para {{ workspaceName }}</p>
       </div>
       <div style="display:flex; gap:10px;">
-        <button class="btn-nuevo-reporte">
-          <span class="material-symbols-outlined">share</span>
-          Compartir
-        </button>
         <button class="btn-nuevo-reporte" (click)="abrirProgramar()">
           <span class="material-symbols-outlined">schedule</span>
           Programar Envío
@@ -43,34 +39,18 @@
             </div>
           </div>
 
-          <div class="rep-field">
-            <p class="rep-field-label">MÉTRICAS A INCLUIR</p>
-            <div class="rep-checkbox-grid">
-              @for (m of metricas; track m.key) {
-                <label class="rep-checkbox-item" [class.rep-checkbox-item--checked]="m.checked">
-                  <input type="checkbox" [(ngModel)]="m.checked" class="rep-checkbox-input">
-                  <span class="rep-checkbox-box">
-                    @if (m.checked) {
-                      <span class="material-symbols-outlined">check</span>
-                    }
-                  </span>
-                  <span class="rep-checkbox-label">{{ m.label }}</span>
-                </label>
-              }
+          @if (rangoSeleccionado === 'personalizado') {
+            <div class="rep-field" style="display:flex; gap:10px;">
+              <div style="flex:1;">
+                <p class="rep-field-label">DESDE</p>
+                <input type="date" class="rep-select" [(ngModel)]="customFrom">
+              </div>
+              <div style="flex:1;">
+                <p class="rep-field-label">HASTA</p>
+                <input type="date" class="rep-select" [(ngModel)]="customTo">
+              </div>
             </div>
-          </div>
-
-          <div class="rep-field">
-            <p class="rep-field-label">PROGRAMACIÓN DE REPORTES</p>
-            <div class="rep-toggle-group">
-              @for (f of frecuencias; track f.key) {
-                <button class="rep-toggle-btn" [class.rep-toggle-btn--active]="frecuenciaSeleccionada === f.key"
-                        (click)="seleccionarFrecuencia(f.key)">
-                  {{ f.label }}
-                </button>
-              }
-            </div>
-          </div>
+          }
 
           <div class="rep-field">
             <p class="rep-field-label">FORMATO DE EXPORTACIÓN</p>
@@ -84,6 +64,10 @@
             </div>
           </div>
 
+          @if (generarReporteError) {
+            <p style="color:#ffb4ab; font-size:13px; margin: 4px 0 0;">{{ generarReporteError }}</p>
+          }
+
           <button class="btn-generar-reporte" [disabled]="generandoReporte" (click)="generarReporte()">
             @if (!generandoReporte) {
               <span>GENERAR REPORTE AHORA</span>
@@ -93,90 +77,69 @@
           </button>
         </div>
 
-        <!-- Resumen Ejecutivo -->
+        <!-- Último reporte generado -->
         <div class="rep-preview-card">
           <div class="rep-preview-header">
             <div>
-              <h3 class="rep-preview-title">Resumen Ejecutivo de {{ workspaceName }}</h3>
-              <p class="rep-preview-periodo">Periodo: {{ periodoResumen }}</p>
+              <h3 class="rep-preview-title">Último reporte de {{ workspaceName }}</h3>
+              @if (ultimoReporte) {
+                <p class="rep-preview-periodo">{{ ultimoReporte.nombre }}</p>
+              } @else {
+                <p class="rep-preview-periodo">Aún no has generado ningún reporte</p>
+              }
             </div>
-            <span class="rep-live-badge">
-              <span class="rep-live-dot"></span>
-              VISTA PREVIA EN VIVO
-            </span>
-          </div>
-
-          <div class="rep-metrics-row">
-            @for (met of metricasResumen; track met.label) {
-              <div class="rep-metric-card">
-                <p class="rep-metric-label">{{ met.label }}</p>
-                <p class="rep-metric-value" [style.color]="met.color">{{ met.valor }}</p>
-                <p class="rep-metric-variacion" [class.rep-metric-variacion--down]="met.tendencia === 'down'">
-                  <span class="material-symbols-outlined">
-                    {{ met.tendencia === 'up' ? 'trending_up' : 'trending_down' }}
-                  </span>
-                  {{ met.variacion }}
-                </p>
-              </div>
+            @if (ultimoReporte) {
+              <span class="rep-estado-badge" [style.color]="ultimoReporte.estadoColor">
+                <span class="rep-estado-dot" [style.background]="ultimoReporte.estadoColor"></span>
+                {{ ultimoReporte.estado }}
+              </span>
             }
           </div>
 
-          <div class="rep-chart-section">
-            <div class="rep-chart-header">
-              <p class="rep-chart-title">EVOLUCIÓN DE SENTIMIENTO DIARIA</p>
-              <div class="rep-chart-legend">
-                <span class="rep-legend-item">
-                  <span class="rep-legend-dot" style="background:#a78bfa;"></span>
-                  Positivo
-                </span>
-                <span class="rep-legend-item">
-                  <span class="rep-legend-dot" style="background:#3a3d52;"></span>
-                  Neutro
-                </span>
+          @if (ultimoReporte?.resumenEjecutivo) {
+            <div style="background:rgba(99,247,255,0.06); border:1px solid rgba(99,247,255,0.15); border-radius:12px; padding:14px 16px; margin-bottom:16px;">
+              <p style="font-size:9px; font-weight:800; color:#63f7ff; letter-spacing:0.08em; margin-bottom:6px;">
+                RESUMEN EJECUTIVO (IA)
+              </p>
+              <p style="font-size:13px; color:#d4e4fa; line-height:1.5;">{{ ultimoReporte?.resumenEjecutivo }}</p>
+            </div>
+          }
+
+          @if (ultimoReporte) {
+            <div class="rep-metrics-row">
+              <div class="rep-metric-card">
+                <p class="rep-metric-label">FORMATO</p>
+                <p class="rep-metric-value">{{ ultimoReporte.tipo }}</p>
+              </div>
+              <div class="rep-metric-card">
+                <p class="rep-metric-label">TAMAÑO</p>
+                <p class="rep-metric-value">{{ ultimoReporte.tamano }}</p>
+              </div>
+              <div class="rep-metric-card">
+                <p class="rep-metric-label">GENERADO</p>
+                <p class="rep-metric-value" style="font-size: 18px;">{{ ultimoReporte.fecha }}</p>
               </div>
             </div>
-            <div class="rep-bar-chart">
-              @for (d of evolucionSentimiento; track $index) {
-                <div class="rep-bar-col">
-                  <div class="rep-bar-stack">
-                    <div class="rep-bar-segment rep-bar-segment--neutro" [style.height.%]="d.neutro"></div>
-                    <div class="rep-bar-segment rep-bar-segment--positivo" [style.height.%]="d.positivo"></div>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
 
-          <div class="rep-keywords-section">
-            <p class="rep-chart-title">CUENTAS MÁS CRÍTICAS</p>
-            <div class="rep-cuentas-list">
-              @for (cuenta of cuentasCriticas; track cuenta.handle) {
-                <div class="rep-cuenta-item">
-                  <div class="rep-cuenta-avatar" [style.background]="cuenta.color">{{ cuenta.initials }}</div>
-                  <div class="rep-cuenta-info">
-                    <p class="rep-cuenta-nombre">{{ cuenta.nombre }}</p>
-                    <p class="rep-cuenta-handle">{{ cuenta.handle }} · {{ cuenta.plataforma }}</p>
-                  </div>
-                  <div class="rep-cuenta-stats">
-                    <span class="rep-cuenta-menciones">{{ cuenta.menciones }} menciones</span>
-                    <span class="rep-cuenta-score" [style.color]="cuenta.scoreColor">{{ cuenta.score }} NEG</span>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-
+            @if (ultimoReporte.estado === 'LISTO') {
+              <button class="btn-generar-reporte" (click)="descargarReporte(ultimoReporte)">
+                <span class="material-symbols-outlined" style="vertical-align:middle; margin-right:6px;">download</span>
+                Descargar este reporte
+              </button>
+            }
+          } @else {
+            <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#929096;">
+              Configura el rango y formato a la izquierda, y presiona "Generar Reporte Ahora" para crear tu primer reporte.
+              El resumen ejecutivo, evolución de sentimiento y cuentas críticas quedan incluidos dentro del archivo generado.
+            </p>
+          }
         </div>
       </div>
 
       <!-- Reportes recientes -->
       <div class="rep-recientes-card">
         <div class="rep-recientes-header">
-          <p class="rep-recientes-title">REPORTES RECIENTES</p>
-          <a class="rep-ver-historial" (click)="verHistorialCompleto()">
-            Ver todo el historial
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </a>
+          <p class="rep-recientes-title">REPORTES GENERADOS</p>
         </div>
 
         <table class="rep-table">
@@ -192,7 +155,7 @@
           </tr>
           </thead>
           <tbody>
-            @for (r of reportesRecientes; track r.nombre) {
+            @for (r of reportes; track r.id) {
               <tr>
                 <td>
                   <span class="rep-reporte-nombre">
@@ -212,12 +175,11 @@
                 </td>
                 <td class="rep-th-accion">
                   <div style="display:flex; gap:6px; justify-content:flex-end;">
-                    <button class="rep-btn-accion rep-btn-accion--ver" (click)="verReporte(r)">
-                      <span class="material-symbols-outlined">visibility</span>
-                    </button>
-                    <button class="rep-btn-accion rep-btn-accion--download" (click)="descargarReporte(r)">
-                      <span class="material-symbols-outlined">download</span>
-                    </button>
+                    @if (r.estado === 'LISTO') {
+                      <button class="rep-btn-accion rep-btn-accion--download" (click)="descargarReporte(r)">
+                        <span class="material-symbols-outlined">download</span>
+                      </button>
+                    }
                     <button class="rep-btn-accion rep-btn-accion--delete" (click)="eliminarReporte(r)">
                       <span class="material-symbols-outlined">delete</span>
                     </button>
@@ -225,9 +187,14 @@
                 </td>
               </tr>
             }
-            @if (reportesRecientes.length === 0) {
+            @if (!loadingReportes && reportes.length === 0) {
               <tr>
                 <td colspan="7" class="rep-tabla-vacia">Aún no has generado ningún reporte.</td>
+              </tr>
+            }
+            @if (loadingReportes) {
+              <tr>
+                <td colspan="7" class="rep-tabla-vacia">Cargando reportes...</td>
               </tr>
             }
           </tbody>
@@ -255,12 +222,9 @@
         <div class="rep-modal-body">
 
           <div class="rep-field">
-            <p class="rep-field-label">DESTINATARIO(S)</p>
+            <p class="rep-field-label">DESTINATARIO</p>
             <input [(ngModel)]="programarEmail" class="rep-modal-input"
-                   placeholder="correo@empresa.com, otro@empresa.com">
-            <p style="font-family:'DM Sans',sans-serif; font-size:10px; color:#47464b; margin-top:4px;">
-              Separa múltiples correos con coma
-            </p>
+                   placeholder="correo@empresa.com">
           </div>
 
           <div class="rep-field">
@@ -289,20 +253,6 @@
             </div>
           }
 
-          @if (programarFrecuencia === 'mensual') {
-            <div class="rep-field">
-              <p class="rep-field-label">DÍA DEL MES</p>
-              <div class="rep-select-wrapper">
-                <select class="rep-select" [(ngModel)]="programarDia">
-                  <option value="1">Día 1</option>
-                  <option value="15">Día 15</option>
-                  <option value="ultimo">Último día</option>
-                </select>
-                <span class="material-symbols-outlined rep-select-chevron">expand_more</span>
-              </div>
-            </div>
-          }
-
           <div class="rep-field">
             <p class="rep-field-label">FORMATO</p>
             <div class="rep-toggle-group">
@@ -320,22 +270,27 @@
             <p>
               Se enviará un reporte en
               <strong style="color:#d4e4fa;">{{ programarFormato.toUpperCase() }}</strong>
-              @if (programarFrecuencia === 'diario') { <span>cada día</span> }
               @if (programarFrecuencia === 'semanal') { <span>cada <strong style="color:#d4e4fa;">{{ programarDia }}</strong></span> }
-              @if (programarFrecuencia === 'mensual') { <span>el <strong style="color:#d4e4fa;">día {{ programarDia }}</strong> de cada mes</span> }
+              @if (programarFrecuencia === 'mensual') { <span>cada 30 días</span> }
               a <strong style="color:#d4e4fa;">{{ programarEmail || '...' }}</strong>
             </p>
           </div>
+
+          @if (scheduleError) {
+            <p style="color:#ffb4ab; font-size:13px;">{{ scheduleError }}</p>
+          }
 
         </div>
 
         <div class="rep-modal-footer">
           <button class="rep-btn-cancelar" (click)="cerrarProgramar()">Cancelar</button>
           <button class="btn-generar-reporte" style="margin-top:0; flex:1;"
-                  [disabled]="!programarEmail.trim() || programacionGuardada"
+                  [disabled]="!programarEmail.trim() || programacionGuardada || guardandoProgramacion"
                   (click)="guardarProgramacion()">
             @if (programacionGuardada) {
               <span>✓ PROGRAMADO</span>
+            } @else if (guardandoProgramacion) {
+              <span>GUARDANDO...</span>
             } @else {
               <span>GUARDAR PROGRAMACIÓN</span>
             }

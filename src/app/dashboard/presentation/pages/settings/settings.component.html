@@ -23,7 +23,7 @@
     </nav>
 
     <div class="sidebar-bottom">
-      <button class="btn-upgrade">Actualizar Plan</button>
+      <button class="btn-upgrade" (click)="router.navigate(['/subscription'])">Actualizar Plan</button>
       <button (click)="logout()" class="btn-logout">
         <span class="material-symbols-outlined">logout</span>
         CERRAR SESIÓN
@@ -89,9 +89,9 @@
           </div>
 
           <div class="card-footer">
-            <button class="btn-primary">
-              <span class="material-symbols-outlined">save</span>
-              Actualizar Perfil
+            <button class="btn-primary" [disabled]="guardandoPerfil" (click)="actualizarPerfil()">
+              <span class="material-symbols-outlined">{{ guardandoPerfil ? 'hourglass_empty' : 'save' }}</span>
+              {{ guardandoPerfil ? 'Guardando...' : 'Actualizar Perfil' }}
             </button>
           </div>
         </div>
@@ -108,30 +108,18 @@
 
           <div class="plan-box">
             <div class="plan-name-row">
-              <span class="plan-name">Plan Basic</span>
+              <span class="plan-name">Plan {{ planLabel }}</span>
               <span class="plan-badge">Activo</span>
             </div>
             <div class="plan-detail">
-              <span class="plan-detail-label">Marcas monitoreadas:</span>
-              <span class="plan-detail-value">1 / 1</span>
-            </div>
-            <div class="plan-detail">
-              <span class="plan-detail-label">Menciones/mes:</span>
-              <span class="plan-detail-value">500</span>
-            </div>
-            <div class="plan-detail">
-              <span class="plan-detail-label">Canales:</span>
-              <span class="plan-detail-value">Solo YouTube</span>
-            </div>
-            <div class="plan-detail">
-              <span class="plan-detail-label">Costo:</span>
-              <span class="plan-detail-value">Gratuito</span>
+              <span class="plan-detail-label">Workspace:</span>
+              <span class="plan-detail-value">{{ workspaceName }}</span>
             </div>
           </div>
 
           <button class="btn-secondary" (click)="router.navigate(['/subscription'])">
             <span class="material-symbols-outlined">rocket_launch</span>
-            Actualizar a Pro
+            Ver planes disponibles
           </button>
         </div>
 
@@ -143,35 +131,13 @@
           </div>
           <p class="section-subtitle">Proteja su acceso y datos sensibles</p>
 
-          <div class="security-item">
+          <div class="security-item" style="cursor:pointer;" (click)="abrirModalPassword()">
             <div class="security-icon-wrapper">
               <span class="material-symbols-outlined">key</span>
             </div>
             <div class="security-info">
               <p class="security-title">Cambiar Contraseña</p>
-              <p class="security-sub">Última actualización hace 3 meses</p>
-            </div>
-            <span class="material-symbols-outlined chevron">chevron_right</span>
-          </div>
-
-          <div class="security-item">
-            <div class="security-icon-wrapper">
-              <span class="material-symbols-outlined">smartphone</span>
-            </div>
-            <div class="security-info">
-              <p class="security-title">Autenticación de Dos Factores</p>
-              <p class="security-sub">No configurado</p>
-            </div>
-            <span class="material-symbols-outlined chevron">chevron_right</span>
-          </div>
-
-          <div class="security-item">
-            <div class="security-icon-wrapper red">
-              <span class="material-symbols-outlined">devices</span>
-            </div>
-            <div class="security-info">
-              <p class="security-title">Sesiones Activas</p>
-              <p class="security-sub">Sesión actual</p>
+              <p class="security-sub">Haz clic para actualizar tu contraseña</p>
             </div>
             <span class="material-symbols-outlined chevron">chevron_right</span>
           </div>
@@ -214,6 +180,7 @@
             </label>
           </div>
         </div>
+
         @if (showCropper) {
           <div class="cropper-overlay" (click)="cancelCrop()">
             <div class="cropper-modal" (click)="$event.stopPropagation()">
@@ -233,6 +200,42 @@
                   Aplicar
                 </button>
                 <button class="btn-secondary-sm" (click)="cancelCrop()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (showPasswordModal) {
+          <div class="cropper-overlay" (click)="cerrarModalPassword()">
+            <div class="cropper-modal" (click)="$event.stopPropagation()" style="max-width:400px;">
+              <h3 class="cropper-title">Cambiar contraseña</h3>
+
+              <div class="form-group">
+                <label class="form-label">Contraseña actual</label>
+                <input [(ngModel)]="currentPassword" type="password" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nueva contraseña</label>
+                <input [(ngModel)]="newPassword" type="password" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirmar nueva contraseña</label>
+                <input [(ngModel)]="confirmPassword" type="password" class="form-input">
+              </div>
+
+              @if (passwordError) {
+                <p style="color:#ffb4ab; font-size:12px;">{{ passwordError }}</p>
+              }
+              @if (passwordSuccess) {
+                <p style="color:#4ade80; font-size:12px;">¡Contraseña actualizada!</p>
+              }
+
+              <div class="cropper-btns">
+                <button class="btn-primary" [disabled]="cambiandoPassword" (click)="cambiarPassword()">
+                  <span class="material-symbols-outlined">check</span>
+                  {{ cambiandoPassword ? 'Guardando...' : 'Cambiar contraseña' }}
+                </button>
+                <button class="btn-secondary-sm" (click)="cerrarModalPassword()">Cancelar</button>
               </div>
             </div>
           </div>

@@ -1,25 +1,52 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {SidebarComponent} from '../../components/sidebar/sidebar.component';
+import { HttpClient } from '@angular/common/http';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { environment } from '../../../../../environments/environment';
+
+interface Incidente {
+  id: number;
+  nivel: string;
+  estado: string;
+  nivelColor: string;
+  nivelBg: string;
+  estadoColor: string;
+  estadoBg: string;
+  titulo: string;
+  descripcion: string;
+  impactScore: number;
+  tiempo: string;
+  progreso: number;
+  canales: { nombre: string; logo: string }[];
+  keywords: string[];
+}
 
 @Component({
   selector: 'app-incidentes',
   standalone: true,
   imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './incidents.component.html',
-  styleUrl: './incidents.component.css'
+  styleUrl: './incidents.component.css',
 })
-export class IncidentsComponent {
+export class IncidentsComponent implements OnInit {
   router = inject(Router);
+  private http = inject(HttpClient);
+  private baseUrl = environment.apiBaseUrl;
+
+  brandId: number | null = null;
+  loading = true;
 
   get workspaceName() {
-    return typeof window !== 'undefined' ? localStorage.getItem('currentWorkspaceName') || 'Workspace' : 'Workspace';
+    return typeof window !== 'undefined'
+      ? localStorage.getItem('currentWorkspaceName') || 'Workspace'
+      : 'Workspace';
   }
 
   get planLabel(): string {
-    const plan = typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
+    const plan =
+      typeof window !== 'undefined' ? localStorage.getItem('workspacePlan') || 'FREE' : 'FREE';
     if (plan === 'PRO') return 'Pro';
     if (plan === 'ENTERPRISE') return 'Enterprise';
     return 'Basic';
@@ -27,143 +54,233 @@ export class IncidentsComponent {
 
   activeTab = 'todos';
   activeCrisisTab = 'diagnostico';
-  selectedIncidente: any = null;
+  selectedIncidente: Incidente | null = null;
   copiedIndex: number | null = null;
 
-  tabs = [
-    { key: 'todos', label: 'Todos', count: 4, color: '#929096' },
-    { key: 'alto', label: 'Alto', count: 1, color: '#ffb4ab' },
-    { key: 'medio', label: 'Medio', count: 1, color: '#f97316' },
-    { key: 'bajo', label: 'Bajo', count: 1, color: '#63f7ff' },
-    { key: 'resuelto', label: 'Resueltos', count: 1, color: '#4ade80' },
-  ];
+  incidentes: Incidente[] = [];
 
-  incidentes = [
-    {
-      id: 1,
-      nivel: 'ALTO', estado: 'ACTIVO',
-      nivelColor: '#ffb4ab', nivelBg: 'rgba(255,180,171,0.12)',
-      estadoColor: '#ffb4ab', estadoBg: 'rgba(255,180,171,0.08)',
-      titulo: 'Pico de quejas por demoras en delivery',
-      descripcion: 'Detectado por la app tras analizar 234 menciones en las últimas 3 horas. Concentración en zonas de Miraflores y Surco.',
-      menciones: 234, score: '0.88 NEG',
-      tiempo: 'hace 2h 14m', progreso: 35,
-      canales: [
-        { nombre: 'Facebook', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg' },
-        { nombre: 'TikTok', logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80' },
-        { nombre: 'Twitter/X', logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true' }
-      ],
-      keywords: ['delivery', 'demora', 'tarde']
-    },
-    {
-      id: 2,
-      nivel: 'MEDIO', estado: 'ACTIVO',
-      nivelColor: '#f97316', nivelBg: 'rgba(249,115,22,0.12)',
-      estadoColor: '#f97316', estadoBg: 'rgba(249,115,22,0.08)',
-      titulo: 'Comentarios sobre temperatura de productos',
-      descripcion: 'Patrón detectado en reseñas de Google y Reddit. Los usuarios reportan productos fríos o mal empacados.',
-      menciones: 89, score: '0.71 NEG',
-      tiempo: 'hace 5h 30m', progreso: 0,
-      canales: [
-        { nombre: 'Google News', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png' },
-        { nombre: 'Reddit', logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true' }
-      ],
-      keywords: ['frío', 'empaque', 'calidad']
-    },
-    {
-      id: 3,
-      nivel: 'BAJO', estado: 'MONITOREADO',
-      nivelColor: '#63f7ff', nivelBg: 'rgba(99,247,255,0.1)',
-      estadoColor: '#63f7ff', estadoBg: 'rgba(99,247,255,0.06)',
-      titulo: 'Mención negativa viral en YouTube',
-      descripcion: 'Video con 15k vistas menciona negativamente el servicio. Tendencia estable sin crecimiento acelerado.',
-      menciones: 32, score: '0.54 NEG',
-      tiempo: 'hace 12h', progreso: 0,
-      canales: [
-        { nombre: 'YouTube', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg' }
-      ],
-      keywords: ['video', 'experiencia']
-    },
-    {
-      id: 4,
-      nivel: 'RESUELTO', estado: 'CERRADO',
-      nivelColor: '#4ade80', nivelBg: 'rgba(74,222,128,0.1)',
-      estadoColor: '#4ade80', estadoBg: 'rgba(74,222,128,0.06)',
-      titulo: 'Queja por error en pedido en San Isidro',
-      descripcion: 'Incidente resuelto tras respuesta pública y compensación al cliente. Sentimiento normalizado.',
-      menciones: 18, score: '0.22 NEG',
-      tiempo: 'hace 2 días', progreso: 100,
-      canales: [
-        { nombre: 'Facebook', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg' }
-      ],
-      keywords: ['pedido', 'error']
-    }
-  ];
+  private readonly nivelStyles: Record<string, { color: string; bg: string }> = {
+    CRITICO: { color: '#ffb4ab', bg: 'rgba(255,180,171,0.12)' },
+    ALTO: { color: '#ffb4ab', bg: 'rgba(255,180,171,0.12)' },
+    MEDIO: { color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  };
+
+  private readonly estadoStyles: Record<string, { color: string; bg: string }> = {
+    ACTIVO: { color: '#ffb4ab', bg: 'rgba(255,180,171,0.08)' },
+    MONITOREADO: { color: '#63f7ff', bg: 'rgba(99,247,255,0.06)' },
+    RESUELTO: { color: '#4ade80', bg: 'rgba(74,222,128,0.06)' },
+  };
+
+  get tabs() {
+    const count = (matcher: (i: Incidente) => boolean) => this.incidentes.filter(matcher).length;
+    return [
+      { key: 'todos', label: 'Todos', count: this.incidentes.length, color: '#929096' },
+      {
+        key: 'CRITICO',
+        label: 'Crítico',
+        count: count((i) => i.nivel === 'CRITICO'),
+        color: '#ffb4ab',
+      },
+      { key: 'ALTO', label: 'Alto', count: count((i) => i.nivel === 'ALTO'), color: '#ffb4ab' },
+      { key: 'MEDIO', label: 'Medio', count: count((i) => i.nivel === 'MEDIO'), color: '#f97316' },
+      {
+        key: 'RESUELTO',
+        label: 'Resueltos',
+        count: count((i) => i.estado === 'RESUELTO'),
+        color: '#4ade80',
+      },
+    ];
+  }
 
   get filteredIncidentes() {
     if (this.activeTab === 'todos') return this.incidentes;
-    if (this.activeTab === 'resuelto') return this.incidentes.filter(i => i.nivel === 'RESUELTO');
-    return this.incidentes.filter(i => i.nivel === this.activeTab.toUpperCase());
+    if (this.activeTab === 'RESUELTO')
+      return this.incidentes.filter((i) => i.estado === 'RESUELTO');
+    return this.incidentes.filter((i) => i.nivel === this.activeTab);
   }
 
-  selectIncidente(inc: any) {
-    this.selectedIncidente = inc;
-  }
-
-  keywords = [
-    { word: 'delivery', count: 312, pct: 100, color: '#ffb4ab' },
-    { word: 'demora', count: 287, pct: 92, color: '#ffb4ab' },
-    { word: 'frío', count: 198, pct: 63, color: '#f97316' },
-    { word: 'repartidor', count: 145, pct: 46, color: '#f97316' },
-    { word: 'calidad', count: 54, pct: 17, color: '#63f7ff' },
-  ];
+  keywords: { word: string; count: number; pct: number; color: string }[] = [];
 
   aiDiagnostico = {
-    texto: 'Se detecta un pico sostenido de menciones negativas durante 3 días consecutivos en Facebook (68% NEG) y TikTok (72% NEG), concentradas en las palabras clave "delivery", "demora" y "frío". El patrón indica un problema operacional recurrente sin respuesta pública de la marca.',
-    mencionesAnalizadas: '1,247',
-    scorePromedio: '0.84 NEG',
-    tendencia: '↑ ALZA',
-    sugerencias: [
-      {
-        tipo: 'mensaje',
-        urgencia: 'URGENTE · HACER AHORA',
-        urgenciaColor: '#ffb4ab',
-        titulo: 'Publicar comunicado oficial en Facebook',
-        desc: 'Reconocer el problema de delivery públicamente en los próximos 60 minutos.',
-        borrador: '"Querida comunidad Bembos, somos conscientes de los inconvenientes con nuestro servicio de delivery. Estamos trabajando activamente para resolver los tiempos de espera. Lamentamos el inconveniente y ofrecemos compensación a todos los afectados."',
-        plataforma: 'Facebook',
-        plataformaUrl: 'https://facebook.com'
-      },
-      {
-        tipo: 'accion',
-        urgencia: 'MEDIA · ESTA SEMANA',
-        urgenciaColor: '#63f7ff',
-        titulo: 'Pausar contenido promocional 24-48 horas',
-        desc: 'Publicar contenido de marketing durante una crisis activa genera contraste negativo con las quejas activas.'
-      }
-    ]
+    texto:
+      'Selecciona un incidente y presiona "Actualizar análisis" para generar un diagnóstico con IA.',
+    patron: '-',
+    geofocus: '-',
+    sugerencias: [] as any[],
   };
 
   accionesEvitar = [
     'No eliminar comentarios',
     'No responder de forma corporativa',
-    'No publicar promociones sin resolver'
+    'No publicar promociones sin resolver',
   ];
 
-  historialIA = [
-    { fecha: 'Hoy 09:00', score: '0.88 NEG', color: '#ffb4ab', resumen: 'Pico detectado en delivery. Se recomendó comunicado inmediato.' },
-    { fecha: 'Ayer 14:30', score: '0.71 NEG', color: '#f97316', resumen: 'Aumento moderado en quejas de temperatura de productos.' },
-    { fecha: 'Hace 3 días', score: '0.45 NEG', color: '#63f7ff', resumen: 'Sentimiento estable. Sin acciones urgentes requeridas.' },
-  ];
+  historialIA: { fecha: string; score: string; color: string; resumen: string }[] = [];
+
+  ngOnInit() {
+    if (typeof window === 'undefined') return;
+    const wsId = localStorage.getItem('currentWorkspaceId');
+    if (!wsId) {
+      this.router.navigate(['/home']);
+      return;
+    }
+    this.http.get<any[]>(`${this.baseUrl}/brands/workspace/${wsId}`).subscribe({
+      next: (brands) => {
+        if (brands.length > 0) {
+          this.brandId = brands[0].id;
+          this.loadIncidentes();
+        } else {
+          this.loading = false;
+        }
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
+  }
+
+  loadIncidentes() {
+    if (!this.brandId) return;
+    this.loading = true;
+    this.http.get<any[]>(`${this.baseUrl}/incidents/brand/${this.brandId}`).subscribe({
+      next: (data) => {
+        this.incidentes = data.map((i) => this.mapIncidente(i));
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
+  }
+
+  private mapIncidente(i: any): Incidente {
+    const nivel = i.severityLabel || 'MEDIO';
+    const estado = i.status || 'ACTIVO';
+    const nivelStyle = this.nivelStyles[nivel] || this.nivelStyles['MEDIO'];
+    const estadoStyle = this.estadoStyles[estado] || this.estadoStyles['ACTIVO'];
+
+    return {
+      id: i.id,
+      nivel,
+      estado,
+      nivelColor: nivelStyle.color,
+      nivelBg: nivelStyle.bg,
+      estadoColor: estadoStyle.color,
+      estadoBg: estadoStyle.bg,
+      titulo: i.title || 'Incidente sin título',
+      descripcion: i.description || '',
+      impactScore: i.impactScore || 0,
+      tiempo: this.relativeTime(i.createdAt),
+      progreso: i.progressPct || 0,
+      canales: [],
+      keywords: [],
+    };
+  }
+
+  private relativeTime(iso: string): string {
+    if (!iso) return '';
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'hace instantes';
+    if (mins < 60) return `hace ${mins} min`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `hace ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `hace ${days}d`;
+  }
+
+  selectIncidente(inc: Incidente) {
+    this.selectedIncidente = inc;
+    this.loadKeywords(inc.id);
+    this.loadHistorial(inc.id);
+    this.aiDiagnostico = {
+      texto:
+        'Presiona "Actualizar análisis" para generar un diagnóstico con IA sobre este incidente.',
+      patron: '-',
+      geofocus: '-',
+      sugerencias: [],
+    };
+  }
+
+  loadKeywords(incidentId: number) {
+    this.http.get<any>(`${this.baseUrl}/incidents/${incidentId}/keywords`).subscribe({
+      next: (data) => {
+        this.keywords = (data.keywords ?? []).map((k: any) => ({
+          word: k.keyword,
+          count: k.count,
+          pct: k.percentOfMax,
+          color: k.percentOfMax > 70 ? '#ffb4ab' : k.percentOfMax > 40 ? '#f97316' : '#63f7ff',
+        }));
+      },
+      error: () => {
+        this.keywords = [];
+      },
+    });
+  }
+
+  loadHistorial(incidentId: number) {
+    this.http.get<any[]>(`${this.baseUrl}/incidents/${incidentId}/analysis-history`).subscribe({
+      next: (data) => {
+        this.historialIA = data.map((h) => ({
+          fecha: new Date(h.createdAt).toLocaleString('es-PE', {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          score: h.pattern || '-',
+          color: '#63f7ff',
+          resumen: h.diagnostico,
+        }));
+      },
+      error: () => {
+        this.historialIA = [];
+      },
+    });
+  }
+
+  actualizarIA() {
+    if (!this.selectedIncidente) return;
+    this.http
+      .post<any>(`${this.baseUrl}/incidents/${this.selectedIncidente.id}/analyze`, {})
+      .subscribe({
+        next: (data) => {
+          this.aiDiagnostico = {
+            texto: data.diagnostico,
+            patron: data.pattern,
+            geofocus: data.geofocus,
+            sugerencias: [
+              {
+                tipo: 'accion',
+                urgencia: 'SUGERIDO POR IA',
+                urgenciaColor: '#63f7ff',
+                titulo: 'Acción recomendada',
+                desc: data.accion,
+              },
+            ],
+          };
+          if (this.selectedIncidente) this.loadHistorial(this.selectedIncidente.id);
+        },
+      });
+  }
+
+  actualizarEstado(nuevoEstado: string) {
+    if (!this.selectedIncidente) return;
+    const progressPct = nuevoEstado === 'RESUELTO' ? 100 : this.selectedIncidente.progreso;
+    this.http
+      .patch<any>(`${this.baseUrl}/incidents/${this.selectedIncidente.id}/status`, {
+        status: nuevoEstado,
+        progressPct,
+      })
+      .subscribe({
+        next: () => this.loadIncidentes(),
+      });
+  }
 
   copyText(text: string, index: number) {
     navigator.clipboard.writeText(text);
     this.copiedIndex = index;
-    setTimeout(() => this.copiedIndex = null, 2000);
-  }
-
-  actualizarIA() {
-    // conectar con Groq en el futuro
+    setTimeout(() => (this.copiedIndex = null), 2000);
   }
 
   goToSection(section: string) {
@@ -181,21 +298,66 @@ export class IncidentsComponent {
   nuevaAlertaDesc = '';
   nuevaAlertaGuardada = false;
 
-  historialResueltos = [
-    { fecha: '12 Oct 2024', titulo: 'Queja masiva por tiempo de entrega', nivel: 'ALTO', nivelColor: '#ffb4ab', score: '0.87', resolucion: 'Comunicado enviado + refuerzo de delivery en Miraflores', duracion: '3 días' },
-    { fecha: '28 Sep 2024', titulo: 'Comentarios negativos sobre nuevo menú', nivel: 'MEDIO', nivelColor: '#f97316', score: '0.62', resolucion: 'Se respondieron 18 comentarios y se ajustó la descripción del producto', duracion: '1 día' },
-    { fecha: '10 Sep 2024', titulo: 'Pico de menciones negativas en Google Maps', nivel: 'ALTO', nivelColor: '#ffb4ab', score: '0.91', resolucion: 'Gestión interna con local afectado + mejora de rating posterior', duracion: '5 días' },
-  ];
+  get historialResueltos() {
+    return this.incidentes
+      .filter((i) => i.estado === 'RESUELTO')
+      .map((i) => ({
+        fecha: i.tiempo,
+        titulo: i.titulo,
+        nivel: i.nivel,
+        nivelColor: i.nivelColor,
+        score: i.impactScore.toString(),
+        resolucion: i.descripcion,
+        duracion: '-',
+      }));
+  }
 
   guardarNuevaAlerta() {
-    if (!this.nuevaAlertaTitulo.trim()) return;
-    this.nuevaAlertaGuardada = true;
-    setTimeout(() => {
-      this.showNuevaAlertaModal = false;
-      this.nuevaAlertaGuardada = false;
-      this.nuevaAlertaTitulo = '';
-      this.nuevaAlertaDesc = '';
-      this.nuevaAlertaNivel = 'medio';
-    }, 1500);
+    if (!this.nuevaAlertaTitulo.trim() || !this.brandId) return;
+
+    const nivelMap: Record<string, { level: number; label: string }> = {
+      alto: { level: 2, label: 'ALTO' },
+      medio: { level: 1, label: 'MEDIO' },
+      bajo: { level: 1, label: 'BAJO' },
+    };
+    const nivel = nivelMap[this.nuevaAlertaNivel] || nivelMap['medio'];
+
+    this.http
+      .post<any>(`${this.baseUrl}/crisis-alerts`, {
+        brandId: this.brandId,
+        priorityLevel: nivel.level,
+        priorityLabel: nivel.label,
+        title: this.nuevaAlertaTitulo,
+        description: this.nuevaAlertaDesc,
+        triggerType: 'MANUAL',
+        triggerDeviationPct: 0,
+        triggerConfidence: 1,
+      })
+      .subscribe({
+        next: (alert) => {
+          this.http
+            .post(`${this.baseUrl}/incidents`, {
+              brandId: this.brandId,
+              crisisAlertId: alert.id,
+              severityLevel: nivel.level,
+              severityLabel: nivel.label,
+              title: this.nuevaAlertaTitulo,
+              description: this.nuevaAlertaDesc,
+            })
+            .subscribe({
+              next: () => {
+                this.nuevaAlertaGuardada = true;
+                this.loadIncidentes();
+                setTimeout(() => {
+                  this.showNuevaAlertaModal = false;
+                  this.nuevaAlertaGuardada = false;
+                  this.nuevaAlertaTitulo = '';
+                  this.nuevaAlertaDesc = '';
+                  this.nuevaAlertaNivel = 'medio';
+                }, 1500);
+              },
+            });
+        },
+      });
   }
 }

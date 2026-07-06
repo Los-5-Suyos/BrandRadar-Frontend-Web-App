@@ -38,6 +38,11 @@
           </div>
 
           <div class="inc-list">
+            @if (loading) {
+              <div class="inc-empty">
+                <p>Cargando incidentes...</p>
+              </div>
+            }
             @for (inc of filteredIncidentes; track inc.id) {
               <div class="inc-card" [class.inc-card--selected]="selectedIncidente?.id === inc.id"
                    [style.border-left-color]="inc.nivelColor"
@@ -60,12 +65,8 @@
 
                 <div class="inc-card-stats">
                   <span class="inc-stat">
-                    <span class="material-symbols-outlined">forum</span>
-                    {{ inc.menciones }} menciones
-                  </span>
-                  <span class="inc-stat">
                     <span class="material-symbols-outlined">trending_down</span>
-                    Score: {{ inc.score }}
+                    Impacto: {{ inc.impactScore }}
                   </span>
                 </div>
 
@@ -95,7 +96,7 @@
               </div>
             }
 
-            @if (filteredIncidentes.length === 0) {
+            @if (!loading && filteredIncidentes.length === 0) {
               <div class="inc-empty">
                 <span class="material-symbols-outlined">check_circle</span>
                 <p>No hay incidentes en esta categoría</p>
@@ -138,7 +139,13 @@
 
             <div class="crisis-panel-body">
 
-              @if (activeCrisisTab === 'diagnostico') {
+              @if (!selectedIncidente) {
+                <div class="crisis-section">
+                  <p class="crisis-text">Selecciona un incidente de la lista para ver su diagnóstico.</p>
+                </div>
+              }
+
+              @if (selectedIncidente && activeCrisisTab === 'diagnostico') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
                     <span class="material-symbols-outlined">radar</span>
@@ -148,35 +155,23 @@
 
                   <div class="crisis-metrics">
                     <div class="crisis-metric">
-                      <p class="crisis-metric-label">MENCIONES ANALIZADAS</p>
-                      <p class="crisis-metric-value">{{ aiDiagnostico.mencionesAnalizadas }}</p>
+                      <p class="crisis-metric-label">PATRÓN DETECTADO</p>
+                      <p class="crisis-metric-value" style="font-size:13px;">{{ aiDiagnostico.patron }}</p>
                     </div>
                     <div class="crisis-metric">
-                      <p class="crisis-metric-label">
-                        SCORE PROMEDIO
-                        <span class="crisis-metric-info material-symbols-outlined"
-                              title="Nivel promedio de negatividad. Escala 0.00–1.00: 0.00 = neutral/positivo, 1.00 = totalmente negativo.">
-                          info
-                        </span>
-                      </p>
-                      <p class="crisis-metric-value" style="color:#ffb4ab;">{{ aiDiagnostico.scorePromedio }}</p>
-                    </div>
-                    <div class="crisis-metric">
-                      <p class="crisis-metric-label">TENDENCIA</p>
-                      <p class="crisis-metric-value" style="color:#f97316;">{{ aiDiagnostico.tendencia }}</p>
+                      <p class="crisis-metric-label">ENFOQUE GEOGRÁFICO</p>
+                      <p class="crisis-metric-value" style="font-size:13px; color:#63f7ff;">{{ aiDiagnostico.geofocus }}</p>
                     </div>
                   </div>
-
-                  <p class="crisis-metrics-hint">
-                    <span class="material-symbols-outlined">help</span>
-                    El score promedio va de 0.00 (neutral/positivo) a 1.00 (totalmente negativo). Se calcula sobre las menciones NEG analizadas en las últimas 24h.
-                  </p>
 
                   <p class="crisis-section-label" style="margin-top:16px;">
                     <span class="material-symbols-outlined">tag</span>
                     KEYWORDS CRÍTICAS
                   </p>
                   <div class="crisis-keywords">
+                    @if (keywords.length === 0) {
+                      <p style="font-size:12px; color:#697586;">Sin keywords críticas detectadas para este incidente</p>
+                    }
                     @for (kw of keywords; track kw.word) {
                       <div class="crisis-kw-item">
                         <span class="crisis-kw-word">{{ kw.word }}</span>
@@ -190,12 +185,16 @@
                 </div>
               }
 
-              @if (activeCrisisTab === 'acciones') {
+              @if (selectedIncidente && activeCrisisTab === 'acciones') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
                     <span class="material-symbols-outlined">bolt</span>
                     SUGERENCIAS DE ACCIÓN
                   </p>
+
+                  @if (aiDiagnostico.sugerencias.length === 0) {
+                    <p class="crisis-text">Presiona "Actualizar análisis" para generar sugerencias con IA.</p>
+                  }
 
                   @for (s of aiDiagnostico.sugerencias; track s.titulo; let i = $index) {
                     <div class="crisis-accion-card">
@@ -237,12 +236,15 @@
                 </div>
               }
 
-              @if (activeCrisisTab === 'historial') {
+              @if (selectedIncidente && activeCrisisTab === 'historial') {
                 <div class="crisis-section">
                   <p class="crisis-section-label">
                     <span class="material-symbols-outlined">history</span>
                     ANÁLISIS ANTERIORES
                   </p>
+                  @if (historialIA.length === 0) {
+                    <p style="font-size:12px; color:#697586;">Aún no se ha generado ningún análisis para este incidente</p>
+                  }
                   @for (h of historialIA; track h.fecha) {
                     <div class="historial-item">
                       <div class="historial-item-header">
@@ -257,8 +259,22 @@
 
             </div>
 
-            <div class="crisis-panel-footer">
-              <button class="btn-actualizar" (click)="actualizarIA()">
+            <div class="crisis-panel-footer" style="display:flex; flex-direction:column; gap:8px;">
+              @if (selectedIncidente) {
+                <div style="display:flex; gap:6px;">
+                  <button class="btn-actualizar" style="flex:1; font-size:10px;"
+                          (click)="actualizarEstado('MONITOREADO')"
+                          [disabled]="selectedIncidente.estado === 'MONITOREADO'">
+                    MONITOREAR
+                  </button>
+                  <button class="btn-actualizar" style="flex:1; font-size:10px; background:#4ade80;"
+                          (click)="actualizarEstado('RESUELTO')"
+                          [disabled]="selectedIncidente.estado === 'RESUELTO'">
+                    RESOLVER
+                  </button>
+                </div>
+              }
+              <button class="btn-actualizar" (click)="actualizarIA()" [disabled]="!selectedIncidente">
                 <span class="material-symbols-outlined">refresh</span>
                 ACTUALIZAR ANÁLISIS
               </button>
@@ -286,9 +302,12 @@
           </button>
         </div>
 
-        <p class="inc-modal-sub">Incidentes resueltos y cerrados de tu workspace</p>
+        <p class="inc-modal-sub">Incidentes resueltos de tu workspace</p>
 
         <div class="inc-historial-list">
+          @if (historialResueltos.length === 0) {
+            <p style="font-size:13px; color:#697586; padding:20px 0;">Aún no hay incidentes resueltos</p>
+          }
           @for (h of historialResueltos; track h.fecha) {
             <div class="inc-historial-card">
               <div class="inc-historial-top">
@@ -299,7 +318,7 @@
               </div>
               <p class="inc-historial-titulo">{{ h.titulo }}</p>
               <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
-                <span style="font-family:'DM Sans',sans-serif; font-size:9px; font-weight:800; color:#929096; letter-spacing:0.08em;">SCORE FINAL:</span>
+                <span style="font-family:'DM Sans',sans-serif; font-size:9px; font-weight:800; color:#929096; letter-spacing:0.08em;">IMPACTO:</span>
                 <span style="font-family:'DM Sans',sans-serif; font-size:11px; font-weight:800;" [style.color]="h.nivelColor">{{ h.score }}</span>
               </div>
               <div class="inc-historial-resolucion">

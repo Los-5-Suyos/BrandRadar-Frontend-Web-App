@@ -11,10 +11,10 @@
       </div>
       <div class="dash-topbar-right">
 
-        <div class="dash-realtime-badge">
-          <span class="dash-realtime-dot"></span>
-          MONITORING LIVE
-        </div>
+        <button class="dash-realtime-badge" (click)="refresh()" [disabled]="loading" style="cursor:pointer; border:none;">
+          <span class="material-symbols-outlined" [class.spinning]="loading" style="font-size:16px;">refresh</span>
+          {{ loading ? 'ACTUALIZANDO...' : 'ACTUALIZAR' }}
+        </button>
 
         <div class="notif-wrapper">
           <span class="material-symbols-outlined topbar-icon"
@@ -61,7 +61,7 @@
             </div>
             <div>
               <p class="incident-banner-title">Incidente activo detectado</p>
-              <p class="incident-banner-desc">Pico de quejas por demoras en delivery reportado hace 15 minutos.</p>
+              <p class="incident-banner-desc">{{ crisisAnalysis }}</p>
             </div>
           </div>
           <button class="btn-diagnostico" (click)="goToSection('incidentes')">
@@ -89,17 +89,23 @@
               <span class="score-status">Neutral</span>
             </div>
           </div>
-          <p class="score-trend score-trend--down">
-            <span class="material-symbols-outlined">trending_down</span>
-            14% vs. ayer
-          </p>
+          @if (scoreDeltaVsYesterday !== null) {
+            <p class="score-trend" [class.score-trend--down]="scoreDeltaVsYesterday < 0">
+              <span class="material-symbols-outlined">{{ scoreDeltaVsYesterday < 0 ? 'trending_down' : 'trending_up' }}</span>
+              {{ scoreDeltaVsYesterday >= 0 ? '+' : '' }}{{ scoreDeltaVsYesterday }}% vs. ayer
+            </p>
+          } @else {
+            <p class="score-trend">Sin datos de ayer aún</p>
+          }
         </div>
 
         <div class="metric-card">
           <p class="metric-card-label">MENCIONES HOY</p>
           <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px;">
             <p class="mentions-value">{{ mentionsToday }}</p>
-            <span class="mentions-delta">+12%</span>
+            @if (mentionsDeltaPercent !== null) {
+              <span class="mentions-delta">{{ mentionsDeltaPercent >= 0 ? '+' : '' }}{{ mentionsDeltaPercent }}%</span>
+            }
           </div>
           <svg viewBox="0 0 200 48" class="sparkline" preserveAspectRatio="none">
             <polyline [attr.points]="sparklinePoints" fill="none" stroke="#63f7ff" stroke-width="2"/>
@@ -107,15 +113,15 @@
           <div class="mentions-breakdown">
             <div class="mb-item">
               <p class="mb-label">NEG</p>
-              <p class="mb-value mb-value--neg">32%</p>
+              <p class="mb-value mb-value--neg">{{ negativePercent }}%</p>
             </div>
             <div class="mb-item">
               <p class="mb-label">NEU</p>
-              <p class="mb-value mb-value--neu">48%</p>
+              <p class="mb-value mb-value--neu">{{ neutralPercent }}%</p>
             </div>
             <div class="mb-item">
               <p class="mb-label">POS</p>
-              <p class="mb-value mb-value--pos">20%</p>
+              <p class="mb-value mb-value--pos">{{ positivePercent }}%</p>
             </div>
           </div>
         </div>
@@ -123,11 +129,11 @@
         <div class="metric-card">
           <p class="metric-card-label">INCIDENTES ACTIVOS</p>
           <div class="incidents-header">
-            <span class="incidents-count">{{ activeIncidents.length }}</span>
-            <span class="incidents-sub">Requieren acción inmediata en locales</span>
+            <span class="incidents-count">{{ activeIncidentsCount }}</span>
+            <span class="incidents-sub">{{ activeIncidentsCount > 0 ? 'Requieren acción inmediata' : 'Todo bajo control' }}</span>
           </div>
           <div class="incidents-list">
-            @for (inc of activeIncidents; track inc.title) {
+            @for (inc of activeIncidents; track inc.id) {
               <div class="incident-row" (click)="goToSection('incidentes')">
                 <span class="incident-row-text">{{ inc.title }}</span>
                 <span class="material-symbols-outlined incident-row-arrow">chevron_right</span>
@@ -190,9 +196,9 @@
           <div class="chart-card-header">
             <div>
               <h3 class="chart-card-title">Evolución del SentimentScore</h3>
-              <p class="chart-card-subtitle">Comparativa de los últimos 15 días operativos</p>
+              <p class="chart-card-subtitle">Comparativa de los últimos 14 días</p>
             </div>
-            <span class="chart-card-period">ÚLTIMOS 15 DÍAS</span>
+            <span class="chart-card-period">ÚLTIMOS 14 DÍAS</span>
           </div>
           <svg viewBox="0 0 700 200" class="line-chart" preserveAspectRatio="none">
             <defs>
@@ -210,12 +216,11 @@
             <text x="4" y="118" class="chart-label">60</text>
             <text x="4" y="158" class="chart-label">40</text>
             <polygon
-              points="30,48 77,40 124,44 171,36 218,28 265,32 312,40 359,48 406,136 453,120 500,108 547,104 594,96 641,92 688,96 688,200 30,200"
+              [attr.points]="trendPolygonPoints"
               fill="url(#lineGrad)"/>
             <polyline
-              points="30,48 77,40 124,44 171,36 218,28 265,32 312,40 359,48 406,136 453,120 500,108 547,104 594,96 641,92 688,96"
+              [attr.points]="trendPolylinePoints"
               fill="none" stroke="#fface8" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="406" cy="136" r="6" fill="#fface8" stroke="#051424" stroke-width="2"/>
             @for (label of chartLabels; track label.x) {
               <text [attr.x]="label.x" y="190" class="chart-label" text-anchor="middle">{{ label.text }}</text>
             }
@@ -231,15 +236,15 @@
               <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12"/>
               <circle cx="50" cy="50" r="35" fill="none"
                       stroke="#63f7ff" stroke-width="12"
-                      stroke-dasharray="44.8 255.2" stroke-dashoffset="0"
+                      [attr.stroke-dasharray]="positiveDasharray" stroke-dashoffset="0"
                       transform="rotate(-90 50 50)"/>
               <circle cx="50" cy="50" r="35" fill="none"
                       stroke="#273647" stroke-width="12"
-                      stroke-dasharray="104.7 195.3" stroke-dashoffset="-44.8"
+                      [attr.stroke-dasharray]="neutralDasharray" [attr.stroke-dashoffset]="neutralDashoffset"
                       transform="rotate(-90 50 50)"/>
               <circle cx="50" cy="50" r="35" fill="none"
                       stroke="#ffb4ab" stroke-width="12"
-                      stroke-dasharray="70.4 229.6" stroke-dashoffset="-149.5"
+                      [attr.stroke-dasharray]="negativeDasharray" [attr.stroke-dashoffset]="negativeDashoffset"
                       transform="rotate(-90 50 50)"/>
             </svg>
           </div>
@@ -247,17 +252,17 @@
             <div class="donut-legend-item">
               <span class="donut-legend-dot" style="background:#63f7ff"></span>
               <span class="donut-legend-label">Positivo</span>
-              <span class="donut-legend-value">20.4%</span>
+              <span class="donut-legend-value">{{ positivePercent }}%</span>
             </div>
             <div class="donut-legend-item">
               <span class="donut-legend-dot" style="background:#273647; border:1px solid rgba(255,255,255,0.15)"></span>
               <span class="donut-legend-label">Neutral</span>
-              <span class="donut-legend-value">47.6%</span>
+              <span class="donut-legend-value">{{ neutralPercent }}%</span>
             </div>
             <div class="donut-legend-item">
               <span class="donut-legend-dot" style="background:#ffb4ab"></span>
               <span class="donut-legend-label">Negativo</span>
-              <span class="donut-legend-value">32.0%</span>
+              <span class="donut-legend-value">{{ negativePercent }}%</span>
             </div>
           </div>
         </div>
@@ -266,52 +271,49 @@
 
       <div class="bottom-grid">
 
-        <div class="chart-card">
-          <div class="crisis-header">
-            <div class="crisis-icon-wrapper">
-              <span class="material-symbols-outlined crisis-icon">psychology</span>
+        @if (crisisAnalysis) {
+          <div class="chart-card">
+            <div class="crisis-header">
+              <div class="crisis-icon-wrapper">
+                <span class="material-symbols-outlined crisis-icon">psychology</span>
+              </div>
+              <div>
+                <h3 class="chart-card-title">Crisis Response Engine</h3>
+                <span class="ai-badge">AI INSIGHTS</span>
+              </div>
             </div>
-            <div>
-              <h3 class="chart-card-title">Crisis Response Engine</h3>
-              <span class="ai-badge">AI INSIGHTS</span>
+            <p class="crisis-desc">{{ crisisAnalysis }}</p>
+            <div class="crisis-actions">
+              <div class="btn-crisis-action">
+                <div class="crisis-action-num crisis-action-num--error">1</div>
+                <div class="crisis-action-info">
+                  <p class="crisis-action-tag crisis-action-tag--error">Urgente</p>
+                  <p class="crisis-action-title">Borrador de Comunicado Listo</p>
+                  <p class="crisis-action-desc">IA generó un comunicado para que tu equipo lo publique en sus canales oficiales.</p>
+                </div>
+                <span class="material-symbols-outlined">content_copy</span>
+              </div>
+              <div class="btn-crisis-action" (click)="goToSection('mentions')">
+                <div class="crisis-action-num crisis-action-num--ai">2</div>
+                <div class="crisis-action-info">
+                  <p class="crisis-action-tag crisis-action-tag--ai">IA Sugerido</p>
+                  <p class="crisis-action-title">Generar Borradores de Respuesta</p>
+                  <p class="crisis-action-desc">Ve a Mentions para generar respuestas con IA sobre los comentarios críticos.</p>
+                </div>
+                <span class="material-symbols-outlined">edit_note</span>
+              </div>
+              <div class="btn-crisis-action" (click)="goToSection('incidentes')">
+                <div class="crisis-action-num crisis-action-num--ai">3</div>
+                <div class="crisis-action-info">
+                  <p class="crisis-action-tag crisis-action-tag--ai">IA Sugerido</p>
+                  <p class="crisis-action-title">Crear Incidente y Escalar</p>
+                  <p class="crisis-action-desc">Registrar este patrón como incidente activo para seguimiento y diagnóstico continuo.</p>
+                </div>
+                <span class="material-symbols-outlined">warning</span>
+              </div>
             </div>
           </div>
-          <p class="crisis-desc">
-            Se detecta un patrón de insatisfacción concentrado en
-            <strong>Surco</strong> y <strong>La Molina</strong>.
-            El <strong style="color:#ffb4ab;">65%</strong> de las críticas mencionan
-            <strong>"papas frías"</strong> y <strong>"más de 60 min de espera"</strong>.
-          </p>
-          <div class="crisis-actions">
-            <div class="btn-crisis-action">
-              <div class="crisis-action-num crisis-action-num--error">1</div>
-              <div class="crisis-action-info">
-                <p class="crisis-action-tag crisis-action-tag--error">Urgente</p>
-                <p class="crisis-action-title">Borrador de Comunicado Listo</p>
-                <p class="crisis-action-desc">IA generó un comunicado para que tu equipo lo publique en sus canales oficiales.</p>
-              </div>
-              <span class="material-symbols-outlined">content_copy</span>
-            </div>
-            <div class="btn-crisis-action">
-              <div class="crisis-action-num crisis-action-num--ai">2</div>
-              <div class="crisis-action-info">
-                <p class="crisis-action-tag crisis-action-tag--ai">IA Sugerido</p>
-                <p class="crisis-action-title">Generar Borradores de Respuesta</p>
-                <p class="crisis-action-desc">40 borradores listos para que tu equipo responda manualmente los comentarios críticos.</p>
-              </div>
-              <span class="material-symbols-outlined">edit_note</span>
-            </div>
-            <div class="btn-crisis-action">
-              <div class="crisis-action-num crisis-action-num--ai">3</div>
-              <div class="crisis-action-info">
-                <p class="crisis-action-tag crisis-action-tag--ai">IA Sugerido</p>
-                <p class="crisis-action-title">Crear Incidente y Escalar</p>
-                <p class="crisis-action-desc">Registrar este patrón como incidente activo para seguimiento y diagnóstico continuo.</p>
-              </div>
-              <span class="material-symbols-outlined">warning</span>
-            </div>
-          </div>
-        </div>
+        }
 
         <div class="chart-card" style="display:flex; flex-direction:column;">
           <h3 class="chart-card-title" style="margin-bottom:24px;">Keywords Críticas</h3>
@@ -366,7 +368,7 @@
                 <p class="alert-item-desc">{{ a.desc }}</p>
               </div>
               <button class="alert-toggle" [class.alert-toggle--on]="a.enabled"
-                      (click)="a.enabled = !a.enabled; $event.stopPropagation()">
+                      (click)="toggleAlertPreference(a); $event.stopPropagation()">
                 <span class="alert-toggle-dot"></span>
               </button>
             </div>

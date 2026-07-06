@@ -4,13 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApi } from '../../../infrastructure/auth-api';
 
-
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.css',
 })
 export class RegisterComponent {
   router = inject(Router);
@@ -48,13 +47,16 @@ export class RegisterComponent {
         this.loading = false;
         if (typeof window !== 'undefined') {
           localStorage.setItem('pendingEmail', this.email);
+          // Guardado solo temporalmente para poder iniciar sesión automáticamente
+          // apenas se verifique el correo. Se borra inmediatamente después de usarse.
+          sessionStorage.setItem('pendingPassword', this.password);
         }
         this.router.navigate(['/verify-email']);
       },
       error: (err) => {
         this.loading = false;
         this.error = 'Error al registrar usuario';
-      }
+      },
     });
   }
 }

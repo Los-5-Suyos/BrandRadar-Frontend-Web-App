@@ -8,7 +8,7 @@ import { LoginResponse } from '../domain/model/login-response.entity';
 export class AuthStore {
   private currentUserSignal = signal<UserAccount | null>(null);
   private tokenSignal = signal<string | null>(
-    typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   );
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
@@ -29,6 +29,7 @@ export class AuthStore {
       next: (response: LoginResponse) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', response.token);
+          localStorage.setItem('refreshToken', response.refreshToken);
           localStorage.setItem('userId', response.userId.toString());
           localStorage.setItem('userEmail', email);
         }
@@ -41,7 +42,7 @@ export class AuthStore {
       error: (err) => {
         this.errorSignal.set('Credenciales incorrectas');
         this.loadingSignal.set(false);
-      }
+      },
     });
   }
 
@@ -55,13 +56,14 @@ export class AuthStore {
       error: (err) => {
         this.errorSignal.set('Error al registrar usuario');
         this.loadingSignal.set(false);
-      }
+      },
     });
   }
 
   logout() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('userId');
     }
     this.tokenSignal.set(null);

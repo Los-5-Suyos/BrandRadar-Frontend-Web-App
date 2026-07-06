@@ -237,12 +237,18 @@
                   </div>
                 </div>
 
+                @if (createWorkspaceError) {
+                  <p class="create-ws-error" style="color:#ffb4ab; font-size:13px; margin: 4px 0 0;">
+                    {{ createWorkspaceError }}
+                  </p>
+                }
+
                 <div class="create-ws-footer">
                   <button class="btn-cancel" (click)="closeCreateWorkspace()">Cancelar</button>
                   <button class="btn-create" (click)="createWorkspace()"
-                          [disabled]="!newWsName.trim()">
+                          [disabled]="!newWsName.trim() || creatingWorkspace">
                     <span class="material-symbols-outlined">add</span>
-                    Crear Workspace
+                    {{ creatingWorkspace ? 'Creando...' : 'Crear Workspace' }}
                   </button>
                 </div>
 
