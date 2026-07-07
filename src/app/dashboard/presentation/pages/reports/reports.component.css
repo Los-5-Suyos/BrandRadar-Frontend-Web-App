@@ -457,6 +457,41 @@
 .rep-main::-webkit-scrollbar-track { background: transparent; }
 .rep-main::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.25); border-radius: 50px; }
 .rep-main::-webkit-scrollbar-thumb:hover { background: rgba(167,139,250,0.45); }
+
+/* ===========================================================
+   RESPONSIVE (mobile / tablet)
+   Solo overrides — no se toca ninguna regla de desktop de arriba.
+   =========================================================== */
+@media (max-width: 767px) {
+  /* Deja espacio para el botón hamburguesa fijo (top:14px left:14px, 40x40) */
+  .rep-topbar {
+    flex-wrap: wrap;
+    row-gap: 12px;
+    padding: 14px 16px 14px 64px;
+  }
+
+  .rep-content {
+    padding: 16px;
+  }
+
+  /* La columna de configuración tenía un ancho fijo (340px) pensado para
+     desktop, al lado de la tarjeta de preview; en móvil se apilan. */
+  .rep-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* La tabla de "reportes generados" tiene 7 columnas y no cabe en móvil;
+     en vez de romper el layout, dejamos que haga scroll horizontal dentro
+     de su propia tarjeta. */
+  .rep-recientes-card {
+    overflow-x: auto;
+  }
+
+  .rep-table {
+    min-width: 640px;
+  }
+}
+
 .rep-btn-accion {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.07);

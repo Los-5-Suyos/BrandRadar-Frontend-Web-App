@@ -1,14 +1,24 @@
 <div class="dark flex h-screen bg-[#0A0B0F] text-on-surface overflow-hidden">
+  <button class="dash-hamburger" (click)="mobileSidebarOpen = true" aria-label="Abrir menú">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+
+  @if (mobileSidebarOpen) {
+    <div class="dash-overlay" (click)="mobileSidebarOpen = false"></div>
+  }
 
   <!-- Sidebar igual al home -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.sidebar--open]="mobileSidebarOpen">
 
     <div class="sidebar-top">
       <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <button class="dash-close-btn" (click)="mobileSidebarOpen = false" aria-label="Cerrar menú">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-item" (click)="router.navigate(['/home'])">
+      <div class="nav-item" (click)="mobileSidebarOpen = false; router.navigate(['/home'])">
         <span class="material-symbols-outlined">home</span>
         <span>Workspaces</span>
       </div>
@@ -16,7 +26,7 @@
         <span class="material-symbols-outlined">settings</span>
         <span>Configuración de Cuenta</span>
       </div>
-      <div class="nav-item" (click)="router.navigate(['/help'])">
+      <div class="nav-item" (click)="mobileSidebarOpen = false; router.navigate(['/help'])">
         <span class="material-symbols-outlined">help</span>
         <span>Centro de Ayuda</span>
       </div>

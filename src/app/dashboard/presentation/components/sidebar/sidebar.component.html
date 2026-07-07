@@ -1,8 +1,19 @@
-<aside class="dash-sidebar">
+<button class="dash-hamburger" (click)="mobileOpen = true" aria-label="Abrir menú">
+  <span class="material-symbols-outlined">menu</span>
+</button>
+
+@if (mobileOpen) {
+  <div class="dash-overlay" (click)="mobileOpen = false"></div>
+}
+
+<aside class="dash-sidebar" [class.dash-sidebar--open]="mobileOpen">
   <div class="dash-sidebar-top">
     <div class="dash-logo-row">
       <img src="./assets/images/light-logo.png" alt="BrandRadar" class="dash-logo">
       <span class="dash-plan-badge">{{ planLabel }}</span>
+      <button class="dash-close-btn" (click)="mobileOpen = false" aria-label="Cerrar menú">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
   </div>
 

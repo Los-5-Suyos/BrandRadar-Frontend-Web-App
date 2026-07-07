@@ -1,22 +1,91 @@
+/* ---------- Hamburger button (mobile only) ---------- */
+.dash-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(13, 28, 45, 0.85);
+  backdrop-filter: blur(8px);
+  color: #e4e1ed;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .dash-hamburger { display: none; }
+}
+
+/* ---------- Overlay backdrop (mobile only, shown while drawer is open) ---------- */
+.dash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 55;
+}
+
+@media (min-width: 768px) {
+  .dash-overlay { display: none; }
+}
+
+/* ---------- Close button inside drawer (mobile only) ---------- */
+.dash-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #c8c5cb;
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (min-width: 768px) {
+  .dash-close-btn { display: none; }
+}
+
+/* ---------- Sidebar ---------- */
 .dash-sidebar {
-  display: none;
+  display: flex;
   flex-direction: column;
   height: 100vh;
   width: 260px;
-  position: sticky;
-  left: 250px;
-  top: 250px;
-  background: rgba(13, 28, 45, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(13, 28, 45, 0.95);
   backdrop-filter: blur(16px);
   border-right: 1px solid rgba(71, 70, 75, 0.3);
   padding: 20px 16px;
-  z-index: 50;
+  z-index: 56;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
 }
 
-@media (min-width: 768px) { .dash-sidebar { display: flex; } }
+.dash-sidebar--open {
+  transform: translateX(0);
+}
+
+/* Desktop: sidebar is always visible, in normal document flow */
+@media (min-width: 768px) {
+  .dash-sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    transform: none;
+    background: rgba(13, 28, 45, 0.5);
+    border-right: 1px solid rgba(71, 70, 75, 0.3);
+  }
+}
 
 .dash-sidebar-top { margin-bottom: 16px; padding: 4px 8px; }
-.dash-logo-row { display: flex; align-items: center; justify-content: space-between; }
+.dash-logo-row { display: flex; align-items: center; gap: 10px; }
 .dash-logo { height: 40px; object-fit: contain; filter: brightness(1.1); }
 
 .dash-plan-badge {
@@ -47,7 +116,7 @@
 .dash-brand-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #d4e4fa; }
 .dash-brand-chevron { font-size: 16px; color: #929096; }
 
-.dash-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.dash-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
 
 .dash-nav-item {
   display: flex;

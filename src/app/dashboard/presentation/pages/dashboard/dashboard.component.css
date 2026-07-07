@@ -535,21 +535,7 @@
 
 /* ===== LINE CHART ===== */
 .line-chart { width: 100%; height: 200px; }
-.chart-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; fill: #9b99a6; }
-
-.chart-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  height: 200px;
-  color: #7c7a86;
-  text-align: center;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 0 24px;
-}
+.chart-label { font-family: 'DM Sans', sans-serif; font-size: 7px; fill: #47464b; }
 
 /* ===== DONUT ===== */
 .donut-wrapper { display: flex; justify-content: center; margin-bottom: 28px; }
@@ -816,3 +802,65 @@
 }
 
 .modal-close:hover { background: rgba(255,255,255,0.1); color: #d4e4fa; }
+
+/* ===========================================================
+   RESPONSIVE (mobile / tablet)
+   Solo overrides — no se toca ninguna regla de desktop de arriba.
+   =========================================================== */
+@media (max-width: 767px) {
+  /* Deja espacio para el botón hamburguesa fijo (top:14px left:14px, 40x40) */
+  .dash-topbar {
+    flex-wrap: wrap;
+    row-gap: 12px;
+    padding: 14px 16px 14px 64px;
+  }
+
+  .dash-topbar-right {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    width: 100%;
+  }
+
+  .dash-content {
+    padding: 20px 16px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* El panel de notificaciones usaba right:160px fijo, pensado para desktop;
+     en pantallas angostas eso lo saca de la vista. */
+  .notif-panel {
+    top: auto;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    margin-top: 8px;
+  }
+
+  .incident-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .btn-diagnostico {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* En pantallas muy angostas, el texto de estos botones puede desbordar */
+  .dash-realtime-badge,
+  .dash-btn-alerts {
+    padding: 6px 12px;
+    font-size: 9px;
+  }
+}

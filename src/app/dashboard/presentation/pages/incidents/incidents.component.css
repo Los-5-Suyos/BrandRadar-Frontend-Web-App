@@ -644,3 +644,39 @@
 .inc-main::-webkit-scrollbar-track { background: transparent; }
 .inc-main::-webkit-scrollbar-thumb { background: rgba(255,172,232,0.2); border-radius: 50px; }
 .inc-main::-webkit-scrollbar-thumb:hover { background: rgba(255,172,232,0.4); }
+
+
+@media (max-width: 767px) {
+  .inc-topbar {
+    flex-wrap: wrap;
+    row-gap: 12px;
+    padding: 14px 16px 14px 64px;
+  }
+
+  .inc-content {
+    padding: 16px;
+    overflow: visible;
+  }
+
+  .inc-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .inc-left,
+  .inc-right {
+    overflow: visible;
+  }
+
+  .inc-list {
+    overflow-y: visible;
+  }
+
+  .crisis-panel {
+    height: auto;
+  }
+
+  .crisis-panel-body {
+    overflow-y: visible;
+  }
+}

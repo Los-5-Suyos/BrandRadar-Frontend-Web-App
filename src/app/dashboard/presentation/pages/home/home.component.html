@@ -1,19 +1,30 @@
 <div class="dark flex h-screen bg-[#0A0B0F]" style="overflow:hidden;" (click)="showNotifications = false; closeMenus()">
+  <button class="dash-hamburger" (click)="mobileSidebarOpen = true; $event.stopPropagation()" aria-label="Abrir menú">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+
+  @if (mobileSidebarOpen) {
+    <div class="dash-overlay" (click)="mobileSidebarOpen = false"></div>
+  }
+
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.sidebar--open]="mobileSidebarOpen">
     <div class="sidebar-top">
       <img src="./assets/images/light-logo.png" alt="BrandRadar" class="sidebar-logo">
+      <button class="dash-close-btn" (click)="mobileSidebarOpen = false" aria-label="Cerrar menú">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-item nav-item--active">
         <span class="material-symbols-outlined">home</span>
         <span>Workspaces</span>
       </div>
-      <div class="nav-item" (click)="router.navigate(['/settings'])">
+      <div class="nav-item" (click)="mobileSidebarOpen = false; router.navigate(['/settings'])">
         <span class="material-symbols-outlined">settings</span>
         <span>Configuración de Cuenta</span>
       </div>
-      <div class="nav-item" (click)="router.navigate(['/help'])">
+      <div class="nav-item" (click)="mobileSidebarOpen = false; router.navigate(['/help'])">
         <span class="material-symbols-outlined">help</span>
         <span>Centro de Ayuda</span>
       </div>
@@ -45,17 +56,24 @@
                 <p class="notif-title">Notificaciones</p>
                 <button class="notif-clear" (click)="showNotifications = false">Cerrar</button>
               </div>
-              @for (n of notifications; track n.title) {
-                <div class="notif-item">
-                  <div class="notif-icon" [style.color]="n.color">
-                    <span class="material-symbols-outlined">{{ n.icon }}</span>
-                  </div>
-                  <div class="notif-info">
-                    <p class="notif-item-title">{{ n.title }}</p>
-                    <p class="notif-item-desc">{{ n.desc }}</p>
-                    <p class="notif-item-time">{{ n.time }}</p>
-                  </div>
+              @if (notifications.length === 0) {
+                <div class="notif-empty">
+                  <span class="material-symbols-outlined notif-empty-icon">notifications_off</span>
+                  <p class="notif-empty-text">No tienes notificaciones</p>
                 </div>
+              } @else {
+                @for (n of notifications; track n.title) {
+                  <div class="notif-item">
+                    <div class="notif-icon" [style.color]="n.color">
+                      <span class="material-symbols-outlined">{{ n.icon }}</span>
+                    </div>
+                    <div class="notif-info">
+                      <p class="notif-item-title">{{ n.title }}</p>
+                      <p class="notif-item-desc">{{ n.desc }}</p>
+                      <p class="notif-item-time">{{ n.time }}</p>
+                    </div>
+                  </div>
+                }
               }
             </div>
           }
@@ -226,16 +244,10 @@
                 <div class="create-ws-section">
                   <label class="create-ws-label">Canales de Análisis</label>
                   <p class="create-ws-channels-sub">Plan {{ planLabel }} — {{ planChannelsDesc }}</p>
-                  <p class="create-ws-channels-sub" style="opacity:0.8;">Selecciona los canales que quieres monitorear en este workspace (mínimo 1).</p>
-                  @if (channelSelectionError) {
-                    <p style="color:#ffb4ab; font-size:12px; margin: 4px 0;">{{ channelSelectionError }}</p>
-                  }
                   <div class="channels-grid">
                     @for (ch of channels; track ch.name) {
-                      <div class="channel-item" [class.channel-item--active]="ch.selected"
-                           [class.channel-item--locked]="ch.locked"
-                           [style.cursor]="ch.locked ? 'not-allowed' : 'pointer'"
-                           (click)="toggleChannelSelection(ch)">
+                      <div class="channel-item" [class.channel-item--active]="ch.active"
+                           [class.channel-item--locked]="ch.locked">
                         @if (ch.logo) {
                           <img [src]="ch.logo" [alt]="ch.name" class="channel-logo">
                         } @else {
@@ -244,8 +256,6 @@
                         <span class="channel-name">{{ ch.name }}</span>
                         @if (ch.locked) {
                           <span class="material-symbols-outlined channel-lock">lock</span>
-                        } @else if (ch.selected) {
-                          <span class="material-symbols-outlined channel-lock" style="color:#4ade80;">check_circle</span>
                         }
                       </div>
                     }

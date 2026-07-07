@@ -1,86 +1,120 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './iam/infrastructure/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
-    loadComponent: () => import('./iam/presentation/pages/login/login.component')
-      .then(m => m.LoginComponent)
+    loadComponent: () =>
+      import('./iam/presentation/pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'forgot-password',
-    loadComponent: () => import('./iam/presentation/pages/forgot-password/forgot-password.component')
-      .then(m => m.ForgotPasswordComponent)
+    loadComponent: () =>
+      import('./iam/presentation/pages/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
   },
   {
     path: 'register',
-    loadComponent: () => import('./iam/presentation/pages/register/register.component')
-      .then(m => m.RegisterComponent)
+    loadComponent: () =>
+      import('./iam/presentation/pages/register/register.component').then(
+        (m) => m.RegisterComponent,
+      ),
   },
   {
     path: 'verify-email',
-    loadComponent: () => import('./iam/presentation/pages/verify-email/verify-email.component')
-      .then(m => m.VerifyEmailComponent)
+    loadComponent: () =>
+      import('./iam/presentation/pages/verify-email/verify-email.component').then(
+        (m) => m.VerifyEmailComponent,
+      ),
   },
   {
     path: 'subscription',
-    loadComponent: () => import('./iam/presentation/pages/subscription/subscription.component')
-      .then(m => m.SubscriptionComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./iam/presentation/pages/subscription/subscription.component').then(
+        (m) => m.SubscriptionComponent,
+      ),
   },
   {
     path: 'payment',
-    loadComponent: () => import('./iam/presentation/pages/payment/payment.component')
-      .then(m => m.PaymentComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./iam/presentation/pages/payment/payment.component').then((m) => m.PaymentComponent),
   },
   {
     path: 'workspace',
-    loadComponent: () => import('./iam/presentation/pages/workspace/workspace.component')
-      .then(m => m.WorkspaceComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./iam/presentation/pages/workspace/workspace.component').then(
+        (m) => m.WorkspaceComponent,
+      ),
   },
   {
     path: 'success',
-    loadComponent: () => import('./iam/presentation/pages/success/success.component')
-      .then(m => m.SuccessComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./iam/presentation/pages/success/success.component').then((m) => m.SuccessComponent),
   },
   {
     path: 'home',
-    loadComponent: () => import('./dashboard/presentation/pages/home/home.component')
-      .then(m => m.HomeComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'loading',
-    loadComponent: () => import('./shared/components/loading/loading.component')
-      .then(m => m.LoadingComponent)
+    loadComponent: () =>
+      import('./shared/components/loading/loading.component').then((m) => m.LoadingComponent),
   },
   {
     path: 'settings',
-    loadComponent: () => import('./dashboard/presentation/pages/settings/settings.component')
-      .then(m => m.SettingsComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/settings/settings.component').then(
+        (m) => m.SettingsComponent,
+      ),
   },
   {
     path: 'configuration',
-    loadComponent: () => import('./dashboard/presentation/pages/configuration/configuration.component')
-      .then(m => m.ConfigurationComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/configuration/configuration.component').then(
+        (m) => m.ConfigurationComponent,
+      ),
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./dashboard/presentation/pages/dashboard/dashboard.component')
-      .then(m => m.DashboardComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
   },
   {
     path: 'mentions',
-    loadComponent: () => import('./dashboard/presentation/pages/mentions/mentions.component')
-      .then(m => m.MentionsComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/mentions/mentions.component').then(
+        (m) => m.MentionsComponent,
+      ),
   },
   {
     path: 'incidents',
-    loadComponent: () => import('./dashboard/presentation/pages/incidents/incidents.component')
-      .then(m => m.IncidentsComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/incidents/incidents.component').then(
+        (m) => m.IncidentsComponent,
+      ),
   },
   {
     path: 'reports',
-    loadComponent: () => import('./dashboard/presentation/pages/reports/reports.component')
-      .then(m => m.ReportsComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./dashboard/presentation/pages/reports/reports.component').then(
+        (m) => m.ReportsComponent,
+      ),
   },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
 ];

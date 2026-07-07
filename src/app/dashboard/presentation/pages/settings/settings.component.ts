@@ -20,6 +20,7 @@ export class SettingsComponent implements OnInit {
   private serverBaseUrl = environment.apiBaseUrl.replace('/api/v1', '');
 
   userId: string | null = null;
+  mobileSidebarOpen = false;
 
   fullName = '';
   username = '';
