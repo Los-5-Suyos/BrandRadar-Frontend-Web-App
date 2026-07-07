@@ -208,31 +208,38 @@
             </div>
             <span class="chart-card-period">ÚLTIMOS 14 DÍAS</span>
           </div>
-          <svg viewBox="0 0 700 200" class="line-chart" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#fface8" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="#fface8" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <line x1="0" y1="40" x2="700" y2="40" stroke="rgba(199,197,208,0.05)" stroke-width="1"/>
-            <line x1="0" y1="80" x2="700" y2="80" stroke="rgba(199,197,208,0.05)" stroke-width="1"/>
-            <line x1="0" y1="120" x2="700" y2="120" stroke="rgba(199,197,208,0.05)" stroke-width="1"/>
-            <line x1="0" y1="160" x2="700" y2="160" stroke="rgba(199,197,208,0.05)" stroke-width="1"/>
-            <text x="4" y="38" class="chart-label">100</text>
-            <text x="4" y="78" class="chart-label">80</text>
-            <text x="4" y="118" class="chart-label">60</text>
-            <text x="4" y="158" class="chart-label">40</text>
-            <polygon
-              [attr.points]="trendPolygonPoints"
-              fill="url(#lineGrad)"/>
-            <polyline
-              [attr.points]="trendPolylinePoints"
-              fill="none" stroke="#fface8" stroke-width="3" stroke-linejoin="round"/>
-            @for (label of chartLabels; track label.x) {
-              <text [attr.x]="label.x" y="190" class="chart-label" text-anchor="middle">{{ label.text }}</text>
-            }
-          </svg>
+          @if (hasTrendData) {
+            <svg viewBox="0 0 700 200" class="line-chart" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fface8" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#fface8" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="40" x2="700" y2="40" stroke="rgba(199,197,208,0.08)" stroke-width="1"/>
+              <line x1="0" y1="80" x2="700" y2="80" stroke="rgba(199,197,208,0.08)" stroke-width="1"/>
+              <line x1="0" y1="120" x2="700" y2="120" stroke="rgba(199,197,208,0.08)" stroke-width="1"/>
+              <line x1="0" y1="160" x2="700" y2="160" stroke="rgba(199,197,208,0.08)" stroke-width="1"/>
+              <text x="4" y="38" class="chart-label">100</text>
+              <text x="4" y="78" class="chart-label">80</text>
+              <text x="4" y="118" class="chart-label">60</text>
+              <text x="4" y="158" class="chart-label">40</text>
+              <polygon
+                [attr.points]="trendPolygonPoints"
+                fill="url(#lineGrad)"/>
+              <polyline
+                [attr.points]="trendPolylinePoints"
+                fill="none" stroke="#fface8" stroke-width="3" stroke-linejoin="round"/>
+              @for (label of chartLabels; track label.x) {
+                <text [attr.x]="label.x" y="190" class="chart-label" text-anchor="middle">{{ label.text }}</text>
+              }
+            </svg>
+          } @else {
+            <div class="chart-empty-state">
+              <span class="material-symbols-outlined" style="font-size:28px; opacity:0.5;">show_chart</span>
+              <p>{{ trendError ? 'No se pudo cargar la tendencia. Intenta actualizar.' : 'Aún no hay suficientes datos para mostrar la tendencia de los últimos 14 días.' }}</p>
+            </div>
+          }
         </div>
 
         <div class="chart-card">

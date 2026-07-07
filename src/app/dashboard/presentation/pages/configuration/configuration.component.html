@@ -182,15 +182,24 @@
                   Guardando...
                 </button>
               } @else if (canal.estado === 'activo') {
-                <button class="set-canal-estado set-canal-estado--activo" (click)="toggleCanal(canal)">
-                  <span class="set-canal-dot"></span>
-                  Activo
-                </button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="set-canal-estado set-canal-estado--activo" style="cursor:default;">
+                    <span class="set-canal-dot"></span>
+                    Activo
+                  </span>
+                  <button class="set-canal-toggle-btn set-canal-toggle-btn--off" (click)="toggleCanal(canal)">
+                    Desactivar
+                  </button>
+                </div>
               } @else if (canal.estado === 'disponible') {
-                <button class="set-canal-estado" style="background:rgba(99,247,255,0.1); color:#63f7ff;" (click)="toggleCanal(canal)">
-                  <span class="material-symbols-outlined">add_circle</span>
-                  Activar
-                </button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="set-canal-estado" style="background:rgba(255,255,255,0.05); color:#7c7a86; cursor:default;">
+                    Inactivo
+                  </span>
+                  <button class="set-canal-toggle-btn set-canal-toggle-btn--on" (click)="toggleCanal(canal)">
+                    Activar
+                  </button>
+                </div>
               } @else if (canal.estado === 'proximamente') {
                 <button class="set-canal-estado set-canal-estado--bloqueado" disabled style="cursor:default;">
                   <span class="material-symbols-outlined">schedule</span>

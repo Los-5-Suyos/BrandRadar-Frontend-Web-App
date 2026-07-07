@@ -535,7 +535,21 @@
 
 /* ===== LINE CHART ===== */
 .line-chart { width: 100%; height: 200px; }
-.chart-label { font-family: 'DM Sans', sans-serif; font-size: 7px; fill: #47464b; }
+.chart-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; fill: #9b99a6; }
+
+.chart-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 200px;
+  color: #7c7a86;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 0 24px;
+}
 
 /* ===== DONUT ===== */
 .donut-wrapper { display: flex; justify-content: center; margin-bottom: 28px; }

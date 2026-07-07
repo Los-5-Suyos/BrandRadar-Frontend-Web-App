@@ -324,6 +324,26 @@
 .set-canal-estado--bloqueado:hover { background: rgba(255,172,232,0.12); color: #fface8; }
 .set-canal-estado .material-symbols-outlined { font-size: 13px; }
 
+.set-canal-toggle-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.set-canal-toggle-btn:hover { opacity: 0.85; }
+.set-canal-toggle-btn--off {
+  background: rgba(255,180,171,0.12);
+  color: #ffb4ab;
+}
+.set-canal-toggle-btn--on {
+  background: rgba(99,247,255,0.12);
+  color: #63f7ff;
+}
+
 /* ===== SCROLLBAR ===== */
 .set-main::-webkit-scrollbar { width: 4px; }
 .set-main::-webkit-scrollbar-track { background: transparent; }

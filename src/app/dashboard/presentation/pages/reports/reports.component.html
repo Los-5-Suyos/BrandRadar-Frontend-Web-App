@@ -122,10 +122,15 @@
             </div>
 
             @if (ultimoReporte.estado === 'LISTO') {
-              <button class="btn-generar-reporte" (click)="descargarReporte(ultimoReporte)">
-                <span class="material-symbols-outlined" style="vertical-align:middle; margin-right:6px;">download</span>
-                Descargar este reporte
+              <button class="btn-generar-reporte" [disabled]="descargandoId === ultimoReporte.id" (click)="descargarReporte(ultimoReporte)">
+                <span class="material-symbols-outlined" style="vertical-align:middle; margin-right:6px;">
+                  {{ descargandoId === ultimoReporte.id ? 'hourglass_empty' : 'download' }}
+                </span>
+                {{ descargandoId === ultimoReporte.id ? 'Descargando...' : 'Descargar este reporte' }}
               </button>
+              @if (descargaError) {
+                <p style="color:#ffb4ab; font-size:12px; margin-top:8px;">{{ descargaError }}</p>
+              }
             }
           } @else {
             <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#929096;">
@@ -176,8 +181,8 @@
                 <td class="rep-th-accion">
                   <div style="display:flex; gap:6px; justify-content:flex-end;">
                     @if (r.estado === 'LISTO') {
-                      <button class="rep-btn-accion rep-btn-accion--download" (click)="descargarReporte(r)">
-                        <span class="material-symbols-outlined">download</span>
+                      <button class="rep-btn-accion rep-btn-accion--download" [disabled]="descargandoId === r.id" (click)="descargarReporte(r)">
+                        <span class="material-symbols-outlined">{{ descargandoId === r.id ? 'hourglass_empty' : 'download' }}</span>
                       </button>
                     }
                     <button class="rep-btn-accion rep-btn-accion--delete" (click)="eliminarReporte(r)">

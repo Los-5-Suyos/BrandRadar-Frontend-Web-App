@@ -281,19 +281,69 @@ export class MentionsComponent implements OnInit {
     return `hace ${days}d`;
   }
 
+  exportando = false;
+  exportError: string | null = null;
+
   exportar(formato: string) {
     if (!this.brandId) return;
+    this.exportando = true;
+    this.exportError = null;
     const token = localStorage.getItem('token');
     const url = `${this.baseUrl}/mentions/brand/${this.brandId}/export?format=${formato}`;
+
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.blob())
+      .then(async (res) => {
+        const contentType = res.headers.get('content-type') || '';
+
+        if (!res.ok) {
+          // El backend respondió con un error (401, 404, 500...). Antes esto se
+          // guardaba igual como si fuera el archivo, generando un "PDF" roto que
+          // no abría. Ahora leemos el mensaje de error y lo mostramos.
+          let mensaje = `No se pudo exportar (código ${res.status}).`;
+          try {
+            if (contentType.includes('application/json')) {
+              const body = await res.json();
+              mensaje = body.message || body.error || mensaje;
+            }
+          } catch {
+            /* el cuerpo del error no era JSON, usamos el mensaje genérico */
+          }
+          throw new Error(mensaje);
+        }
+
+        // Si el backend devolvió JSON/HTML en vez del binario esperado (p.ej. un
+        // error mal formado con status 200), tampoco lo guardamos como archivo.
+        const esBinarioEsperado =
+          contentType.includes('pdf') ||
+          contentType.includes('csv') ||
+          contentType.includes('spreadsheet') ||
+          contentType.includes('excel') ||
+          contentType.includes('octet-stream');
+        if (!esBinarioEsperado && (contentType.includes('json') || contentType.includes('html'))) {
+          throw new Error('El servidor no devolvió el archivo esperado. Intenta nuevamente.');
+        }
+
+        return res.blob();
+      })
       .then((blob) => {
+        if (!blob) return;
+        if (blob.size === 0) {
+          throw new Error('El archivo exportado llegó vacío.');
+        }
+        const ext = formato === 'excel' ? 'xlsx' : formato;
         const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `menciones.${formato === 'excel' ? 'xlsx' : formato}`;
+        const objectUrl = window.URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = `menciones.${ext}`;
         link.click();
+        window.URL.revokeObjectURL(objectUrl);
+        this.exportando = false;
+        this.showExportModal = false;
+      })
+      .catch((err) => {
+        this.exportando = false;
+        this.exportError = err?.message || 'No se pudo exportar el archivo. Intenta nuevamente.';
       });
-    this.showExportModal = false;
   }
 
   openModal(m: Mencion) {

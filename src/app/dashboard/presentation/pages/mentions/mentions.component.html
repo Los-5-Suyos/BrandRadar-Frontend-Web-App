@@ -400,30 +400,34 @@
           <strong style="color:#d4e4fa;">{{ filteredMenciones.length }} menciones</strong>
         </p>
 
+        @if (exportError) {
+          <p style="color:#ffb4ab; font-size:13px; margin: 0 0 10px;">{{ exportError }}</p>
+        }
+
         <div class="export-options">
-          <button class="export-option" (click)="exportar('csv')">
+          <button class="export-option" [disabled]="exportando" (click)="exportar('csv')">
             <span class="material-symbols-outlined export-option-icon">table_chart</span>
             <div>
               <p class="export-option-title">CSV</p>
               <p class="export-option-desc">Compatible con Excel y Google Sheets</p>
             </div>
-            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
+            <span class="material-symbols-outlined export-option-arrow">{{ exportando ? 'hourglass_empty' : 'chevron_right' }}</span>
           </button>
-          <button class="export-option" (click)="exportar('pdf')">
+          <button class="export-option" [disabled]="exportando" (click)="exportar('pdf')">
             <span class="material-symbols-outlined export-option-icon" style="color:#ffb4ab;">picture_as_pdf</span>
             <div>
               <p class="export-option-title">PDF</p>
               <p class="export-option-desc">Reporte visual con formato</p>
             </div>
-            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
+            <span class="material-symbols-outlined export-option-arrow">{{ exportando ? 'hourglass_empty' : 'chevron_right' }}</span>
           </button>
-          <button class="export-option" (click)="exportar('excel')">
+          <button class="export-option" [disabled]="exportando" (click)="exportar('excel')">
             <span class="material-symbols-outlined export-option-icon" style="color:#4ade80;">grid_on</span>
             <div>
               <p class="export-option-title">Excel</p>
               <p class="export-option-desc">Archivo .xlsx con datos completos</p>
             </div>
-            <span class="material-symbols-outlined export-option-arrow">chevron_right</span>
+            <span class="material-symbols-outlined export-option-arrow">{{ exportando ? 'hourglass_empty' : 'chevron_right' }}</span>
           </button>
         </div>
 

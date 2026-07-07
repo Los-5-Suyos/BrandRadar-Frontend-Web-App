@@ -264,19 +264,50 @@ export class ReportsComponent implements OnInit {
     });
   }
 
+  descargandoId: number | null = null;
+  descargaError: string | null = null;
+
   descargarReporte(r: ReporteItem) {
     if (r.estado !== 'LISTO') return;
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const ext = r.tipo === 'EXCEL' ? 'xlsx' : r.tipo.toLowerCase();
+    this.descargandoId = r.id;
+    this.descargaError = null;
+
     fetch(`${this.baseUrl}/reports/${r.id}/download`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.blob())
+      .then(async (res) => {
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok) {
+          let mensaje = `No se pudo descargar el reporte (código ${res.status}).`;
+          try {
+            if (contentType.includes('application/json')) {
+              const body = await res.json();
+              mensaje = body.message || body.error || mensaje;
+            }
+          } catch {
+            /* cuerpo del error no era JSON */
+          }
+          throw new Error(mensaje);
+        }
+        return res.blob();
+      })
       .then((blob) => {
+        if (!blob || blob.size === 0) {
+          throw new Error('El archivo del reporte llegó vacío.');
+        }
         const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
+        const objectUrl = window.URL.createObjectURL(blob);
+        link.href = objectUrl;
         link.download = `${r.nombre}.${ext}`;
         link.click();
+        window.URL.revokeObjectURL(objectUrl);
+        this.descargandoId = null;
+      })
+      .catch((err) => {
+        this.descargandoId = null;
+        this.descargaError = err?.message || 'No se pudo descargar el reporte. Intenta nuevamente.';
       });
   }
 

@@ -352,13 +352,24 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  hasTrendData = true;
+  trendError = false;
+
   loadTrend(workspaceId: string) {
     this.http
       .get<any>(`${this.baseUrl}/workspaces/${workspaceId}/dashboard/trend?days=14`)
       .subscribe({
         next: (data) => {
           const points = data.points ?? [];
-          if (points.length === 0) return;
+          this.trendError = false;
+          if (points.length === 0) {
+            this.hasTrendData = false;
+            this.trendPolylinePoints = '';
+            this.trendPolygonPoints = '';
+            this.chartLabels = [];
+            return;
+          }
+          this.hasTrendData = true;
 
           const maxScore = 100;
           const chartWidth = 700;
@@ -372,6 +383,13 @@ export class DashboardComponent implements OnInit {
             const y = chartHeight - 40 - (p.sentimentScore / maxScore) * (chartHeight - 60);
             return { x: Math.round(x), y: Math.round(y), date: p.date };
           });
+
+          if (coords.length === 1) {
+            // Con un solo punto no se puede dibujar una línea; la duplicamos
+            // (mismo valor, extremo a extremo) para que al menos se vea el punto
+            // como una línea plana en vez de no mostrar nada.
+            coords.push({ ...coords[0], x: chartWidth - rightPad });
+          }
 
           this.trendPolylinePoints = coords.map((c: any) => `${c.x},${c.y}`).join(' ');
           this.trendPolygonPoints =
@@ -392,7 +410,24 @@ export class DashboardComponent implements OnInit {
             })
             .join(' ');
         },
+        error: () => {
+          this.hasTrendData = false;
+          this.trendError = true;
+        },
       });
+  }
+
+  // Igual que crisisAnalysis: si el backend manda el insight del canal como un
+  // JSON de análisis en vez de una frase, mostramos el diagnóstico en vez del
+  // JSON crudo (evita el mismo bug que salía debajo de "Fuente más activa").
+  private extractInsightText(raw: string | null | undefined): string {
+    if (!raw) return 'Sin datos suficientes';
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed?.diagnostico ?? raw;
+    } catch {
+      return raw;
+    }
   }
 
   loadChannels(workspaceId: string) {
@@ -414,7 +449,7 @@ export class DashboardComponent implements OnInit {
             logo: tpl.logo,
             icon: tpl.icon,
             index: Math.round(c.sentimentIndex),
-            desc: c.topInsight || 'Sin datos suficientes',
+            desc: this.extractInsightText(c.topInsight),
             locked: false,
             channelType: c.channelType,
           };

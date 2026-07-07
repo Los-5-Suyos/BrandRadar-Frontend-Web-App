@@ -44,58 +44,82 @@ export class HomeComponent implements OnInit {
 
   // Canales del plan Basic (los realmente implementados en backend hoy):
   // YouTube, Twitter/X, Reddit y TikTok. El resto queda bloqueado hasta Pro/Enterprise.
+  // El usuario elige, al crear el workspace, cuáles de los canales disponibles
+  // en su plan quiere activar (mínimo 1).
   channels = [
     {
       name: 'YouTube',
+      channelType: 'YOUTUBE',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg',
       icon: null,
-      active: true,
+      selected: true,
       locked: false,
     },
     {
       name: 'Twitter / X',
+      channelType: 'TWITTER',
       logo: 'https://img.logo.dev/x.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
       icon: null,
-      active: true,
+      selected: true,
       locked: false,
     },
     {
       name: 'Reddit',
+      channelType: 'REDDIT',
       logo: 'https://img.logo.dev/reddit.com?token=pk_XE_XBDKdRaGuZ8ro3WCxIQ&size=140&retina=true',
       icon: null,
-      active: true,
+      selected: true,
       locked: false,
     },
     {
       name: 'TikTok',
+      channelType: 'TIKTOK',
       logo: 'https://img.magnific.com/vector-premium/logotipo-tik-tok_578229-290.jpg?semt=ais_hybrid&w=740&q=80',
       icon: null,
-      active: true,
+      selected: true,
       locked: false,
     },
     {
       name: 'Facebook',
+      channelType: 'FACEBOOK',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg',
       icon: null,
-      active: false,
+      selected: false,
       locked: true,
     },
     {
       name: 'Instagram',
+      channelType: 'INSTAGRAM',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
       icon: null,
-      active: false,
+      selected: false,
       locked: true,
     },
     {
       name: 'Google News',
+      channelType: 'GOOGLE_NEWS',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_News_icon.svg/960px-Google_News_icon.svg.png',
       icon: null,
-      active: false,
+      selected: false,
       locked: true,
     },
-    { name: 'Blogs / Web', logo: null, icon: 'article', active: false, locked: true },
+    { name: 'Blogs / Web', channelType: 'BLOGS', logo: null, icon: 'article', selected: false, locked: true },
   ];
+
+  channelSelectionError: string | null = null;
+
+  toggleChannelSelection(ch: { locked: boolean; selected: boolean; name: string }) {
+    if (ch.locked) return;
+    if (ch.selected) {
+      const seleccionados = this.channels.filter((c) => !c.locked && c.selected).length;
+      if (seleccionados <= 1) {
+        this.channelSelectionError = 'Debes mantener al menos un canal seleccionado.';
+        return;
+      }
+    }
+    this.channelSelectionError = null;
+    ch.selected = !ch.selected;
+  }
 
   notifications: { icon: string; color: string; title: string; desc: string; time: string }[] = [];
 
@@ -347,6 +371,16 @@ export class HomeComponent implements OnInit {
     this.creatingWorkspace = true;
     this.createWorkspaceError = null;
 
+    const selectedChannelTypes = this.channels
+      .filter((c) => !c.locked && c.selected)
+      .map((c) => c.channelType);
+
+    if (selectedChannelTypes.length === 0) {
+      this.creatingWorkspace = false;
+      this.createWorkspaceError = 'Selecciona al menos un canal de análisis.';
+      return;
+    }
+
     this.http
       .post<any>(`${environment.apiBaseUrl}/workspaces`, {
         userId: Number(this.userId),
@@ -355,6 +389,14 @@ export class HomeComponent implements OnInit {
       })
       .subscribe({
         next: (ws) => {
+          // Activamos únicamente los canales que el usuario seleccionó para
+          // este workspace (mínimo 1, ya validado arriba).
+          selectedChannelTypes.forEach((channelType) => {
+            this.http
+              .post(`${environment.apiBaseUrl}/workspaces/${ws.id}/channels`, { channelType })
+              .subscribe({ error: () => {} });
+          });
+
           // Crea la marca asociada al workspace (mentions/incidentes/config la requieren)
           this.http
             .post<any>(`${environment.apiBaseUrl}/brands`, { workspaceId: ws.id, name })
