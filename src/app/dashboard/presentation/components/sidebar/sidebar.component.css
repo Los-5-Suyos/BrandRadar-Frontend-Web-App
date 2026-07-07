@@ -116,7 +116,7 @@
 .dash-brand-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #d4e4fa; }
 .dash-brand-chevron { font-size: 16px; color: #929096; }
 
-.dash-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+.dash-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; overflow-x: hidden; }
 
 .dash-nav-item {
   display: flex;
